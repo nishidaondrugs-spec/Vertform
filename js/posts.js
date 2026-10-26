@@ -223,7 +223,7 @@ function pHero(todayRows) {
 function viewPost() {
   const c = lbCfg(), today = todayISO();
   const right = `<div class="phbtns"><button type="button" class="btn sm ghost" data-act="lb.open">Leaderboard</button></div>`;
-  if (!c) return `${pageHead('', 'Post', right)}${banners()}
+  if (!c) return `${pageHead('', navNew() ? 'Friends' : 'Post', right)}${banners()}
     <div class="goalcard"><b>See what your friends are training</b><p class="tiny">Posts are visible only to you and friends you add by code. Choose a nickname, swap codes, and your feed starts here. No account or email needed.</p>
     <button type="button" class="btn primary" data-act="lb.open">Set up friends</button></div>`;
   if (!pUi.loading && (pUi.rows === null || pUi.day !== today || Date.now() - pUi.at > 90000)) setTimeout(postLoad, 0);
@@ -232,7 +232,7 @@ function viewPost() {
   const todayRows = rows.filter(isToday), earlier = rows.filter(r => !isToday(r));
   const days = [...new Set(earlier.map(r => r.day))].sort().reverse();
   const nothingYet = pUi.rows !== null && !rows.length;
-  return `${pageHead('', 'Post', right)}${banners()}
+  return `${pageHead('', navNew() ? 'Friends' : 'Post', right)}${banners()}
     ${pUi.compose ? postComposer() : pHero(todayRows)}
     <div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>
     ${pUi.err ? `<div class="status warn" role="alert">${esc(pUi.err)}</div>` : ''}

@@ -336,3 +336,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - **Remove exercise** during a workout: just today (with Undo) or for good (built-in A–D exercises are hidden, restorable from the library).
 - **Same exercise, whatever you typed:** history, last time and PBs now match exercises by name, ignoring capitals, spacing, a trailing "s" and a one-letter typo or swap.
 - New fields in saved data: `catalogue`, `hiddenEx` (older backups load fine).
+
+## 2.40.0 — Feed and tabs layout
+- New home: opens on **Friends** (your friends' posts first). Bottom bar: **Feed · You · [post button] · Gym · Fuel**. The centre camera button opens a new post and the photo picker in one tap.
+- Swipe left/right to move between Feed and You.
+- Settings → Appearance → **Home layout** switches back to the classic circle hub at any time. Records are untouched either way.
+- Still to come: the redesigned You page, and Today / Plan / History inside Gym.

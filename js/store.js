@@ -41,7 +41,7 @@ function baseData() {
     settings: {
       rest: { auto: true, sound: true, vibrate: true, wakeLock: true, perExercise: {} },
       backup: { lastExportAt: null, lastExportCounts: null, reminderDays: 14, snoozedUntil: null },
-      theme: 'dark', logo: '', weighSnooze: null, lb: null
+      theme: 'dark', nav: 'feed', logo: '', weighSnooze: null, lb: null
     },
     meta: { createdAt: now, appVersion: APP_VERSION, migratedAt: null, migratedFrom: null }
   };
@@ -149,6 +149,7 @@ function normaliseData(o) {
     backup: { ...b.settings.backup, ...(isObj(s.backup) ? s.backup : {}) }
   };
   out.settings.theme = ['dark', 'light', 'auto'].includes(s.theme) ? s.theme : 'dark';
+  out.settings.nav = s.nav === 'hub' ? 'hub' : 'feed';
   out.settings.logo = typeof s.logo === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.logo) && s.logo.length < 200000 ? s.logo : '';
   out.settings.weighSnooze = isISO(s.weighSnooze) ? s.weighSnooze : null;
   /* 2.20: the player look was dropped on every load. Keep only small whole numbers; the editor cleans it fully when used. */

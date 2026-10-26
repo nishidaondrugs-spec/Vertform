@@ -14,12 +14,14 @@ function fuelDateBar(date, today) {
   return `<button type="button" class="iconbtn" data-act="fuel.prev" aria-label="Previous day">${icon('back')}</button><label class="tdlabel"><span>${esc(label)}</span><input id="fuelday" type="date" data-in="fuelday" aria-label="Food diary date" value="${esc(date)}"></label><button type="button" class="iconbtn" data-act="fuel.next" aria-label="Next day">${icon('chev')}</button>`;
 }
 function renderNav() {
-  const tb = $('#topback'); if (tb) tb.hidden = ui.page === 'home';
+  const tb = $('#topback'); if (tb) tb.hidden = isTopPage(ui.page);
   const td = $('#topdate'); if (td) { const on = ui.page === 'fuel'; td.hidden = !on; td.innerHTML = on ? fuelDateBar(ui.fuelDate, todayISO()) : ''; document.body.classList.toggle('page-fuel', on); }
   $('#top-week').textContent = `WK ${pad2(getWeek())}/12`;
   const me = $('#topme'); if (me) { const onMe = ui.page === 'friend' && ui.friendId === 'me'; me.hidden = onMe; if (!me.dataset.k) { me.dataset.k = 'logo'; me.innerHTML = markHTML; } }
-  $('#tab-buttons').innerHTML = TABS.map(([p, n, i]) => `<button type="button" class="${p === ui.page ? 'active' : ''}" data-act="nav" data-arg="${p}" aria-current="${p === ui.page ? 'page' : 'false'}">${icon(i)}<span>${n}</span></button>`).join('');
-  $('#rail').innerHTML = `<div class="brand">${wordmark}</div><nav aria-label="Main">${TABS.map(([p, n, i]) => `<button type="button" class="${p === ui.page ? 'active' : ''}" data-act="nav" data-arg="${p}" aria-current="${p === ui.page ? 'page' : 'false'}">${icon(i)}<span>${n}</span></button>`).join('')}<button type="button" class="${ui.page === 'settings' ? 'active' : ''}" data-act="nav" data-arg="settings" aria-current="${ui.page === 'settings' ? 'page' : 'false'}">${icon('gear')}<span>Settings</span></button></nav>
+  document.body.classList.toggle('nav2', navNew()); document.body.classList.toggle('page-sub', !isTopPage(ui.page));
+  const tabs = navNew() ? railTabs() : TABS;
+  $('#tab-buttons').innerHTML = navNew() ? tabsHTML() : TABS.map(([p, n, i]) => `<button type="button" class="${p === ui.page ? 'active' : ''}" data-act="nav" data-arg="${p}" aria-current="${p === ui.page ? 'page' : 'false'}">${icon(i)}<span>${n}</span></button>`).join('');
+  $('#rail').innerHTML = `<div class="brand">${wordmark}</div><nav aria-label="Main">${tabs.map(([p, n, i]) => `<button type="button" class="${p === ui.page ? 'active' : ''}" data-act="nav" data-arg="${p}" aria-current="${p === ui.page ? 'page' : 'false'}">${icon(i)}<span>${n}</span></button>`).join('')}<button type="button" class="${ui.page === 'settings' ? 'active' : ''}" data-act="nav" data-arg="settings" aria-current="${ui.page === 'settings' ? 'page' : 'false'}">${icon('gear')}<span>Settings</span></button></nav>
     <button type="button" class="railme" data-act="me.open">${markHTML}<span>Profile</span></button>
     <div class="rail-foot mono">v${APP_VERSION}<br>Saved on this device only</div>`;
   const g = $('#gear'); if (g) g.setAttribute('aria-current', ui.page === 'settings' ? 'page' : 'false');
@@ -42,17 +44,17 @@ function render() {
 const navStack = [];
 function go(page, scrollTop = true) {
   if (!PAGES[page]) return;
-  if (ui.page !== page) { if (page === 'home') navStack.length = 0; else { navStack.push(ui.page); try { history.pushState({ vf: 1 }, ''); } catch (_) { /* no history API */ } } }
+  if (ui.page !== page) { if (page === 'home' || isTopPage(page)) navStack.length = 0; else { navStack.push(ui.page); try { history.pushState({ vf: 1 }, ''); } catch (_) { /* no history API */ } } }
   ui.page = page; ui.panel = null; closeAllSheets(); render(); if (scrollTop) window.scrollTo(0, 0); $('#view').focus({ preventScroll: true });
 }
 function navBackNow() {
-  const to = navStack.pop() || 'home'; ui.page = to; ui.panel = null; if (to === 'home') ui.hub = true;
+  const to = navStack.pop() || homePage(); ui.page = to; ui.panel = null; if (to === 'home' && !navNew()) ui.hub = true;
   closeAllSheets(); render(); window.scrollTo(0, 0);
 }
 /* Swipe in from the left edge to go back (closes the top sheet first). Iframes such as the 3D player keep their own touches. */
 (function () {
   let sx = 0, sy = 0, t0 = 0, on = false, ind = null;
-  const canGo = () => !$('#wk-root .wk') && !$('#dialog-root .dialog') && (sheetOpen() || ui.page !== 'home');
+  const canGo = () => !$('#wk-root .wk') && !$('#dialog-root .dialog') && (sheetOpen() || !isTopPage(ui.page));
   const hide = () => { if (ind) { ind.classList.remove('on'); ind.style.transform = 'translateX(-46px)'; } };
   addEventListener('touchstart', e => {
     on = false; if (e.touches.length !== 1) return; const t = e.touches[0];
@@ -72,7 +74,7 @@ function navBackNow() {
   ['gesturestart', 'gesturechange', 'gestureend'].forEach(g => addEventListener(g, e => e.preventDefault()));   // iOS pinch zoom
 })();
 ACTIONS['page.back'] = () => { if (history.state && history.state.vf) history.back(); else navBackNow(); };
-window.addEventListener('popstate', () => { if (ui.page !== 'home') navBackNow(); });
+window.addEventListener('popstate', () => { if (!isTopPage(ui.page)) navBackNow(); });
 ACTIONS.nav = el => go(el.dataset.arg);
 
 /* ---------- shared fragments ---------- */

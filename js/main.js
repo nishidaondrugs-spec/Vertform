@@ -138,7 +138,7 @@ window.addEventListener('storage', e => {
 
 /* ---------- boot ---------- */
 function boot() {
-  loadState(); loadTimer(); trackViewport(); ui.lastDay = todayISO();
+  loadState(); loadTimer(); trackViewport(); ui.lastDay = todayISO(); ui.page = homePage();
   render();
   if (data.user.onboarded) setTimeout(maybeAskReadiness, 350); else startOnboarding();
   if (typeof acctStart === 'function') setTimeout(acctStart, 250);

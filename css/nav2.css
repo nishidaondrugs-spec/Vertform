@@ -1,0 +1,25 @@
+/* VERTFORM 2.40 — Feed and tabs layout */
+body.nav2 .tabbar{display:block!important;position:fixed;left:0;right:0;bottom:0;border:0;border-top:1px solid var(--glass-line,#1f2b45);border-radius:0;background:#0a1120;padding:6px 8px calc(8px + var(--safe-b));z-index:30;backdrop-filter:none}
+html[data-theme="light"] body.nav2:not(.on-home) .tabbar{background:#fff}
+body.nav2 #tab-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;gap:0}
+body.nav2 #tab-buttons button:not(.postfab){min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;background:none;box-shadow:none;border-radius:12px;color:#a9b5cc;font:700 11px/1 var(--sans);letter-spacing:.02em;text-transform:none}
+body.nav2 #tab-buttons button.active:not(.postfab){background:none;box-shadow:none;color:#6ea8ff}
+body.nav2 #tab-buttons button.active .ico{color:#6ea8ff;filter:none}
+body.nav2 #tab-buttons .ico{width:24px;height:24px}
+.tabpost{position:relative;height:56px}
+body.nav2 #tab-buttons .postfab{position:absolute;min-height:0;letter-spacing:0;left:50%;top:-30px;margin-left:-32px;width:64px;height:64px;border-radius:50%;border:4px solid #060b16;background:#2563eb!important;color:#fff!important;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 6px 18px rgba(37,99,235,.45)}
+body.nav2 #tab-buttons .postfab .ico{width:28px;height:28px}
+body.nav2 #tab-buttons .postfab:active{transform:scale(.96)}
+html[data-theme="light"] body.nav2:not(.on-home) #tab-buttons .postfab{border-color:#fff}
+body.nav2 .shell{padding-bottom:calc(96px + var(--safe-b))}
+body.nav2.on-home .shell{padding-bottom:0}
+body.nav2.on-home .vhDock{padding-bottom:calc(92px + var(--safe-b))}
+body.nav2.on-home #toast-root,body.nav2 #toast-root,body.nav2 .timer-pill{bottom:calc(96px + var(--safe-b))}
+body.nav2.kb-open .tabbar{display:none!important}
+body.nav2 .topbar .topback{display:none}
+body.nav2:not(.page-sub) .topbar .topback{display:none}
+body.nav2.page-sub .topbar .topback{display:inline-flex}
+@media (min-width:900px){
+  body.nav2 .tabbar{display:none!important}
+  body.nav2 .shell{padding-bottom:36px}
+}
