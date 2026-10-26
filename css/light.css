@@ -1,0 +1,78 @@
+/* VERTFORM 2.4 — light theme. Variables first, then generated overrides of the hard-coded night colours. */
+html[data-theme="light"],html[data-theme="light"] .vhPanel,html[data-theme="light"] #sheet-root,html[data-theme="light"] #dialog-root,html[data-theme="light"] #wk-root,html[data-theme="light"] #toast-root{
+  color-scheme:light;
+  --bg:#edf1f9;--bg2:#e3e9f4;--surf:#ffffff;--surf2:#f2f5fc;--line:#0d1b3322;--line2:#0d1b3338;
+  --ink:#0d1b33;--dim:#4a5b78;--faint:#6b7c99;
+  --clay:#1f6fe0;--clay-ink:#ffffff;--sage:#0b8f4d;--ochre:#a86400;--rose:#c92f42;--slate:#3d5bd9;--gold:#8a5600;
+  --glass:linear-gradient(135deg,rgba(255,255,255,.96),rgba(255,255,255,.78));
+  --glass-line:rgba(13,27,51,.14);
+}
+html[data-theme="light"],html[data-theme="light"] body{background:#edf1f9;color:var(--ink)}
+html[data-theme="light"] body{background:radial-gradient(900px 520px at 85% -8%,rgba(74,120,255,.14),transparent 62%),radial-gradient(700px 480px at -10% 30%,rgba(60,190,255,.10),transparent 60%),#edf1f9;background-attachment:fixed}
+/* the home hub is a night scene in every theme */
+html[data-theme="light"] .topbar{background:linear-gradient(var(--bg) 82%,rgba(255,255,255,0))}
+html[data-theme="light"] .tabbar{background:rgb(255,255,255)}
+html[data-theme="light"] .scrim{background:rgba(255,255,255,0.72)}
+html[data-theme="light"] .wk-dock{background:rgb(255,255,255)}
+html[data-theme="light"] .scan-stage{background:rgb(255,255,255)}
+html[data-theme="light"] .pimg{background:rgba(13,27,51,0.5)}
+@media (min-width:900px){html[data-theme="light"] .rail{background:rgb(255,255,255)}}
+html[data-theme="light"] .eyebrow,html[data-theme="light"] .tiny.eyebrow{color:rgb(74,91,120)}
+html[data-theme="light"] .note,html[data-theme="light"] .tiny{color:rgb(74,91,120)}
+html[data-theme="light"] .topbar{background:linear-gradient(rgb(255,255,255) 78%,rgba(255,255,255,0))}
+html[data-theme="light"] .mark{color:rgb(13,27,51)}
+html[data-theme="light"] .word{color:rgb(13,27,51)}
+html[data-theme="light"] .topweek{color:rgb(74,91,120)}
+html[data-theme="light"] .iconbtn{color:rgb(13,27,51)}
+html[data-theme="light"] .tabbar{background:linear-gradient(135deg,rgb(241,245,252),rgb(255,255,255))}
+html[data-theme="light"] #tab-buttons button{color:rgb(74,91,120)}
+html[data-theme="light"] #tab-buttons button.active{color:rgb(13,27,51)}
+html[data-theme="light"] .stamp b{color:rgb(13,27,51)}
+html[data-theme="light"] .btn{color:rgb(13,27,51)}
+html[data-theme="light"] .chip,html[data-theme="light"] .pill{color:rgb(13,27,51)}
+html[data-theme="light"] .chip.on,html[data-theme="light"] .chip[aria-pressed=true]{color:rgb(13,27,51)}
+html[data-theme="light"] .seg,html[data-theme="light"] .seg3{background:rgba(13,27,51,0.02)}
+html[data-theme="light"] .seg button,html[data-theme="light"] .seg3 button{color:rgb(74,91,120)}
+html[data-theme="light"] .seg button.on,html[data-theme="light"] .seg3 button.on{color:rgb(13,27,51)}
+html[data-theme="light"] input[type=text],html[data-theme="light"] input[type=number],html[data-theme="light"] input[type=search],html[data-theme="light"] input[type=date],html[data-theme="light"] input[type=time],html[data-theme="light"] input[type=email],html[data-theme="light"] select,html[data-theme="light"] textarea,html[data-theme="light"] input:not([type]){background:rgba(255,255,255,0.63);color:rgb(13,27,51)}
+html[data-theme="light"] .field label,html[data-theme="light"] label.lbl{color:rgb(74,91,120)}
+html[data-theme="light"] .ro-num,html[data-theme="light"] .bignum{color:rgb(13,27,51)}
+html[data-theme="light"] .track,html[data-theme="light"] .wb-track,html[data-theme="light"] .tb-bar{background:rgba(13,27,51,0.06)}
+html[data-theme="light"] .lane-day .dw{color:rgb(74,91,120)}
+html[data-theme="light"] th{color:rgb(74,91,120)}
+html[data-theme="light"] .scrim,html[data-theme="light"] .overlay{background:rgba(255,255,255,0.63)}
+html[data-theme="light"] .sheet,html[data-theme="light"] .dialog,html[data-theme="light"] .wk{background:linear-gradient(160deg,rgb(241,245,252),rgb(255,255,255) 70%)!important}
+html[data-theme="light"] .wk-dock,html[data-theme="light"] .timerbar{background:linear-gradient(135deg,rgb(241,245,252),rgb(255,255,255))}
+html[data-theme="light"] .toast{background:linear-gradient(135deg,rgb(241,245,252),rgb(255,255,255))}
+@media (min-width:900px){html[data-theme="light"] .rail{background:linear-gradient(180deg,rgb(241,245,252),rgb(255,255,255))}html[data-theme="light"] .rail button.active{color:rgb(13,27,51)}}
+html[data-theme="light"] .mealgroup .foodlist li,html[data-theme="light"] .mealgroup .food{background:rgba(13,27,51,0.02)!important}
+html[data-theme="light"] .mealempty{color:rgb(74,91,120)}
+html[data-theme="light"] .mark{background:radial-gradient(circle at 50% 30%,rgba(28,72,150,.8),rgb(255,255,255) 72%)}
+html[data-theme="light"] .vhPanel{background:linear-gradient(180deg,rgba(255,255,255,0.495),rgba(255,255,255,0.72))}
+html[data-theme="light"] .vhBack{color:rgb(13,27,51)}
+html[data-theme="light"] .scan-stage{background:rgb(255,255,255)}
+html[data-theme="light"] .scanzoom{color:rgb(13,27,51);background:rgba(255,255,255,0.45)}
+html[data-theme="light"] body.on-home .word{color:#e9eef9}
+html[data-theme="light"] body.on-home .mark{color:#fff}
+html[data-theme="light"] body.on-home .topweek{color:#f4b94f}
+html[data-theme="light"] body.on-home #gear{background:rgba(255,255,255,.1);color:#dbe6fa;border-color:rgba(255,255,255,.18)}
+html[data-theme="light"] body.on-home{background:#060b16 radial-gradient(900px 520px at 85% -8%,rgba(74,120,255,.22),transparent 62%)}
+html[data-theme="light"] .lcbar{background:rgba(13,27,51,.06)}
+html[data-theme="light"] .lcbar .done{background:linear-gradient(180deg,#3b8cff,#1f6fe0)}
+html[data-theme="light"] .vhNote{color:#dbe6fa}
+html[data-theme="light"] .vhNote.warn{color:#ffe3ae}
+html[data-theme="light"] .vhPanel{background:linear-gradient(180deg,rgba(237,241,249,.94),rgba(237,241,249,.98))}
+
+/* hub screen (and the banners above it) keep the night palette */
+html[data-theme="light"] body.on-home{
+  color-scheme:dark;
+  --bg:#060b16;--bg2:#0a1424;--surf:#0e1a2e;--surf2:#152642;--line:#ffffff1f;--line2:#ffffff33;
+  --ink:#eef2fa;--dim:#b7c4da;--faint:#8193b0;--clay:#4aa8ff;--clay-ink:#04122a;--sage:#7df0b0;--ochre:#f4b94f;--rose:#ff7a8a;--slate:#9bb4ff;--gold:#ffc98a;
+  --glass:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.04) 55%,rgba(255,255,255,.08));--glass-line:rgba(255,255,255,.18);
+  color:#eef2fa}
+html[data-theme="light"] body.on-home .topbar{background:linear-gradient(#060b16 78%,#060b1600)}
+html[data-theme="light"] body.on-home .banner,html[data-theme="light"] body.on-home .banner b{color:#eef2fa}
+html[data-theme="light"] body.on-home .banner p{color:#b7c4da}
+html[data-theme="light"] body.on-home .banner .btn.ghost{color:#eef2fa;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+html[data-theme="light"] .vhPanel{color:#0d1b33}
+html[data-theme="light"]:has(body.on-home),html[data-theme="light"] body.on-home{background-color:#060b16}
