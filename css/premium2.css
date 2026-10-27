@@ -652,3 +652,33 @@ body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:1}
 .ing-list li{border-left:0!important;border-right:0!important;border-bottom:0!important;box-shadow:none!important}
 .sheet .field textarea{min-height:84px}
 .rwhole{margin-bottom:18px!important}
+
+/* ===== First-run setup: black, calm, same system as the app ===== */
+#onb-root .onb{background:#000!important;color:#fff}
+.onb-top{padding-top:calc(14px + var(--safe-t,0px))}
+.obprog i{height:3px!important;border-radius:2px;background:#222!important}.obprog i.f{background:#fff!important}
+.obback{background:#1c1c1e!important;border:0!important}
+.obk{color:#8e8e93!important;letter-spacing:.1em!important;font-size:12px!important;font-weight:600;text-transform:uppercase}
+.obh{font-size:34px!important;line-height:1.1!important;font-weight:800!important;letter-spacing:-.02em!important;color:#fff!important}
+.obsub,.obnote{color:#8e8e93!important}
+.obhero{margin:56px 0 40px!important;place-items:start!important}
+.obmark{font-weight:800;letter-spacing:.16em;font-size:20px}.obmark i{color:#e5383b;font-style:normal}
+.obhero.sm .obcrest.ok{background:#fff!important;color:#000!important;border:0!important;box-shadow:none!important}
+.obday,.obint button,.obmin button,.obstarts button,.obpm{background:#1c1c1e!important;border:0!important;color:#fff!important;box-shadow:none!important}
+.obday.on,.obint button.on,.obmin button.on,.obstarts button.on{background:#fff!important;color:#000!important}
+.obint button.on small,.obmin button.on small{color:#555!important}
+.obrow,.obsum,.obcard{background:transparent!important;border:0!important;border-top:1px solid #1c1c1e!important;border-radius:0!important;box-shadow:none!important}
+.obrow input,.obfield input{background:#1c1c1e!important;border:0!important;border-radius:12px!important;color:#fff}
+.onb-foot{flex-direction:column;border-top:0!important;gap:8px;padding-bottom:calc(20px + var(--safe-b,0px))!important}
+.onb-foot .obgo{height:56px;border-radius:28px;font-size:17px;font-weight:700}
+.obskip{background:none;border:0;color:#8e8e93!important;text-decoration:none!important;font-size:15px;height:40px}
+.obsignin{margin-top:18px!important;background:#1c1c1e!important;border:0!important;color:#fff!important;height:48px;border-radius:24px}
+.obnl{list-style:none;margin:26px 0 8px;padding:0}
+.obnl li{display:flex;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #1c1c1e}
+.obnl li>span{width:40px;height:40px;border-radius:12px;background:#1c1c1e;display:grid;place-items:center;flex:none}.obnl li>span svg{width:20px;height:20px}
+.obnl b{display:block;font-size:16px;font-weight:600}.obnl small{display:block;font-size:14px;color:#8e8e93;margin-top:2px}
+.obmark{text-transform:uppercase}
+.onb-foot{background:transparent!important}
+.obsignin{display:flex!important;width:100%;justify-content:center;align-items:center;padding:0!important;margin-left:0!important}
+.obprog i.f{box-shadow:none!important}
+.obnum{background:#1c1c1e!important;border:0!important;color:#fff!important}

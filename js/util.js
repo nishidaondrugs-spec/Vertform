@@ -2,7 +2,7 @@
 /* VERTFORM 2.0 — shared helpers (classic script; globals are shared across files) */
 
 const APP_NAME = 'VERTFORM';
-const APP_VERSION = '2.68.0';
+const APP_VERSION = '2.68.1';
 const APP_RELEASE = 'Courtside Notebook';
 const SCHEMA_VERSION = 2;     // record layout inside the stored data
 const BACKUP_FORMAT = 2;      // layout of exported backup files

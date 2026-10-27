@@ -28,7 +28,7 @@ function obSyncSessions() {
   const n = ob.count; while (ob.sessions.length < n) { const d = OB_DEFAULTS[ob.sessions.length]; ob.sessions.push({ name: d[0], start: d[1] }); } ob.sessions.length = n;
 }
 /* One question per screen. The list of screens depends on how many team days were picked. */
-function obSteps() { return [{ id: 'welcome' }, { id: 'days' }, ...obTeamDays().map(i => ({ id: 'team', day: i })), { id: 'count' }, { id: 'names' }, { id: 'ready' }]; }
+function obSteps() { return [{ id: 'welcome' }, { id: 'days' }, ...obTeamDays().map(i => ({ id: 'team', day: i })), { id: 'count' }, { id: 'names' }, { id: 'notify' }, { id: 'ready' }]; }
 const obHead = (kicker, title, sub) => `<p class="obk">${kicker}</p><h1 class="obh">${title}</h1>${sub ? `<p class="obsub">${sub}</p>` : ''}`;
 const OB_PIPS = { light: 1, moderate: 2, hard: 3, max: 4 };
 function obWeekStrip() {
@@ -36,7 +36,7 @@ function obWeekStrip() {
 }
 function obBody() {
   const st = obSteps()[ob.step];
-  if (st.id === 'welcome') return `<div class="obhero"><span class="obcrest">${crestSvg}</span></div>${obHead('WELCOME', 'Let’s build your week', 'Three quick questions. Your team trainings, how many gym sessions you want, and what to call them. Everything can be changed later.')}${typeof acctOn === 'function' && acctOn() ? `<button type="button" class="btn ghost obsignin" data-act="acct.in">Already use VERTFORM? Sign in</button>` : ''}`;
+  if (st.id === 'welcome') return `<div class="obhero"><span class="obmark">VERT<i>/</i>FORM</span></div>${obHead('WELCOME', 'Let’s build your week', 'Three quick questions. Your team trainings, how many gym sessions you want, and what to call them. Everything can be changed later.')}${typeof acctOn === 'function' && acctOn() ? `<button type="button" class="btn ghost obsignin" data-act="acct.in">Already use VERTFORM? Sign in</button>` : ''}`;
   if (st.id === 'days') {
     const d = obTeamDays();
     return `${obHead('YOUR WEEK', 'Which days do you train with a team?', 'Club or team sessions that are fixed. Tap the days, or skip if you have none.')}
@@ -67,6 +67,11 @@ function obBody() {
     <div class="obrows">${ob.sessions.map((s, i) => `<section class="obrow"><span class="obnum">${i + 1}</span><div class="obrowmain"><input id="obs${i}" data-in="obsname" data-i="${i}" maxlength="40" autocomplete="off" aria-label="Session ${i + 1} name" value="${esc(s.name)}">
       <div class="obstarts" role="radiogroup" aria-label="Start from">${OB_STARTS.map(([id, label]) => `<button type="button" role="radio" aria-checked="${s.start === id}" class="${s.start === id ? 'on' : ''}" data-act="ob.start" data-id="${i}" data-arg="${id}">${esc(label.replace(' (pull)', '').replace(' (add my own)', '').replace(' & jump', ''))}</button>`).join('')}</div></div></section>`).join('')}</div>`;
   }
+  if (st.id === 'notify') return `${obHead('STAY ON TRACK', 'Want a nudge now and then?', 'Only the useful ones. You can change or turn them off any time in Settings.')}
+    <ul class="obnl"><li><span>${icon('train')}</span><div><b>Session days</b><small>A reminder on the days you train.</small></div></li>
+    <li><span>${icon('fuel')}</span><div><b>Match-day fuel</b><small>When to eat carbs and a sip of honey before a game.</small></div></li>
+    <li><span>${icon('feed')}</span><div><b>Friends</b><small>When a friend posts or tags you.</small></div></li></ul>
+    <p class="obnote">${typeof pushIOSWeb === 'function' && pushIOSWeb() ? 'On iPhone, add VERTFORM to your Home Screen first, then notifications can be switched on.' : 'Your phone will ask for permission.'}</p>`;
   const d = obTeamDays();
   return `<div class="obhero sm"><span class="obcrest ok">${icon('check')}</span></div>${obHead('ALL SET', 'Your week is ready')}
     ${obWeekStrip()}
@@ -78,13 +83,13 @@ function paintOb() {
   document.body.classList.add('onb-open');
   const steps = obSteps(); ob.step = clamp(ob.step, 0, steps.length - 1);
   const id = steps[ob.step].id, last = id === 'ready', first = id === 'welcome', nSteps = steps.length - 1;
-  const next = last ? 'ob.finish' : 'ob.next', label = last ? 'Open my week' : first ? 'Get started' : id === 'days' && !obTeamDays().length ? 'No fixed trainings' : 'Next';
+  const notif = id === 'notify', next = last ? 'ob.finish' : notif ? 'ob.notify' : 'ob.next', label = last ? 'Open my week' : first ? 'Get started' : notif ? 'Turn on notifications' : id === 'days' && !obTeamDays().length ? 'No fixed trainings' : 'Next';
   const keep = paintOb.keep;
   r.innerHTML = `<div class="onb" role="dialog" aria-modal="true" aria-label="Set up VERTFORM">
     <header class="onb-top">${first || last ? '<span class="obspacer"></span>' : '<button type="button" class="obback" data-act="ob.back" aria-label="Back">' + icon('back') + '</button>'}
       <div class="obprog" role="progressbar" aria-valuemin="0" aria-valuemax="${nSteps}" aria-valuenow="${ob.step}" aria-label="Setup progress">${Array.from({ length: nSteps }, (_, i) => `<i class="${i < ob.step ? 'f' : ''}"></i>`).join('')}</div><span class="obspacer"></span></header>
     <div class="onb-body ${keep ? 'keep' : ''}">${obBody()}</div>
-    <footer class="onb-foot"><button type="button" class="btn primary grow obgo" data-act="${next}">${label}</button>${first ? '<button type="button" class="obskip" data-act="ob.skip">Use the standard plan instead</button>' : ''}</footer></div>`;
+    <footer class="onb-foot"><button type="button" class="btn primary grow obgo" data-act="${next}">${label}</button>${first ? '<button type="button" class="obskip" data-act="ob.skip">Use the standard plan instead</button>' : ''}${notif ? '<button type="button" class="obskip" data-act="ob.next">Not now</button>' : ''}</footer></div>`;
   const b = $('.onb-body', r); if (b && !keep) b.scrollTop = 0; paintOb.keep = false;
 }
 ACTIONS['ob.day'] = el => { const i = Number(el.dataset.arg); if (ob.team[i]) delete ob.team[i]; else ob.team[i] = { name: 'Team training', intensity: 'moderate', min: 90 }; paintOb.keep = true; paintOb(); };
@@ -93,6 +98,14 @@ ACTIONS['ob.count'] = el => { ob.count = clamp(Number(el.dataset.arg), 1, 6); pa
 ACTIONS['ob.inc'] = () => { ob.count = Math.min(6, ob.count + 1); paintOb.keep = true; paintOb(); };
 ACTIONS['ob.dec'] = () => { ob.count = Math.max(1, ob.count - 1); paintOb.keep = true; paintOb(); };
 ACTIONS['ob.start'] = el => { const s = ob.sessions[Number(el.dataset.id)], id = el.dataset.arg, was = OB_DEFAULTS.some(d => d[0] === s.name) || !s.name.trim(); s.start = id; if (was && id !== 'blank') s.name = OB_STARTS.find(x => x[0] === id)[1].replace(' (pull)', '').replace(' & jump', ''); paintOb.keep = true; paintOb(); };
+ACTIONS['ob.notify'] = async () => {
+  try {
+    const p = { ...pushPrefs(), want: true, remind: true, fuel: true, posts: true, mentions: true }; pushSavePrefs(p);
+    if (typeof pushSupported === 'function' && pushSupported() && Notification.permission === 'default') await Notification.requestPermission();
+    if (typeof pushAuto === 'function') pushAuto();
+  } catch (_) { /* fine, they can turn it on in Settings */ }
+  ob.step++; paintOb();
+};
 ACTIONS['ob.next'] = () => { ob.step++; paintOb(); };
 ACTIONS['ob.back'] = () => { ob.step = Math.max(0, ob.step - 1); paintOb(); };
 function closeOb() { $('#onb-root')?.remove(); document.body.classList.remove('onb-open'); ob = null; }

@@ -60,7 +60,7 @@ async function lbSync(force) {
 }
 /* Called from render(): quietly keeps your stats current after you log a session. Cheap and throttled. */
 let lbAutoAt = 0;
-function lbAuto() { if (!lbCfg() || Date.now() - lbAutoAt < 4000) return; lbAutoAt = Date.now(); lbSync(false); if (typeof lookSyncOnce === 'function') lookSyncOnce(); }
+function lbAuto() { if (!lbCfg() || Date.now() - lbAutoAt < 4000) return; if (typeof pushAuto === 'function') pushAuto(); lbAutoAt = Date.now(); lbSync(false); if (typeof lookSyncOnce === 'function') lookSyncOnce(); }
 
 /* repaint wherever the board is showing: the Friends sheet, the Leaderboard page or a friend's profile */
 function lbRepaint() {

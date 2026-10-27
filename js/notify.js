@@ -2,7 +2,7 @@
 const PUSHPREF_KEY = 'vertform.push';
 function pushPrefs() {
   let p = {}; try { p = JSON.parse(localStorage.getItem(PUSHPREF_KEY) || '{}'); } catch (_) { /* none */ }
-  return { posts: p.posts !== false, mentions: p.mentions !== false, remind: !!p.remind, fuel: p.fuel !== false, remind_time: /^([01]\d|2[0-3]):[0-5]\d$/.test(p.remind_time || '') ? p.remind_time : '08:00', on: !!p.on, plan: p.plan || '' };
+  return { posts: p.posts !== false, mentions: p.mentions !== false, remind: p.remind !== false, fuel: p.fuel !== false, remind_time: /^([01]\d|2[0-3]):[0-5]\d$/.test(p.remind_time || '') ? p.remind_time : '08:00', on: !!p.on, want: !!p.want, plan: p.plan || '' };
 }
 function pushSavePrefs(p) { try { localStorage.setItem(PUSHPREF_KEY, JSON.stringify(p)); } catch (_) { /* ignore */ } }
 const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -30,6 +30,12 @@ async function pushPlanSync(force) {
   try { await lbCall('vf_push_plan', { p_id: c.id, p_secret: c.secret, p_plan: plan }); p.plan = h; pushSavePrefs(p); } catch (_) { /* try again next open */ }
 }
 
+/* asked for during first-run setup: finish the subscription as soon as friends exist and the phone has said yes */
+let pushAutoTries = 0;
+function pushAuto() {
+  const p = pushPrefs(); if (!p.want || p.on || pushBusy || pushAutoTries >= 2 || !pushSupported() || Notification.permission !== 'granted' || !lbCfg()) return;
+  pushAutoTries++; ACTIONS['push.enable']();
+}
 ACTIONS['push.enable'] = async () => {
   const c = lbCfg(); if (!c) { toast('Set up friends first, so there is someone to hear from'); return; }
   if (!pushSupported()) { toast(pushIOSWeb() ? 'On iPhone, add VERTFORM to your Home Screen first, then open it from there' : 'This browser cannot do notifications'); return; }
