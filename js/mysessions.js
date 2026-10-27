@@ -7,6 +7,13 @@ let se = null;
 const blankEx = () => ({ name: '', sets: 3, reps: '8', unit: 'reps', load: true, rest: '', hint: '' });
 const nextKey = () => { const used = new Set([...data.mySessions.map(s => s.key), ...data.logs.map(l => l.session)]); for (const c of 'EFGHIJKLMNOP') if (!used.has(c)) return c; return null; };
 
+/* Built-in sessions are never changed in place: editing one opens a copy that replaces it when saved. */
+function openBuiltinCopy(k) {
+  const t = templates[k]; if (!t) return;
+  se = { key: null, replaces: k, title: t.title, type: '', minutes: '', heavy: isHeavy(k), exercises: allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: !!e.load, hint: e.hint || '', rest: e.rest || '', optional: false })), inPlan: activeSessions().includes(k), idx: -1, ex: blankEx(), isNew: true, err: '' };
+  openSheet({ title: 'Edit session', eyebrow: 'YOUR SESSION', size: 'tall', render: renderSessionEditor });
+}
+ACTIONS['ses.edit'] = el => { const k = el.dataset.arg; if (templates[k]?.custom) openSessionEditor(k); else openBuiltinCopy(k); };
 function openSessionEditor(key) {
   const cur = key ? data.mySessions.find(s => s.key === key) : null;
   se = cur ? { key, title: cur.title, type: cur.type, minutes: cur.minutes || '', heavy: cur.heavy, exercises: cur.exercises.map(e => ({ ...e })), inPlan: activeSessions().includes(key), idx: -1, ex: blankEx(), isNew: false, err: '' }
@@ -43,7 +50,7 @@ function renderSessionEditor() {
       <label class="switch"><span>Heavy leg day<small class="tiny block">Keep it 3+ days from a match</small></span><input type="checkbox" data-in="seheavy" ${se.heavy ? 'checked' : ''}></label>
       <label class="switch"><span>Add to my weekly plan<small class="tiny block">Off keeps it as a log-only session</small></span><input type="checkbox" data-in="seplan" ${se.inPlan ? 'checked' : ''}></label></details>
     ${se.err ? `<div class="status warn" role="alert">${esc(se.err)}</div>` : ''}`,
-    footer: `${se.isNew ? '' : '<button type="button" class="btn ghost warnText" data-act="ys.delete">Delete</button>'}<button type="button" class="btn primary" data-act="ys.save">Save session</button>` };
+    footer: `${se.isNew && !se.replaces ? '' : `<button type="button" class="btn ghost warnText" data-act="${se.replaces ? 'ys.deletebuiltin' : 'ys.delete'}">Delete</button>`}<button type="button" class="btn primary" data-act="ys.save">Save session</button>` };
 }
 ACTIONS['ys.sets'] = el => { const v = clamp((parseInt(se.ex.sets) || 3) + Number(el.dataset.arg), 1, 12); se.ex.sets = v; const o = $('#exsv'); if (o) o.textContent = v; };
 INPUTS.setitle = el => { se.title = el.value; }; INPUTS.setype = el => { se.type = el.value; }; INPUTS.semin = el => { se.minutes = el.value; };
@@ -96,11 +103,18 @@ ACTIONS['ys.save'] = () => {
   let key = se.key;
   if (se.isNew) { key = nextKey(); if (!key) { se.err = 'You have reached the limit of 12 own sessions. Delete one first.'; refreshSheet(); return; } data.mySessions.push({ key, ...rec }); }
   else Object.assign(data.mySessions.find(s => s.key === key), rec);
+  if (se.isNew && se.replaces) {
+    const old = se.replaces; data.user.hiddenKeys = [...new Set([...(data.user.hiddenKeys || []), old])]; setHiddenBuiltin(data.user.hiddenKeys);
+    (data.pins || []).forEach(p => { if (p.session === old) p.session = key; });
+    data.user.gymSessions = (data.user.gymSessions || []).map(k => k === old ? key : k);
+    if (data.draft && data.draft.session === old && false) data.draft.session = key;
+  }
   data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin);
   const act = activeSessions().filter(k => k !== key); data.user.gymSessions = SESSION_KEYS.filter(k => act.includes(k) || (k === key && se.inPlan));
   if (!data.user.gymSessions.length) data.user.gymSessions = SESSION_KEYS.slice();
   save(); closeAllSheets(); render(); toast(`“${title}” saved${se.inPlan ? ' and added to your week' : ''}`);
 };
+ACTIONS['ys.deletebuiltin'] = () => { const k = se.replaces; closeAllSheets(); ACTIONS['ses.delete']({ dataset: { arg: k } }); };
 ACTIONS['ys.delete'] = async () => {
   const s = data.mySessions.find(x => x.key === se.key); if (!s) return;
   const ok = await askChoice({ title: `Delete “${s.title}”?`, message: '<p>It disappears from Train and your plan. Workouts you already logged with it stay in your history.</p>', choices: [{ label: 'Cancel', value: false }, { label: 'Delete', kind: 'primary', value: true }] }); if (!ok) return;
