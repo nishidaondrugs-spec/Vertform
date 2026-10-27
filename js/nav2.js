@@ -176,7 +176,6 @@ function sesCard(k) {
 }
 function gymSessions() {
   return `<button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>
-    <p class="tiny">Open a session to see its exercises. Add from the library or take one out. An exercise already in a session is marked <b>Already added</b> so you do not get doubles.</p>
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button></div>`;
 }

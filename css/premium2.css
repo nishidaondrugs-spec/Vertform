@@ -711,3 +711,31 @@ body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:1}
 /* ===== Sheet footers: red only for the main action ===== */
 .sheet-foot .btn.ghost:not(.primary),.sheet-foot .btn.ghost:not(.primary) *{color:#a1a1a6!important}
 .sheet-foot .btn.ghost:not(.primary){background:#1c1c1e!important;border:0!important}
+
+/* ===== Jump tab ===== */
+.jumpcta{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.jumpcta .btn{width:100%;height:52px;border-radius:26px}
+.jumpcta .btn.ghost{background:#1c1c1e!important;border:0!important;color:#c7c7cc!important;font-weight:500}
+
+/* ===== Gym > Sessions ===== */
+body.nav2 .sescard{background:none!important;border:0!important;border-top:1px solid var(--hair,rgba(255,255,255,.07))!important;border-radius:0!important;box-shadow:none!important}
+body.nav2 .seshead{padding:16px 2px!important;background:none!important;border:0!important}
+body.nav2 .seshead .code{background:#1c1c1e!important;border:0!important;color:#fff!important;box-shadow:none!important}
+body.nav2 .seshead b{font-size:17px;font-weight:600}
+body.nav2 .serow{padding:12px 2px;border-top:1px solid var(--hair,rgba(255,255,255,.06))}
+body.nav2 .sesbtns{display:flex;gap:10px;padding:14px 2px 18px}
+body.nav2 .sesbtns .btn{height:44px;border-radius:22px;flex:1}
+body.nav2 .sesbtns .btn.ghost{background:#1c1c1e!important;border:0!important;color:#fff!important}
+body.nav2 .gymbtns .btn{background:#1c1c1e!important;border:0!important;color:#fff!important;height:48px;border-radius:24px;width:100%}
+body.nav2 .libbar{background:#111113!important;border:0!important;border-radius:18px!important}
+
+/* ===== Fuel > Progress ===== */
+.wcard{background:none!important;border:0!important;border-top:1px solid var(--hair,rgba(255,255,255,.07))!important;border-radius:0!important;box-shadow:none!important;padding:18px 0!important}
+.wcard .wc-top b{font-size:30px;font-weight:800;letter-spacing:-.02em;display:block;margin-top:2px}
+.wcard .btn{height:38px;border-radius:19px;padding:0 18px;background:#1c1c1e!important;border:0!important;color:#fff!important}
+.wcard .btn.primary{background:#e5383b!important}
+#view[data-view="fuel"] .explain .quick .btn{background:#1c1c1e!important;border:0!important;color:#fff!important;height:40px;border-radius:20px}
+
+/* ===== Feed header action ===== */
+.phbtns .btn{background:#1c1c1e!important;border:0!important;color:#c7c7cc!important;height:36px;border-radius:18px;padding:0 16px}
+.wcard .wc-top b{font-size:24px!important}.wcard .btn{white-space:nowrap;flex:none}

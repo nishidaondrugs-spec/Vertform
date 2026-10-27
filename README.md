@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.69.1 — Last visual clean-ups
+Jump tab: one big Jump test button plus a quiet Type a result instead. Gym Sessions: plain rows instead of bordered cards. Fuel Progress: bodyweight is a plain block with a quiet button. Feed Leaderboard and Adjust targets are quiet pills.
+
 ## 2.69.0 — Finish screen, exercise picker, volleyball tab
 Finish workout: big sets-ticked headline, a single row of RPE circles with a word for the number, notes, and the rest under More details. Exercise picker: plain rows with a round + (tick if already in the session). Volleyball tab: one Log volleyball button, a plain stats row and Recent sessions. Sheet footers: Back/Cancel are grey so red marks the main action only.
 
