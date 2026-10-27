@@ -374,6 +374,10 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.58.0 — Easier new sessions and Add food
+- New session: big name box, tap-to-start templates, a search-the-library row, a sets stepper, and advanced options tucked away.
+- Fuel: one big Add food button (scan is a round icon), a simpler Add food sheet with meal chips and four clear options, and a slim profile nudge.
+
 ## 2.57.1 — Cleaner day view
 - Tapping a day in the week strip opens a simpler sheet: one session row, one Start button, Move as a link, and a short list to add volleyball, a match or an extra session.
 

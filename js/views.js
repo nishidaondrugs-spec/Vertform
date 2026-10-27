@@ -253,7 +253,7 @@ function viewFuel() {
     <div class="datebar nav deskonly"><button type="button" class="iconbtn" data-act="fuel.prev" aria-label="Previous day">${icon('back')}</button><input id="fuelday" type="date" data-in="fuelday" aria-label="Food diary date" value="${esc(date)}"><button type="button" class="iconbtn" data-act="fuel.next" aria-label="Next day">${icon('chev')}</button>${diff !== 0 ? `<button type="button" class="btn sm ghost" data-act="fuel.today">Today</button>` : ''}</div>
     ${diff === 0 ? '' : `<div class="datelabel fuelpast"><span>${esc(longDate(date))}</span><button type="button" class="btn sm ghost" data-act="fuel.today">Back to today</button></div>`}
     ${fuelIs('today') ? readout(date) : ''}
-    ${fuelIs('today') ? `<div class="quick three"><button type="button" class="btn primary" data-act="food.open2">${icon('search')}Add food</button><button type="button" class="btn ghost" data-act="food.scan">${icon('scan')}Scan</button><button type="button" class="btn ghost" data-act="food.manual">${icon('plus')}Manual</button></div>` : ''}
+    ${fuelIs('today') ? `<div class="fuelcta"><button type="button" class="btn primary" data-act="food.open2">${icon('plus')}Add food</button><button type="button" class="fscan" data-act="food.scan" aria-label="Scan a barcode">${icon('scan')}</button></div>` : ''}
     ${fuelIs('progress') ? calTrendHtml(date) : ''}
     ${fuelIs('today') && typeof creatineRow === 'function' ? creatineRow(date) : ''}
     ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}

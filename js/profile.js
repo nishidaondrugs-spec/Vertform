@@ -58,7 +58,7 @@ function targetsFor(date) {
 function profileBanner() {
   const e = maintenanceEstimate();
   if (e.ok) return '';
-  return `<div class="banner warn">${icon('info')}<div class="grow"><b>Make your targets yours</b><p>Calories are a rough guess until VERTFORM knows your age, sex, height and weight.</p><div class="actions"><button type="button" class="btn sm primary" data-act="calc.open">Set up my profile</button></div></div></div>`;
+  return `<button type="button" class="tgtnudge" data-act="calc.open"><span><b>Personalise your targets</b><small>Add age, height and weight</small></span>${icon('chev')}</button>`;
 }
 
 function calRead() {

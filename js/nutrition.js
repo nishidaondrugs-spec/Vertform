@@ -56,24 +56,24 @@ let searchState = { q: '', meal: null };
 function openFoodSearch(meal) {
   searchState = { q: '', meal: meal || ui.fuelMeal || guessMeal() };
   if (sheetOpen()) closeAllSheets();
-  openSheet({ title: 'Add food', eyebrow: `${pretty(ui.fuelDate).toUpperCase()} · TO ${searchState.meal.toUpperCase()}`, size: 'tall', autofocus: '#fq', render: renderFoodSearch, onClose: stopScanner });
+  openSheet({ title: 'Add food', eyebrow: pretty(ui.fuelDate).toUpperCase(), size: 'tall', autofocus: '#fq', render: renderFoodSearch, onClose: stopScanner });
 }
 function renderFoodSearch() {
   const rec = typeof recipesByRecency === 'function' ? recipesByRecency().slice(0, 4) : [];
   const recents = recentFoods(5);
+  const row = (act, ic, t, sub) => `<button type="button" class="fdrow" data-act="${act}">${icon(ic)}<span><b>${t}</b><small>${sub}</small></span>${icon('chev')}</button>`;
   return {
-    body: `<div class="fsearch"><div class="field first"><label for="fq">Search foods and saved meals</label><input id="fq" data-in="foodq" type="search" autocomplete="off" autocapitalize="none" enterkeyhint="search" placeholder="e.g. avocado, honey, chia" value="${esc(searchState.q)}"></div>
+    body: `<div class="fsearch"><input id="fq" class="fdq" data-in="foodq" type="search" autocomplete="off" autocapitalize="none" enterkeyhint="search" aria-label="Search foods and saved meals" placeholder="Search foods or saved meals" value="${esc(searchState.q)}">
         <div id="fresults" class="results fdrop" role="listbox" aria-label="Matches" ${searchState.q.trim() ? '' : 'hidden'}>${searchState.q.trim() ? foodSearchResults(searchState.q) : ''}</div></div>
-      <div class="field"><label for="fmeal">Add to</label><select id="fmeal" data-in="foodmeal">${mealOptions(searchState.meal)}</select></div>
-      <button type="button" class="btn ghost aibtn" data-act="ai.open">Chat with AI about a meal</button>
-      <p class="tiny">Describe it, e.g. "beef brisket from Lanzhou La Main", talk it through, then save the macros. AI estimates are a guess, so check them before saving.</p>
-      ${myFoodsChips()}
-      ${rec.length ? `<div class="eyebrow mt">SAVED MEALS &amp; RECIPES</div><div class="chip-row">${rec.map(r => `<button type="button" class="chip" data-act="recipe.log" data-id="${esc(r.id)}">${icon('bookmark')}${esc(r.name)}</button>`).join('')}</div>` : ''}
-      ${recents.length ? `<div class="eyebrow mt">REPEAT A RECENT FOOD</div><div class="chip-row">${recents.map(x => `<button type="button" class="chip" data-act="food.repeat" data-id="${esc(x.id)}" aria-label="Add ${esc(x.name)} again">${icon('plus')}${esc(x.name.length > 26 ? x.name.slice(0, 25) + '…' : x.name)}</button>`).join('')}</div>` : ''}
-      <p class="note">Approximate unbranded reference values; portions vary. For a specific supermarket product use the barcode scanner or the UK product search (needs internet).</p>`,
-    footer: `<button type="button" class="btn ghost" data-act="food.manual">Manual</button><button type="button" class="btn ghost" data-act="food.scan">${icon('scan')}Scan</button><button type="button" class="btn primary grow" data-act="food.online">UK products</button>`
+      <div class="fdmeals" role="group" aria-label="Add to">${MEALS.map(m => `<button type="button" class="${searchState.meal === m ? 'on' : ''}" data-act="food.meal" data-arg="${m}" aria-pressed="${searchState.meal === m}">${m}</button>`).join('')}</div>
+      <div class="fdlist">${row('food.scan', 'scan', 'Scan a barcode', 'Packaged food in seconds')}${row('food.online', 'search', 'Search UK products', 'Supermarket brands, needs internet')}${row('ai.open', 'info', 'Describe a meal', 'Chat it through, AI estimates the macros')}${row('food.manual', 'plus', 'Enter macros yourself', 'Name, calories, protein, carbs, fat')}</div>
+      ${recents.length ? `<div class="fdlab">Recent</div><div class="chip-row">${recents.map(x => `<button type="button" class="chip" data-act="food.repeat" data-id="${esc(x.id)}" aria-label="Add ${esc(x.name)} again">${icon('plus')}${esc(x.name.length > 26 ? x.name.slice(0, 25) + '…' : x.name)}</button>`).join('')}</div>` : ''}
+      ${rec.length ? `<div class="fdlab">Saved meals</div><div class="chip-row">${rec.map(r => `<button type="button" class="chip" data-act="recipe.log" data-id="${esc(r.id)}">${icon('bookmark')}${esc(r.name)}</button>`).join('')}</div>` : ''}
+      ${myFoodsChips().replace('<div class="eyebrow mt">MY FOODS</div>', '<div class="fdlab">My foods</div>')}`,
+    footer: ''
   };
 }
+ACTIONS['food.meal'] = el => { searchState.meal = el.dataset.arg; ui.fuelMeal = searchState.meal; document.querySelectorAll('.fdmeals button').forEach(b => { const on = b.dataset.arg === searchState.meal; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
 INPUTS.foodq = el => { searchState.q = el.value; const box = $('#fresults'); if (box) { box.hidden = !el.value.trim(); box.innerHTML = el.value.trim() ? foodSearchResults(el.value) : ''; } };
 INPUTS.foodmeal = el => { searchState.meal = el.value; ui.fuelMeal = el.value; };
 
