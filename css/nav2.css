@@ -23,3 +23,35 @@ body.nav2.page-sub .topbar .topback{display:inline-flex}
   body.nav2 .tabbar{display:none!important}
   body.nav2 .shell{padding-bottom:36px}
 }
+
+/* ---- pager dots + You page ---- */
+.pager{display:flex;justify-content:center;gap:6px;padding:6px 0 4px}
+.pager span{width:6px;height:6px;border-radius:3px;background:#2a3856}
+.pager span.on{width:18px;background:#6ea8ff}
+.ywrap{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.ycard{padding:14px;border-radius:20px;background:#0e1627;border:1px solid #1f2b45}
+.yme{display:flex;align-items:center;gap:16px}
+.ycrest{width:104px;height:104px;border-radius:50%;background:#16223a;border:2px solid #2563eb;overflow:hidden;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center}
+.ycrest .crest3d,.ycrest .f3d{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ycrestin{width:56px;height:56px;color:#6ea8ff;display:block}.ycrestin svg,.ycrestin img{width:100%;height:100%}
+.yname{font-size:20px;font-weight:800}
+.ystreak{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:13px;color:#a9b5cc}
+.yme .btn{margin-top:10px}
+.yeye{font-size:11px;letter-spacing:.12em;font-weight:700;color:#a9b5cc;margin:0 2px 8px}
+.yhead{display:flex;align-items:center;justify-content:space-between}
+.ylink{border:0;background:none;color:#6ea8ff;font:700 13px var(--sans);min-height:44px;padding:0 4px;margin-top:-10px}
+.ytiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ytile{text-align:left;padding:12px;border-radius:16px;background:#0e1627;border:1px solid #1f2b45;color:#f2f5fb;font-family:inherit;display:flex;flex-direction:column;min-height:44px}
+.ytile .yl,.ytile .ys{font-size:12px;color:#a9b5cc;font-weight:500}
+.ytile b{font-size:22px;font-weight:800;margin:4px 0}
+.yrows{border-radius:16px;background:#0e1627;border:1px solid #1f2b45;overflow:hidden}
+.yrow{display:flex;align-items:center;gap:12px;padding:0 14px;min-height:44px}
+.yrow+.yrow{border-top:1px solid #1f2b45}
+.yrow.me{background:#121c31}
+.yrow b{width:16px;font-size:14px}.yrow b.acc{color:#6ea8ff}
+.yrow .yn{flex-grow:1;font-size:14px;font-weight:600}.yrow.me .yn{font-weight:700}
+.yrow .ys{font-size:13px;color:#a9b5cc}
+.ymore{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ymore button{height:72px;border-radius:16px;border:1px solid #1f2b45;background:#0e1627;color:#f2f5fb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font:700 12px var(--sans)}
+.ymore .ico{width:22px;height:22px}
+html[data-theme="light"] body.nav2 .ycard,html[data-theme="light"] body.nav2 .ytile,html[data-theme="light"] body.nav2 .yrows,html[data-theme="light"] body.nav2 .ymore button{background:#fff;border-color:#d5dcea;color:#101828}

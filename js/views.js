@@ -2,7 +2,7 @@
 /* VERTFORM 2.0 — pages: Today, Train, Fuel, Plan, Progress, Settings */
 
 const TABS = [['home', 'Home', 'home'], ['train', 'Train', 'train'], ['fuel', 'Fuel', 'fuel'], ['plan', 'Plan', 'plan'], ['post', 'Post', 'post']];
-const PAGES = { home: () => viewHome(), today: viewToday, train: viewTrain, fuel: viewFuel, plan: viewPlan, post: viewPost, friend: () => viewFriend(), settings: viewSettings, board: () => viewBoard() };
+const PAGES = { home: () => navNew() ? viewYou() : viewHome(), today: viewToday, train: viewTrain, fuel: viewFuel, plan: viewPlan, post: viewPost, friend: () => viewFriend(), settings: viewSettings, board: () => viewBoard() };
 let updateReady = false;
 
 const markHTML = '<span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 6h6l5 15 5-15h6L19 27h-6z" fill="currentColor"/></svg></span>';
@@ -29,7 +29,7 @@ function renderNav() {
 function render() {
   applyTheme(); renderNav(); const v = $('#view'); v.dataset.view = ui.page; const y = window.scrollY; const hp = $('.hp-body'); const hy = hp ? hp.scrollTop : 0, hadPanel = !!hp;
   if (typeof lbAuto === 'function') lbAuto();
-  document.body.classList.toggle('on-home', ui.page === 'home'); document.body.classList.toggle('panel-open', ui.page === 'home' && !!ui.panel);
+  document.body.classList.toggle('on-home', ui.page === 'home' && !navNew()); document.body.classList.toggle('panel-open', ui.page === 'home' && !navNew() && !!ui.panel);
   /* Re-render of the same screen (e.g. tapping Fresh / Fatigued): skip entrance animations and keep the drifting background, so it doesn't look like a reload. */
   const key = `${ui.page}|${ui.panel || ''}`, same = render.last === key; render.last = key; document.body.classList.toggle('rerender', same);
   const oldBg = same ? $('.vhBg') : null, kept = new Map(same ? $$('#view [data-keep]').map(n => [n.dataset.keep, n]) : []);

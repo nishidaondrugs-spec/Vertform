@@ -45,3 +45,51 @@ function layoutSection() {
     if (dx < 0 && ui.page === 'post') go('home'); else if (dx > 0 && ui.page === 'home') go('post');
   }, { passive: true });
 })();
+
+/* ---------- You page ---------- */
+const pagerDots = i => navNew() ? `<div class="pager" aria-hidden="true"><span class="${i === 0 ? 'on' : ''}"></span><span class="${i === 1 ? 'on' : ''}"></span></div>` : '';
+const fireIcon = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#ff8a3d" d="M12 2c1 4-2 5-2 8a3 3 0 0 0 6 0c0-1-.5-2-1-3 3 2 5 5 5 8a8 8 0 0 1-16 0c0-4 3-6 4-9 .5 1 1 1.5 2 1.5 0-2 0-4 2-5.5z"/></svg>';
+
+function youTiles() {
+  const f = hubFacts(), left = Math.max(0, Math.round(f.t.cal - f.v.kcal));
+  const gymName = f.gym ? (templates[f.gym.session]?.title || sName(f.gym.session)) : 'Rest day';
+  let vbBig = '–', vbSub = 'Nothing planned';
+  if (f.mt) { vbBig = 'Today'; vbSub = f.mt.status === 'done' ? 'Match logged' : 'Match day'; }
+  else if (f.tr) { vbBig = 'Today'; vbSub = f.tr.status === 'done' ? 'Training logged' : 'Club training'; }
+  else if (f.next) { vbBig = weekdayShort(f.next); vbSub = 'Next match'; }
+  const tile = (act, arg, label, big, sub) => `<button type="button" class="ytile" data-act="${act}" data-arg="${arg}"><span class="yl">${esc(label)}</span><b>${esc(String(big))}</b><span class="ys">${esc(sub)}</span></button>`;
+  return `<div class="ysec"><div class="yeye">TODAY</div><div class="ytiles">
+    ${tile('nav', 'fuel', 'Calories left', left.toLocaleString('en-GB'), `of ${f.t.cal.toLocaleString('en-GB')} kcal`)}
+    ${tile('nav', 'train', 'Gym', f.gym ? sBadge(f.gym.session) : '–', gymName)}
+    ${tile('nav', 'plan', 'Volleyball', vbBig, vbSub)}
+  </div></div>`;
+}
+function youBoard() {
+  const c = lbCfg();
+  if (!c) return `<div class="ysec"><div class="yeye">LEADERBOARD</div><div class="ycard"><p class="tiny">Add friends with their code to see a weekly board here.</p><button type="button" class="btn ghost" data-act="lb.open">Set up friends</button></div></div>`;
+  if (lbUi.rows === null && !lbUi.loading) setTimeout(() => { if (typeof lbLoad === 'function') lbLoad(); }, 0);
+  const rows = lbRowsFor('week');
+  let shown = rows.slice(0, 3); const mi = rows.findIndex(r => r.me);
+  if (mi > 2) shown = [rows[0], rows[mi - 1] || rows[1], rows[mi]];
+  const body = shown.length ? shown.map(r => { const i = rows.indexOf(r) + 1;
+    return `<div class="yrow ${r.me ? 'me' : ''}"><b class="${r.me ? 'acc' : ''}">${i}</b><span class="yn">${esc(r.me ? 'You' : r.nickname)}</span><span class="ys">${r.s} ${r.s === 1 ? 'session' : 'sessions'}</span></div>`; }).join('')
+    : `<div class="yrow"><span class="yn ys">${lbUi.rows === null ? 'Loading…' : 'No one on the board yet'}</span></div>`;
+  return `<div class="ysec"><div class="yhead"><div class="yeye">LEADERBOARD · THIS WEEK</div><button type="button" class="ylink" data-act="board.open">See all</button></div><div class="yrows">${body}</div></div>`;
+}
+const YOU_MORE = [['trophy', 'Progress', 'you.prog'], ['camera', 'Jump test', 'jt.open'], ['bolt', 'Vertical plan', 'vert.open'], ['plan', 'Plan', 'you.plan'], ['history', 'Logbook', 'hub.log'], ['post', 'Friends', 'lb.open']];
+ACTIONS['you.prog'] = () => { ui.trainTab = 'jump'; go('train'); };
+ACTIONS['you.plan'] = () => go('plan');
+
+function viewYou() {
+  const w = lbStats(), look = myLook();
+  const crest = look ? `<span class="crest3d" data-keep="crest:${lookKey(look)}"><iframe class="f3d" src="${lookUrl(look, '&bare=1&lite=1')}" tabindex="-1" aria-hidden="true" title=""></iframe></span>` : `<span class="ycrestin">${crestInner()}</span>`;
+  return `${pageHead('', 'You')}${pagerDots(1)}${banners()}
+  <div class="ywrap">
+    <div class="ycard yme"><div class="ycrest">${crest}</div><div class="min0"><div class="yname">You</div>
+      <div class="ystreak">${fireIcon}${w.streak > 0 ? `${w.streak} week streak` : 'No streak yet'}</div>
+      <button type="button" class="btn ghost" data-act="lk.open">Edit look</button></div></div>
+    ${youTiles()}
+    ${youBoard()}
+    <div class="ysec"><div class="yeye">MORE</div><div class="ymore">${YOU_MORE.map(([i, n, a]) => `<button type="button" data-act="${a}">${icon(i)}<span>${n}</span></button>`).join('')}</div></div>
+  </div>`;
+}

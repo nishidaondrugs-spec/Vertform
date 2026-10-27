@@ -342,3 +342,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Swipe left/right to move between Feed and You.
 - Settings → Appearance → **Home layout** switches back to the classic circle hub at any time. Records are untouched either way.
 - Still to come: the redesigned You page, and Today / Plan / History inside Gym.
+
+## 2.41.0 — You page
+- New **You** page (second tab): your look/crest, week streak, TODAY tiles (calories left, today's gym session, volleyball), a three-row weekly leaderboard, and a MORE grid (Progress, Jump test, Vertical plan, Plan, Logbook, Friends).
+- Pager dots show Feed and You are side by side; swipe between them. The classic hub is still available in Settings → Appearance.
