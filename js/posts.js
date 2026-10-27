@@ -82,7 +82,7 @@ function gymOverlay(m, body) {
   return `<div class="bcap gcap"><span class="gh-pill">GYM</span><h3 class="gh-t">${esc(m.t)}</h3><div class="gh-stats">${big.map(([v, l, pb]) => `<span class="${pb ? 'gpb' : ''}"><b>${esc(String(v))}</b>${l}</span>`).join('')}<span><b>${Number(m.s) || 0}</b>sets</span></div>${body ? `<p class="bcap2">${esc(body)}</p>` : ''}</div>`;
 }
 const pKind = k => navNew() ? ({ gym: 'Gym · ', vb: 'Volleyball · ', jump: 'Jump test · ', food: 'Food · ' }[k] || '') : '';
-function postCard(r) {
+function postCard(r, full) {
   const mine = !!r.mine, reacts = r.reacts || {};
   const who = mine || !r.pid
     ? `<button type="button" class="phlink" data-act="me.open" aria-label="Your profile">${faceHTML(lbCfg()?.id, myLook(), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${mine ? ' <i>you</i>' : ''}</b><small>${pKind(r.kind)}${pWhen(r.created)}</small></span></button>`
@@ -102,7 +102,7 @@ function postCard(r) {
   return `<li class="pcard bm ${mine ? 'mine' : ''}">
     <div class="phead">${who}${mine ? `<button type="button" class="iconbtn" data-act="post.del" data-id="${esc(r.id)}" aria-label="Post options"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>` : ''}</div>
     ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? '' : pAttachHtml(r.kind, r.meta, hasMedia, r.id)}${hasMedia && navNew() ? '' : rx}
-    ${navNew() ? `<div class="bcline">${r.comments ? `<button type="button" class="bc-view" data-act="post.comments" data-id="${esc(r.id)}">View ${r.comments === 1 ? '1 comment' : `all ${r.comments} comments`}</button>` : ''}<div class="bc-row"><button type="button" class="bc-add" data-act="post.comments" data-id="${esc(r.id)}">Add a comment…</button>${!mine && r.pid ? `<button type="button" class="bc-react" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}</button>` : ''}</div></div>` : `    <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div>`}</li>`;
+    ${full ? '' : navNew() ? `<div class="bcline">${r.comments ? `<button type="button" class="bc-view" data-act="post.comments" data-id="${esc(r.id)}">View ${r.comments === 1 ? '1 comment' : `all ${r.comments} comments`}</button>` : ''}<div class="bc-row"><button type="button" class="bc-add" data-act="post.comments" data-arg="1" data-id="${esc(r.id)}">Add a comment…</button>${!mine && r.pid ? `<button type="button" class="bc-react" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}</button>` : ''}</div></div>` : `    <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div>`}</li>`;
 }
 const P_KINDS = [
   { v: '', name: 'Text', ico: 'post', cls: 'k-txt', sub: () => 'Just words' },
@@ -324,30 +324,40 @@ const pcPost = () => (pUi.rows || []).find(x => x.id === pcUi.id);
 ACTIONS['post.comments'] = el => {
   const r = (pUi.rows || []).find(x => x.id === el.dataset.id); if (!r) return;
   pcUi = { id: r.id, rows: null, body: '', busy: false, err: '' };
-  openSheet({ title: 'Comments', eyebrow: `${String(r.nickname || '').toUpperCase()}'S POST`, size: 'tall', render: renderComments }); pcLoad();
+  $('#pdet')?.remove();
+  const d = document.createElement('div'); d.id = 'pdet'; d.className = 'pdet'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Post and comments');
+  d.innerHTML = `<div class="pdet-top"><button type="button" class="pdet-back" data-act="pd.close" aria-label="Back">${icon('back')}</button><b>${esc(r.nickname)}</b><span></span></div>
+    <div class="pdet-scroll" id="pdscroll"><ul class="pdet-post">${postCard(r, true)}</ul><div id="pdlist"></div></div>
+    <div class="pdet-in" id="pdin"></div>`;
+  document.body.appendChild(d); document.body.classList.add('pdet-open');
+  d.querySelectorAll('.bmedia,.pphoto,.pphoto img').forEach(e => { e.style.setProperty('margin', '0', 'important'); e.style.setProperty('width', '100%', 'important'); e.style.setProperty('max-width', '100%', 'important'); e.style.setProperty('border-radius', '0', 'important'); });
+  pdPaint(); pPaint(); pcLoad();
+  if (el.dataset.arg === '1') setTimeout(() => $('#pcbody')?.focus(), 250);
 };
+ACTIONS['pd.close'] = () => { const d = $('#pdet'); document.body.classList.remove('pdet-open'); pcUi.id = null; if (!d) return; d.classList.add('out'); setTimeout(() => d.remove(), 220); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#pdet')) ACTIONS['pd.close'](); });
 async function pcLoad() {
   const c = lbCfg(); if (!c || !pcUi.id) return;
   try { pcUi.rows = await lbCall('vf_comments', { p_id: c.id, p_secret: c.secret, p_post: pcUi.id }); pcUi.err = ''; const r = pcPost(); if (r) r.comments = pcUi.rows.length; }
   catch (e) { pcUi.err = pErr(e.message); if (pcUi.rows === null) pcUi.rows = []; }
-  if (topSheet()?.title === 'Comments') refreshSheet();
-  if (ui.page === 'post' || ui.page === 'friend') { if (document.activeElement?.id !== 'pbody') render(); }
+  pdPaint();
+  if (ui.page === 'post' || ui.page === 'friend') { if (document.activeElement?.id !== 'pbody' && document.activeElement?.id !== 'pcbody') render(); }
 }
-function renderComments() {
-  const r = pcPost(), rows = pcUi.rows;
-  /* BeReal style: the post's picture (if it has one) and caption sit at the top, then the replies as a chat */
-  const thumb = r && (r.photo || r.video) ? (document.querySelector(`.pphoto[data-id="${r.id}"] img`)?.getAttribute('src') || '') : '';
-  const snippet = r ? `<div class="bcsnip">${thumb ? `<img class="bcthumb" src="${thumb}" alt="">` : `<span class="bcthumb ph" aria-hidden="true">${icon(r.video ? 'play' : 'post')}</span>`}<div class="bcsn-tx"><b>${esc(r.nickname)}</b><p>${r.body ? esc(r.body.length > 140 ? r.body.slice(0, 140) + '…' : r.body) : (r.photo ? 'Photo' : r.video ? 'Video' : 'Session')}</p></div></div>` : '';
-  const list = rows === null ? '<p class="note">Loading…</p>' : rows.length ? `<ul class="bclist" aria-label="Replies">${rows.map(c => `<li class="bcrow ${c.mine ? 'mine' : ''}">${avatarHTML(lookFor(c.pid, c.mine), c.nickname, 'sm')}<div class="bcbub"><div class="bch"><b>${esc(c.nickname)}${c.mine ? ' <i>you</i>' : ''}</b><small>${pWhen(c.created)}</small></div><p>${esc(c.body)}</p></div>${c.mine || (r && r.mine) ? `<button type="button" class="bcdel" data-act="post.comment.del" data-id="${esc(c.id)}" aria-label="Delete comment">${icon('trash')}</button>` : ''}</li>`).join('')}</ul>` : '<p class="note bcempty">No replies yet. Say something about this.</p>';
-  return { body: `${snippet}${pcUi.err ? `<div class="status warn" role="alert">${esc(pcUi.err)}</div>` : ''}${list}`,
-    footer: `<div class="bcin">${avatarHTML(myLook(), lbCfg()?.nick || 'You', 'sm')}<input id="pcbody" data-in="pcbody" maxlength="200" autocomplete="off" enterkeyhint="send" placeholder="Reply to ${esc(r ? r.nickname : 'this post')}…" aria-label="Add a comment" value="${esc(pcUi.body)}"><button type="button" class="bcsend" data-act="post.comment.send" ${pcUi.busy ? 'disabled' : ''} aria-label="Send comment">${icon('chev')}</button></div>` };
+/* BeReal style: the post sits at the top of a full screen, the replies run below it, the reply box is pinned to the bottom */
+function pdPaint() {
+  const r = pcPost(), rows = pcUi.rows, list = $('#pdlist'), inn = $('#pdin'); if (!list || !inn || !r) return;
+  const n = rows ? rows.length : (r.comments || 0);
+  list.innerHTML = `${pcUi.err ? `<div class="status warn" role="alert">${esc(pcUi.err)}</div>` : ''}<div class="pdet-h">${n ? (n === 1 ? '1 comment' : n + ' comments') : 'Comments'}</div>` +
+    (rows === null ? '<p class="note">Loading…</p>' : rows.length ? `<ul class="bclist" aria-label="Replies">${rows.map(c => `<li class="bcrow ${c.mine ? 'mine' : ''}">${faceHTML(c.pid, lookFor(c.pid, c.mine), c.nickname, 'sm')}<div class="bcbub"><div class="bch"><b>${esc(c.nickname)}${c.mine ? ' <i>you</i>' : ''}</b><small>${pWhen(c.created)}</small></div><p>${esc(c.body)}</p></div>${c.mine || r.mine ? `<button type="button" class="bcdel" data-act="post.comment.del" data-id="${esc(c.id)}" aria-label="Delete comment">${icon('trash')}</button>` : ''}</li>`).join('')}</ul>` : '<p class="note bcempty">No comments yet. Be the first.</p>');
+  if (!inn.firstElementChild) inn.innerHTML = `<div class="bcin">${faceHTML(lbCfg()?.id, myLook(), lbCfg()?.nick || 'You', 'sm')}<input id="pcbody" data-in="pcbody" maxlength="200" autocomplete="off" enterkeyhint="send" placeholder="Add a comment…" aria-label="Add a comment" value="${esc(pcUi.body)}"><button type="button" class="bcsend" data-act="post.comment.send" aria-label="Send comment">${icon('chev')}</button></div>`;
+  const b = inn.querySelector('.bcsend'); if (b) b.disabled = !!pcUi.busy;
 }
 INPUTS.pcbody = el => { pcUi.body = el.value.slice(0, 200); };
 ACTIONS['post.comment.send'] = async () => {
   const c = lbCfg(); if (!c || pcUi.busy) return; pcUi.body = ($('#pcbody')?.value ?? pcUi.body).trim(); if (!pcUi.body) return;
-  pcUi.busy = true; refreshSheet();
-  try { await lbCall('vf_comment_add', { p_id: c.id, p_secret: c.secret, p_post: pcUi.id, p_body: pcUi.body }); pcUi.body = ''; pcUi.err = ''; pcUi.busy = false; await pcLoad(); setTimeout(() => $('#pcbody')?.focus(), 50); }
-  catch (e) { pcUi.busy = false; pcUi.err = pErr(e.message); refreshSheet(); }
+  pcUi.busy = true; pdPaint();
+  try { await lbCall('vf_comment_add', { p_id: c.id, p_secret: c.secret, p_post: pcUi.id, p_body: pcUi.body }); pcUi.body = ''; pcUi.err = ''; pcUi.busy = false; const bi = $('#pcbody'); if (bi) bi.value = ''; await pcLoad(); setTimeout(() => { const sc = $('#pdscroll'); if (sc) sc.scrollTop = sc.scrollHeight; $('#pcbody')?.focus(); }, 50); }
+  catch (e) { pcUi.busy = false; pcUi.err = pErr(e.message); pdPaint(); }
 };
 ACTIONS['post.comment.del'] = async el => {
   const c = lbCfg(); if (!c) return;

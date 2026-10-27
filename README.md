@@ -374,6 +374,10 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.61.0 — Full-screen comments and soft motion
+- Tapping Add a comment or View comments opens the post full screen (photo on top, comments below, reply box pinned at the bottom), like BeReal.
+- Motion: the post slides up and back down, comments ease in, buttons press in, the creatine tick pops, photos fade in, bars grow smoothly. All off for people with Reduce Motion on.
+
 ## 2.60.0 — You on the right, with your photo
 - Bottom bar is now Feed, Fuel, camera, Gym, You.
 - The You tab shows your profile photo as a small circle (the person icon until you set one).
