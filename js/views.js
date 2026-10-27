@@ -25,6 +25,7 @@ function renderNav() {
     <button type="button" class="railme" data-act="me.open">${markHTML}<span>Profile</span></button>
     <div class="rail-foot mono">v${APP_VERSION}<br>Saved on this device only</div>`;
   const g = $('#gear'); if (g) g.setAttribute('aria-current', ui.page === 'settings' ? 'page' : 'false');
+  if (typeof paintBell === 'function') paintBell();
 }
 function render() {
   applyTheme(); renderNav(); const v = $('#view'); v.dataset.view = ui.page; const y = window.scrollY; const hp = $('.hp-body'); const hy = hp ? hp.scrollTop : 0, hadPanel = !!hp;

@@ -845,3 +845,18 @@ body.nav2 .mealgroup .foodlist li.food .fdel{width:34px;height:34px;justify-self
 .rcseg button.on{background:#fff;color:#000}.rcseg button:disabled{opacity:.35}
 .rcimg{display:block;width:100%;max-width:340px;margin:0 auto;border-radius:22px}
 .rcnote{text-align:center;margin:0 0 10px}
+
+/* 2.75.0 — notification bell + inbox */
+.topbell{display:none!important;position:relative;margin-right:auto;color:#fff}
+body.nav2.has-bell .topbell{display:inline-grid!important}
+.topbell .ico{width:22px;height:22px}
+.belldot{position:absolute;top:9px;right:9px;width:10px;height:10px;border-radius:50%;background:#e5383b;box-shadow:0 0 0 2px #000}
+.nlist{list-style:none;margin:0;padding:0}
+.nrow{display:flex;align-items:center;gap:14px;width:100%;padding:14px 2px;border:0;border-top:1px solid rgba(255,255,255,.07);background:none;color:inherit;text-align:left;font-family:inherit}
+.nlist li:first-child .nrow{border-top:0}
+.nrow b{display:block;font-size:15px;font-weight:600}.nrow small{color:#a1a1a6;font-size:12px}
+.nrow:not(.new) b{font-weight:500;color:#d1d1d6}
+.nic{flex:none;width:40px;height:40px;border-radius:50%;background:#1c1c1e;display:grid;place-items:center;color:#fff}.nic .ico{width:20px;height:20px}.nic.big{width:56px;height:56px;margin:0 auto 12px}
+.ndot{margin-left:auto;flex:none;width:10px;height:10px;border-radius:50%;background:#e5383b}
+.nempty{text-align:center;padding:40px 10px}.nempty b{display:block;font-size:17px;margin-bottom:6px}
+.nfoot{text-align:center;margin-top:18px}.nenable{width:100%;margin-top:18px}

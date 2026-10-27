@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.75.0 — Post recap to feed + notification bell
+Weekly recap has a Post to feed button (shares the card as a photo post to your friends). A bell at the top left of Feed and You opens an inbox: friends' new posts, reactions and comments on yours, and your recap, with a red dot for anything new, plus the push-notification switch.
+
 ## 2.74.0 — Weekly recap cards + grace day
 You → Weekly recap draws a shareable 9:16 card (Black or Red) from what you logged: the hero number is picked from your week (matches, a PR, full house, hours on court, protein days or your streak), plus a Match-day card. Share saves or sends the image. A Home banner appears on Saturday and Sunday. Streaks now allow one missed session a week when you have 3 or more planned.
 

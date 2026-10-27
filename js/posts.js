@@ -69,7 +69,7 @@ async function postLoad() {
   const c = lbCfg(); if (!c || pUi.loading) return; pUi.loading = true; pUi.err = '';
   try { const t = todayISO(); pUi.rows = await lbCall('vf_feed', { p_id: c.id, p_secret: c.secret, p_from: addDays(t, -6), p_to: t }); pUi.day = t; Object.keys(rxCache).forEach(k => delete rxCache[k]); }
   catch (e) { pUi.err = pErr(e.message); }
-  pUi.at = Date.now(); pUi.loading = false;
+  pUi.at = Date.now(); pUi.loading = false; if (typeof paintBell === 'function') paintBell();
   if (ui.page === 'post') { if (document.activeElement?.id === 'pbody') pUi.stale = true; else render(); }
 }
 

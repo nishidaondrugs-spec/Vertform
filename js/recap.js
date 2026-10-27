@@ -140,7 +140,7 @@ function recapSheetBody() {
     <div class="rcseg" role="group" aria-label="Card"><button type="button" class="${recUi.tab === 'week' ? 'on' : ''}" data-act="rcp.tab" data-arg="week">Week</button><button type="button" class="${recUi.tab === 'match' ? 'on' : ''}" data-act="rcp.tab" data-arg="match" ${hasM ? '' : 'disabled'}>Match</button><span class="rcgap"></span><button type="button" class="${recUi.theme === 'dark' ? 'on' : ''}" data-act="rcp.theme" data-arg="dark">Black</button><button type="button" class="${recUi.theme === 'red' ? 'on' : ''}" data-act="rcp.theme" data-arg="red">Red</button></div>
     ${empty ? '<p class="tiny rcnote">Nothing logged this week yet, so this card is mostly empty.</p>' : ''}
     ${recUi.url ? `<img class="rcimg" src="${recUi.url}" alt="Your weekly recap card">` : '<p class="status warn">Could not draw the card on this browser.</p>'}`,
-    footer: `<button type="button" class="btn primary" data-act="rcp.share" ${recUi.url ? '' : 'disabled'}>Share image</button>` };
+    footer: `<button type="button" class="btn ghost" data-act="rcp.share" ${recUi.url ? '' : 'disabled'}>Share image</button><button type="button" class="btn primary" data-act="rcp.post" ${recUi.url && !recUi.busy ? '' : 'disabled'}>${recUi.busy ? 'Posting…' : 'Post to feed'}</button>` };
 }
 ACTIONS['recap.open'] = () => {
   const t = todayISO(), dow = (parseDate(t).getDay() + 6) % 7;
@@ -159,4 +159,20 @@ ACTIONS['rcp.share'] = () => {
     try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'My VERTFORM week' }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('Image saved');
   }, 'image/png');
+};
+
+/* Post the card to the friends feed as a photo post (same path as a normal photo post). */
+ACTIONS['rcp.post'] = async () => {
+  const c = typeof lbCfg === 'function' && lbCfg(); if (!c) { toast('Join your friends first (You → Friends)'); return; }
+  if (!recUi.canvas || recUi.busy) return;
+  recUi.busy = true; refreshSheet();
+  try {
+    const sm = document.createElement('canvas'); sm.width = 540; sm.height = 960; sm.getContext('2d').drawImage(recUi.canvas, 0, 0, 540, 960);
+    let photo = ''; for (const q of [0.82, 0.7, 0.58, 0.46]) { photo = sm.toDataURL('image/jpeg', q); if (photo.length <= 330000) break; }
+    if (photo.length > 330000) throw new Error('bad_photo');
+    const h = recapHero(recUi.r), cap = `${h.tag[0] + h.tag.slice(1).toLowerCase()}: ${h.big}${h.unit ? ' ' + h.unit : ''}`.slice(0, P_MAX);
+    const r = await lbCall('vf_post_create', { p_id: c.id, p_secret: c.secret, p_body: cap, p_kind: 'note', p_meta: {}, p_photo: photo, p_video: null, p_day: todayISO() });
+    if (r?.id) pPhotos[r.id] = photo;
+    recUi.busy = false; closeAllSheets(); pUi.loading = false; pUi.at = 0; go('post'); toast('Posted to your feed'); postLoad();
+  } catch (e) { recUi.busy = false; refreshSheet(); toast(typeof pErr === 'function' ? pErr(e.message) : 'Could not post'); }
 };
