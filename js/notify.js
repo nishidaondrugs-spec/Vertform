@@ -64,9 +64,9 @@ function pushSettings() {
   if (!lbCfg()) head = `<p class="tiny">Notifications come through your friends list, so set that up first.</p>`;
   else if (perm === 'unsupported') head = `<p class="tiny">${pushIOSWeb() ? 'On iPhone, add VERTFORM to your Home Screen (Share, then Add to Home Screen) and open it from there. Then come back here.' : 'This browser cannot show notifications.'}</p>`;
   else if (perm === 'denied') head = `<p class="tiny">Notifications are blocked for VERTFORM. Allow them in your phone settings, then come back.</p>`;
-  else head = live ? '' : `<p class="tiny">Get pinged when a friend posts or mentions you, and reminded when you have a session. Nothing is shown from the post itself.</p><button type="button" class="btn primary" data-act="push.enable">Turn on notifications</button>`;
+  else head = live ? '' : `<p class="tiny">Get pinged when a friend posts or tags you. Nothing else. Nothing is shown from the post itself.</p><button type="button" class="btn primary" data-act="push.enable">Turn on notifications</button>`;
   const sw = (k, label) => `<label class="switch"><span>${label}</span><input type="checkbox" data-act="push.pref" data-arg="${k}" ${p[k] ? 'checked' : ''}></label>`;
-  const body = live ? `${sw('posts', 'A friend posts')}${sw('mentions', 'Someone @mentions you or comments')}${sw('remind', 'Remind me on session days')}
+  const body = live ? `${sw('posts', 'A friend posts')}${sw('mentions', 'Someone @mentions you')}${sw('remind', 'Remind me on session days (optional)')}
     ${p.remind ? `<div class="field inline-field"><label for="pushtime">Remind me at</label><input id="pushtime" type="time" data-in="pushtime" value="${esc(p.remind_time)}"></div>` : ''}
     <button type="button" class="btn ghost" data-act="push.off">Turn off on this phone</button>` : '';
   return head + body;

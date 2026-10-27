@@ -375,9 +375,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
 ## 2.52.0 — Notifications + premium look
-- Push notifications (Settings → Notifications): a friend posts, you're @mentioned in a post or comment, someone comments on your post, and a "session today" reminder at a time you choose. Needs the server setup in vertform-push.sql + the vf-push edge function; on iPhone the app must be installed to the home screen.
+- Push notifications (Settings → Notifications), kept quiet: only when a friend posts (one ping per friend per 3 hours) or you're @mentioned in a post or comment. Optional session-day reminder, off by default. Needs the server setup in vertform-push.sql + the vf-push edge function; on iPhone the app must be installed to the home screen.
 - Composer tag chips insert @nickname.
-- css/premium2.css: flat near-black, borderless surfaces, single red accent, gold only for streak/PB.
+- css/premium2.css: no card boxes; hairlines and space group content, photos are the only shapes, single red accent, gold only for streak/PB. Leaderboard lives only on You.
 
 ## 2.51.1 — Glass tab bar
 - The bottom tab bar is now a floating frosted-glass pill (blur, soft highlight edge), light and dark.
