@@ -264,7 +264,7 @@ function viewFuel() {
     ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}
     ${fuelIs('today') && typeof creatineRow === 'function' ? creatineRow(date) : ''}
     ${fuelIs('progress') ? weightCard() : ''}
-    ${fuelIs('meals') ? `<section class="mealshead"><div class="mh-t"><h2>Saved meals</h2><small>${plural(recs.length, 'meal or recipe', 'meals and recipes')}</small></div><div class="mh-b"><button type="button" class="pill" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="pill on" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div></section><div class="mealsbody">
+    ${fuelIs('meals') ? `<section class="mealshead"><h2>Saved meals</h2><button type="button" class="pill on" data-act="recipe.new" data-arg="recipe">${icon('plus')}New</button></section><div class="mealsbody">
     ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyState('fuel', 'No saved meals', 'Save a meal from your diary with the bookmark, or build a recipe once and log it in one tap.')}</div>` : ''}
     ${fuelIs('progress') ? `<details class="explain" ${navNew() ? 'open' : ''}><summary><span>Targets &amp; last 7 days</span><b class="mono">${t.cal}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="calc.open">Adjust targets</button></div>
     <dl class="tally four"><div><dt>Protein</dt><dd class="mono">${t.protein}<small> g</small></dd></div><div><dt>Carbs</dt><dd class="mono">${t.carbs}<small> g</small></dd></div><div><dt>Fat</dt><dd class="mono">${t.fat}<small> g</small></dd></div><div><dt>Energy</dt><dd class="mono">${t.cal}<small> kcal</small></dd></div></dl>

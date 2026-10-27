@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.67.3 — Saved meals tidy
+Saved meals has one header row with a single New button; the count line and the separate Meal / Recipe buttons are gone, and the spacing is even.
+
 ## 2.67.2 — Meal colours
 Breakfast, Lunch, Dinner and Snack each get their own colour underline in the Fuel diary. It grows to the full name width once something is logged.
 
