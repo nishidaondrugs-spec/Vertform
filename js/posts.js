@@ -250,7 +250,7 @@ function viewPost() {
   const c = lbCfg(), today = todayISO();
   const right = `<div class="phbtns"><button type="button" class="btn sm ghost" data-act="lb.open">Leaderboard</button></div>`;
   if (!c) return `${pageHead('', navNew() ? 'Friends' : 'Post', right)}${pagerDots(0)}${banners()}
-    <div class="goalcard"><b>See what your friends are training</b><p class="tiny">Posts are visible only to you and friends you add by code. Choose a nickname, swap codes, and your feed starts here. No account or email needed.</p>
+    <div class="es feedhero"><span class="es-ic" aria-hidden="true">${icon('post')}</span><b>See what your friends train</b><p>Add friends with a 6-character code and their sessions show up here. Only you and your friends can see posts. No email needed.</p>
     <button type="button" class="btn primary" data-act="lb.open">Set up friends</button></div>`;
   if (!pUi.loading && (pUi.rows === null || pUi.day !== today || Date.now() - pUi.at > 90000)) setTimeout(postLoad, 0);
   setTimeout(pPaint, 0);

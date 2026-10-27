@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.59.1 — Centred friends sign-in and empty feed
+- Friends sign-in is centred; the empty feed (not set up, or no posts yet) is a centred state with one button.
+
 ## 2.59.0 — Much bigger food library, and six screens redone
 - About 450 more foods: vegetables and mushrooms, fruit (incl. Malaysian fruit), meat, fish, dairy, cupboard items, drinks, UK dishes, Malaysian dishes (nasi lemak, roti canai, laksa, char kway teow, mamak), and menu items from McDonald's, KFC, Burger King, Five Guys, Nando's, Subway, Greggs, Pret, Costa, Starbucks, Domino's, Wagamama, Marrybrown, Texas Chicken, Old Town and more. Values are approximate.
 - Search matches every word and singular/plural.
