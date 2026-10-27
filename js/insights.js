@@ -101,8 +101,7 @@ document.addEventListener('change', async e => {
 function appearanceSection() {
   const cur = data.settings.theme || 'dark';
   return `<div class="chip-row" role="group" aria-label="Theme">${[['dark', 'Dark'], ['light', 'Light'], ['auto', 'Match phone']].map(([k, n]) => `<button type="button" class="chip ${cur === k ? 'on' : ''}" aria-pressed="${cur === k}" data-act="theme.set" data-arg="${k}">${n}</button>`).join('')}</div>
-    <p class="tiny">The home hub stays a night scene in every theme.</p>
-    <div class="eyebrow">HOME LAYOUT</div>${layoutSection()}
+    
     <div class="logoset"><span class="logoprev">${crestInner()}</span><div><b>Your logo</b><p class="tiny">Shown in the hub and top bar. Square images look best. The home-screen icon is set by your browser and does not change.</p></div></div>
     <div class="quick"><button type="button" class="btn ghost" data-act="logo.pick">${icon('upload')}Choose logo</button>${logoOk(data.settings.logo) ? `<button type="button" class="btn ghost" data-act="logo.clear">Remove</button>` : ''}</div>
     <input id="logofile" type="file" accept="image/*" hidden aria-label="Logo image">`;

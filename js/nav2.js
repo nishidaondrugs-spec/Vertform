@@ -6,7 +6,7 @@ ICONS.me = '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7
 ICONS.feed = '<path d="M4 5h16v6H4zM4 14h16v5H4z"/>';
 
 const NAV2_TOP = ['post', 'home', 'train', 'fuel'];
-const navNew = () => data.settings.nav !== 'hub';
+const navNew = () => true;   // the classic hub is retired
 const isTopPage = p => navNew() ? NAV2_TOP.includes(p) : p === 'home';
 const homePage = () => navNew() ? 'post' : 'home';
 
@@ -79,7 +79,7 @@ function youBoard() {
     : `<div class="yrow"><span class="yn ys">${lbUi.rows === null ? 'Loading…' : 'No one on the board yet'}</span></div>`;
   return `<div class="ysec"><div class="yhead"><div class="yeye">LEADERBOARD · THIS WEEK</div><button type="button" class="ylink" data-act="board.open">See all</button></div><div class="yrows">${body}</div></div>`;
 }
-const YOU_MORE = [['trophy', 'Progress', 'you.prog'], ['camera', 'Jump test', 'jt.open'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts'], ['history', 'Logbook', 'hub.log'], ['post', 'Friends', 'lb.open']];
+const YOU_MORE = [['trophy', 'Jump progress', 'you.prog'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts']];
 ACTIONS['you.prog'] = () => { ui.trainTab = 'jump'; go('train'); };
 ACTIONS['you.plan'] = () => go('plan');
 
@@ -109,7 +109,7 @@ function gymToday() {
     ${readinessBlock()}
     ${sectionHead('THIS WEEK', `${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}`)}
     ${weekStrip(mon)}
-    <div class="gymbtns"><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercises</button><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button><button type="button" class="btn ghost" data-act="gym.tab" data-arg="jump">${icon('bolt')}Jump tracker</button></div>`;
+    <div class="gymbtns"><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button></div>`;
 }
 function monthGrid() {
   const today = todayISO(); ui.planMonth = ui.planMonth || today.slice(0, 7) + '-01';
@@ -141,7 +141,6 @@ function gymPlan() {
   ui.trainDate = todayISO();
   return `${monthGrid()}
     ${planDayPanel()}
-    <button type="button" class="gymlink" data-act="gym.tab" data-arg="sessions"><span><b>Training sessions</b><small>See, add and remove the exercises in each session</small></span>${icon('chev')}</button>
     <details class="explain mt"><summary><span>Plan settings &amp; upcoming</span></summary>${calendarBody(ui.planWeek, 'settings')}</details>`;
 }
 function viewGym() {
@@ -174,7 +173,7 @@ function gymSessions() {
   return `<button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>
     <p class="tiny">Open a session to see its exercises. Add from the library or take one out. An exercise already in a session is marked <b>Already added</b> so you do not get doubles.</p>
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
-    <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercise library</button></div>`;
+    <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button></div>`;
 }
 
 /* ---------- Fuel tab: Today / Meals / Progress ---------- */

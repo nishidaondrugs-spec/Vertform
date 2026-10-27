@@ -374,6 +374,11 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.52.1 — Less repeating
+- You: shortcuts cut to Jump progress, Vertical plan, Lifts (Logbook lives in Gym → History; Friends via the leaderboard card).
+- Gym: removed the duplicate Exercises / New session / Jump tracker buttons on Today, the duplicate "Exercise library" button and "Training sessions" link.
+- Week tag (WK 01/12) only on You. Classic hub retired; layout switch removed from Settings.
+
 ## 2.52.0 — Notifications + premium look
 - Push notifications (Settings → Notifications), kept quiet: only when a friend posts (one ping per friend per 3 hours) or you're @mentioned in a post or comment. Optional session-day reminder, off by default. Needs the server setup in vertform-push.sql + the vf-push edge function; on iPhone the app must be installed to the home screen.
 - Composer tag chips insert @nickname.
