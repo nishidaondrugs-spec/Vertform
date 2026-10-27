@@ -589,3 +589,4 @@ body.nav2 .mealgroup{margin-bottom:8px}
 :root:not([data-theme="light"]) .sheet .list-actions .btn:not(.critical) svg{color:#8e8e93;width:20px;height:20px}
 .wk-layer .sets.noload .cell.na,.wk-layer .sets.noload .set-head span:nth-child(3){display:none!important}
 .wk-layer .sets.noload .set-head span:nth-child(4){text-align:center}
+:root:not([data-theme="light"]) body.nav2 .mcell u{background:#e5383b!important;width:7px;height:7px;box-shadow:0 0 0 1.5px rgba(0,0,0,.35)}
