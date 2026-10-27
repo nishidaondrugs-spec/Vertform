@@ -131,16 +131,17 @@ function weekNav(mon) {
   const nowMon = monday(todayISO());
   return `<div class="weeknav"><button type="button" class="iconbtn" data-act="plan.shift" data-arg="-7" aria-label="Previous week">${icon('back')}</button><div class="wn-mid"><div class="eyebrow">${mon === nowMon ? 'THIS WEEK' : 'WEEK OF'}</div><b>${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}</b></div><button type="button" class="iconbtn" data-act="plan.shift" data-arg="7" aria-label="Next week">${icon('chev')}</button>${mon !== nowMon ? `<button type="button" class="btn sm ghost" data-act="plan.now">Today</button>` : ''}</div>`;
 }
-function calendarBody(mon) {
+function calendarBody(mon, mode) {
+  const only = mode === 'settings';
   const plan = weekPlan(mon), n = activeSessions().length, sched = vbDaysFor(todayISO());
   const fixtures = data.matches.filter(d => d >= todayISO()).sort(), extras = data.vb.extras.filter(x => x.date >= todayISO()).sort((a, b) => a.date.localeCompare(b.date));
   const names = sched.map(i => data.vb.trainInfo?.[String(i)]?.name || DOW[i]).slice(0, 3).join(', ');
-  return `${weekNav(mon)}
-    ${plan.conflicts.length ? `<div class="flags" role="status">${plan.conflicts.slice(0, 2).map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}${plan.conflicts.length > 2 ? `<p class="tiny">+${plan.conflicts.length - 2} more. Tap a day to review.</p>` : ''}</div>` : ''}
-    <ul class="dayrows lanes">${plan.days.map(laneRow).join('')}</ul>
-    <p class="tiny drag-hint">Press and hold a gym session to move it.</p>
-    ${plan.notPlaced.filter(() => !(data.user.setupDate && data.user.setupDate > mon)).map(x => `<p class="tiny">${esc(sName(x.session))} is left out this week: ${esc(x.reason)}.</p>`).join('')}
-    <div class="quick calq"><button type="button" class="btn primary" data-act="vb.log" data-arg="training">${icon('plus')}Log training</button><button type="button" class="btn ghost" data-act="match.add">${icon('plus')}Match</button><button type="button" class="btn ghost" data-act="extra.add">${icon('plus')}Extra</button></div>
+  return `${only ? '' : weekNav(mon)}
+    ${!only && plan.conflicts.length ? `<div class="flags" role="status">${plan.conflicts.slice(0, 2).map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}${plan.conflicts.length > 2 ? `<p class="tiny">+${plan.conflicts.length - 2} more. Tap a day to review.</p>` : ''}</div>` : ''}
+    ${only ? '' : `<ul class="dayrows lanes">${plan.days.map(laneRow).join('')}</ul>
+    <p class="tiny drag-hint">Press and hold a gym session to move it.</p>`}
+    ${only ? '' : plan.notPlaced.filter(() => !(data.user.setupDate && data.user.setupDate > mon)).map(x => `<p class="tiny">${esc(sName(x.session))} is left out this week: ${esc(x.reason)}.</p>`).join('')}
+    ${only ? '' : `<div class="quick calq"><button type="button" class="btn primary" data-act="vb.log" data-arg="training">${icon('plus')}Log training</button><button type="button" class="btn ghost" data-act="match.add">${icon('plus')}Match</button><button type="button" class="btn ghost" data-act="extra.add">${icon('plus')}Extra</button></div>`}
     <details class="explain mt"><summary><span>Gym sessions a week</span><b class="mono">${n}</b></summary>${goalCard(mon)}</details>
     <details class="explain"><summary><span>Fixed trainings</span><b class="sm">${sched.length ? esc(names) : 'None'}</b></summary><p class="tiny">${sched.length ? sched.map(i => esc(DOW_LONG[i])).join(', ') : 'No fixed weekly training set.'}</p><button type="button" class="btn sm ghost" data-act="days.open">${icon('edit')}Edit fixed trainings</button></details>
     <details class="explain"><summary><span>Matches &amp; extras</span><b class="mono">${fixtures.length + extras.length}</b></summary>

@@ -369,3 +369,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.47.0 — Usability pass
 - Workout screen: **Add exercise** and **Remove** buttons now sit under "Add a set" on every exercise (they were only in the ⋯ menu).
 - New layout: removed the duplicate "V" icons from the top bar (the You tab covers your profile).
+
+## 2.48.0 — Plan day panel, tidier leaderboard
+- Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
+- Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".

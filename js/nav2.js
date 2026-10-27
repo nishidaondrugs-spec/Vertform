@@ -118,8 +118,8 @@ function monthGrid() {
       const gym = d.items.find(i => i.kind === 'gym'), mt = d.items.find(i => i.kind === 'match'), tr = d.items.find(i => i.kind === 'training' && !i.cancelled);
       const main = gym || mt || tr, st = main ? main.status : 'rest', both = (gym && (mt || tr));
       const txt = gym ? sBadge(gym.session) : (mt || tr) ? 'VB' : '·';
-      const cls = `${gym ? 'g' : (mt || tr) ? 'vb' : 'r'} st-${st} ${d.isToday ? 'today' : ''}`;
-      cells.push(`<button type="button" class="mcell ${cls}" data-act="day.open" data-id="${d.date}" aria-label="${esc(DOW_LONG[d.idx])} ${Number(d.date.slice(8))}${main ? ', ' + (gym ? esc(sName(gym.session)) : 'volleyball') + ', ' + st : ', rest'}"><i>${Number(d.date.slice(8))}</i><b>${txt}</b>${both ? '<u></u>' : ''}</button>`);
+      const cls = `${gym ? 'g' : (mt || tr) ? 'vb' : 'r'} st-${st} ${d.isToday ? 'today' : ''} ${(ui.planDay || today) === d.date ? 'sel' : ''}`;
+      cells.push(`<button type="button" class="mcell ${cls}" data-act="plan.pick" data-id="${d.date}" aria-pressed="${(ui.planDay || todayISO()) === d.date}" aria-label="${esc(DOW_LONG[d.idx])} ${Number(d.date.slice(8))}${main ? ', ' + (gym ? esc(sName(gym.session)) : 'volleyball') + ', ' + st : ', rest'}"><i>${Number(d.date.slice(8))}</i><b>${txt}</b>${both ? '<u></u>' : ''}</button>`);
     });
   }
   return `<div class="mcard"><div class="mnav"><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="-1" aria-label="Previous month">${icon('back')}</button><b>${esc(label)}</b><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="1" aria-label="Next month"><span style="display:inline-flex;transform:rotate(180deg)">${icon('back')}</span></button></div>
@@ -127,11 +127,18 @@ function monthGrid() {
     <div class="mkey"><span class="k-done">Done</span><span class="k-plan">Planned</span><span class="k-vb">Volleyball</span><span class="k-missed">Missed</span><span class="k-today">Today</span></div></div>`;
 }
 ACTIONS['plan.mshift'] = el => { const f = ui.planMonth || todayISO().slice(0, 7) + '-01'; ui.planMonth = addDays(f, Number(el.dataset.arg) > 0 ? 32 : -1).slice(0, 7) + '-01'; render(); };
+ACTIONS['plan.pick'] = el => { ui.planDay = el.dataset.id; ui.planWeek = monday(el.dataset.id); render(); };
+function planDayPanel() {
+  const d = ui.planDay && isISO(ui.planDay) ? ui.planDay : todayISO();
+  const long = `${DOW_LONG[(parseDate(d).getDay() + 6) % 7]} ${parseDate(d).getDate()} ${parseDate(d).toLocaleDateString('en-GB', { month: 'long' })}`;
+  return `<section class="dayinline" aria-label="Plan for ${esc(long)}"><div class="between"><div><div class="eyebrow">${d === todayISO() ? 'TODAY' : 'SELECTED DAY'}</div><h2 class="dih">${esc(long)}</h2></div></div>${renderDaySheet(d).body}</section>`;
+}
 function gymPlan() {
   ui.trainDate = todayISO();
   return `${monthGrid()}
+    ${planDayPanel()}
     <button type="button" class="gymlink" data-act="gym.tab" data-arg="sessions"><span><b>Training sessions</b><small>See, add and remove the exercises in each session</small></span>${icon('chev')}</button>
-    ${calendarBody(ui.planWeek)}`;
+    <details class="explain mt"><summary><span>Plan settings &amp; upcoming</span></summary>${calendarBody(ui.planWeek, 'settings')}</details>`;
 }
 function viewGym() {
   const w = getWeek(), t = ui.trainTab, tab = ['plan', 'sessions', 'history', 'vb', 'jump'].includes(t) ? t : 'today';

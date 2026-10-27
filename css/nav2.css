@@ -146,3 +146,11 @@ body.nav2 .topbar{justify-content:flex-end;gap:8px}
 body.nav2 #topback:not([hidden]){margin-right:auto}
 .wkx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .wkx .btn{min-height:48px;justify-content:center}
+
+/* ---- Plan: selected day panel ---- */
+.mcell.sel{box-shadow:inset 0 0 0 2px #6ea8ff}
+.mcell.today.sel{box-shadow:inset 0 0 0 2px #6ea8ff}
+.dayinline{margin-top:12px;padding:14px;border-radius:20px;background:#0e1627;border:1px solid #1f2b45}
+.dayinline .dih{margin:2px 0 8px;font-size:20px}
+.dayinline .dayitem{padding:12px 0;border-top:1px solid #1f2b45}
+.dayinline .dayitem:first-of-type{border-top:0}

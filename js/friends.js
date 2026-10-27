@@ -102,11 +102,11 @@ function renderLb() {
     <div class="seg lbtabs" role="tablist">${TABS_LB.map(([k, l]) => `<button type="button" role="tab" aria-selected="${lbUi.tab === k}" class="${lbUi.tab === k ? 'on' : ''}" data-act="lb.tab" data-arg="${k}">${l}</button>`).join('')}</div>
     ${lbUi.err ? `<div class="status warn" role="alert">${esc(lbUi.err)}</div>` : ''}
     ${lbUi.stale ? `<button type="button" class="btn primary block" data-act="lb.reset">Start again with a new code</button>` : ''}
-    ${lbUi.rows === null ? `<p class="note">${lbUi.loading ? 'Loading…' : 'Pull to refresh with the button below.'}</p>` : `<p class="tiny lbhead">${esc(lbHeadline(rows, lbUi.tab))}</p>
+    ${lbUi.rows === null ? (lbUi.loading ? `<p class="note">Loading…</p>` : `<button type="button" class="btn ghost block" data-act="lb.refresh">Load the board</button>`) : `<p class="tiny lbhead">${esc(lbHeadline(rows, lbUi.tab))}</p>
     <ol class="lbrows">${rows.map((r, i) => `<li class="lbrow ${r.me ? 'me' : ''}"><span class="lbrank mono">${i + 1}</span>${avatarHTML(r.me ? myLook() : r.look, r.nickname, 'sm')}${r.me ? `<button type="button" class="lbname lbtap" data-act="me.open"><span class="lbnrow"><span class="lbn">${esc(r.nickname)}</span><span class="tag slate">YOU</span>${fireTag(r.streakNow)}</span></button>` : `<button type="button" class="lbname lbtap" data-act="fr.open" data-id="${esc(r.id)}" aria-label="${esc(r.nickname)}, open profile"><span class="lbnrow"><span class="lbn">${esc(r.nickname)}</span>${fireTag(r.streakNow)}</span><small>Profile ${icon('chev')}</small></button>`}<span class="lbval">${lbVal(r, lbUi.tab)}</span>${r.me ? '' : `<button type="button" class="iconbtn lbx" data-act="lb.remove" data-id="${esc(r.id)}" data-arg="${esc(r.nickname)}" aria-label="Remove ${esc(r.nickname)}">${icon('close')}</button>`}</li>`).join('')}</ol>`}
     <div class="field"><label for="lbcode">Add a friend</label><div class="inline"><input id="lbcode" data-in="lbcode" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="Their code" value="${esc(lbUi.code)}"><button type="button" class="btn primary" data-act="lb.add">Add</button></div></div>
     <p class="tiny">You both need to add each other's code.</p>
-    <details class="explain"><summary>Settings</summary>
+    <details class="explain"><summary>Sharing &amp; nickname</summary>
       <label class="switch"><span>Share my best lifts with friends</span><input type="checkbox" data-in="lbshare" ${lbSharesLifts() ? 'checked' : ''}></label>
       <label class="switch"><span>Share my best standing jump</span><input type="checkbox" data-in="lbjump" ${data.settings.shareJump === false ? '' : 'checked'}></label>
       <div class="quick"><button type="button" class="btn sm ghost" data-act="lb.rename">Change nickname (${esc(c.nick)})</button><button type="button" class="btn sm ghost warnText" data-act="lb.leave">Leave &amp; delete my data</button></div></details>`,
@@ -115,7 +115,7 @@ function renderLb() {
 function openFriends() { lbUi.err = ''; openSheet({ title: 'Friends', eyebrow: 'LEADERBOARD', size: 'tall', render: renderLb }); if (lbCfg()) lbLoad(); }
 ACTIONS['lb.open'] = openFriends;
 /* the leaderboard as its own page (home orb) */
-function viewBoard() { const s = renderLb(); return `${pageHead('', 'Leaderboard')}<div class="lbpage">${s.body}</div>${s.footer ? `<div class="lbpagefoot">${s.footer}</div>` : ''}`; }
+function viewBoard() { const s = renderLb(), nv = typeof navNew === 'function' && navNew(); return `${pageHead('', 'Leaderboard', nv && lbCfg() ? `<button type="button" class="btn sm ghost" data-act="lb.refresh" ${lbUi.loading ? 'disabled' : ''}>${lbUi.loading ? 'Loading…' : 'Refresh'}</button>` : '')}<div class="lbpage">${s.body}</div>${s.footer && !(nv && lbCfg()) ? `<div class="lbpagefoot">${s.footer}</div>` : ''}`; }
 ACTIONS['board.open'] = () => { lbUi.err = ''; go('board'); if (lbCfg()) lbLoad(); };
 INPUTS.lbnick = el => { lbUi.nick = el.value; };
 INPUTS.lbcode = el => { lbUi.code = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (el.value !== lbUi.code) el.value = lbUi.code; };
