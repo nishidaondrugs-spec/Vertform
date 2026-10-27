@@ -157,11 +157,10 @@ body.nav2 .feelbox summary::after{content:" ›";color:#a1a1a6}
 :root:not([data-theme="light"]) body.nav2 .eyebrow{font-size:13px;font-weight:600;letter-spacing:.02em}
 :root:not([data-theme="light"]) body.nav2 .iconbtn,:root:not([data-theme="light"]) body.nav2 .iconbtn svg{color:#f5f5f7}
 /* leftover navy surfaces */
-:root:not([data-theme="light"]) body.nav2 :is(.sescard,.crrow,.dayinline,.libbar,.gymlink,.partner,.pcard .wkcard,.ptile,.ptext,.field input,input,select,textarea){background:#151517!important;border-color:transparent!important}
+:root:not([data-theme="light"]) body.nav2 :is(.sescard,.dayinline,.libbar,.gymlink,.partner,.pcard .wkcard,.ptile,.ptext,.field input,input,select,textarea){background:#151517!important;border-color:transparent!important}
 :root:not([data-theme="light"]) body.nav2 input:focus,:root:not([data-theme="light"]) body.nav2 textarea:focus{border-color:rgba(255,255,255,.35)!important;outline:0}
-:root:not([data-theme="light"]) body.nav2 .crrow.on{border-color:transparent!important;background:#1c1c1f!important}
 :root:not([data-theme="light"]) body.nav2 .crdots i.on{background:#f5f5f7}
-:root:not([data-theme="light"]) body.nav2 .dayinline,:root:not([data-theme="light"]) body.nav2 .crrow,:root:not([data-theme="light"]) body.nav2 .libbar,:root:not([data-theme="light"]) body.nav2 .gymlink{background:transparent!important;border-top:1px solid var(--pm-line)!important;border-radius:0!important;padding-left:2px;padding-right:2px}
+:root:not([data-theme="light"]) body.nav2 .dayinline,:root:not([data-theme="light"]) body.nav2 .libbar,:root:not([data-theme="light"]) body.nav2 .gymlink{background:transparent!important;border-top:1px solid var(--pm-line)!important;border-radius:0!important;padding-left:2px;padding-right:2px}
 /* month calendar: monochrome. filled = done, outline = planned, red = missed */
 :root:not([data-theme="light"]) body.nav2 .mcell{background:transparent!important;color:#c7c7cc;box-shadow:none!important}
 :root:not([data-theme="light"]) body.nav2 .mcell.g,:root:not([data-theme="light"]) body.nav2 .mcell.vb{background:#1c1c1f!important;color:#f5f5f7}
@@ -400,3 +399,13 @@ body.nav2 .setgroup[open]>summary>svg:last-child{transform:rotate(90deg)}
 .crcheck{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.09);color:transparent;display:grid;place-items:center;cursor:pointer;flex:none}
 .crcheck svg{width:22px;height:22px}.crrow.on .crcheck{background:#fff;color:#000}
 :root:not([data-theme="light"]) body.nav2 .crrow,:root:not([data-theme="light"]) body.nav2 .crrow.on{background:transparent!important;box-shadow:none!important;margin-bottom:90px!important}
+/* creatine v3: same rhythm as a meal row */
+:root:not([data-theme="light"]) body.nav2 .crrow{border:0!important;margin:0 0 90px!important;padding:12px 0!important;min-height:64px;align-items:center}
+body.nav2 .crrow .crtx{display:flex;align-items:baseline;gap:10px}
+body.nav2 .crrow .crtx b{font-size:inherit;font-weight:700;opacity:.55;font:inherit;font-weight:700}
+body.nav2 .crrow.on .crtx b{opacity:1}
+body.nav2 .crrow .crtx small{display:inline;margin:0;font-size:13px;opacity:.45}
+body.nav2 .crrow .crdots{display:none}
+body.nav2 .crrow .crtx b{font-size:19px!important}
+body.nav2 .crrow .crcheck{margin-right:0}
+body.nav2 .crrow .crcheck{color:rgba(255,255,255,.35)}body.nav2 .crrow.on .crcheck{color:#000}
