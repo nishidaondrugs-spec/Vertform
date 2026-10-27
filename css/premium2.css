@@ -460,3 +460,16 @@ body.pdet-open{overflow:hidden}
   .pcard .bmedia img{animation:imgIn .5s ease both}
   @keyframes imgIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
 }
+/* ---- 2.62 motion ---- */
+@media (prefers-reduced-motion:no-preference){
+  #view.pgin{animation:pgIn .34s cubic-bezier(.22,1,.36,1) both}
+  @keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .rxbubbles.rxpop>*{animation:rxPop .45s cubic-bezier(.34,1.56,.64,1) both}
+  .rxbubbles.rxpop>*:nth-child(2){animation-delay:.06s}.rxbubbles.rxpop>*:nth-child(3){animation-delay:.12s}.rxbubbles.rxpop>*:nth-child(4){animation-delay:.18s}.rxbubbles.rxpop>*:nth-child(5){animation-delay:.24s}
+  @keyframes rxPop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+  .lbfire svg{transform-origin:50% 90%;animation:flame 2.4s ease-in-out infinite}
+  @keyframes flame{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.1,1.16) rotate(-3deg)}60%{transform:scale(.96,1.05) rotate(2deg)}}
+  .pphoto:not(.ready){background:linear-gradient(110deg,#141416 30%,#1f1f23 50%,#141416 70%);background-size:220% 100%;animation:shim 1.4s linear infinite}
+  @keyframes shim{from{background-position:120% 0}to{background-position:-120% 0}}
+}
+.ro-num b{font-variant-numeric:tabular-nums}
