@@ -54,10 +54,11 @@ ACTIONS['ph.clear'] = async () => {
 setTimeout(() => { if (myPhoto() && lbCfg() && data.settings.photoUp !== myPhoto().length) phUpload(); }, 4000);
 
 /* your own banner picture for gym cards: chosen from your phone, kept on this phone only (never uploaded, never part of the app) */
-const BANNERS = [['spike', 'Spike'], ['net', 'Net'], ['court', 'Court'], ['iron', 'Iron'], ['rise', 'Rise']];
+const BANNERS = [['block', 'Block'], ['smash', 'Smash'], ['dig', 'Dig'], ['spike', 'Silhouette'], ['net', 'Net'], ['court', 'Court'], ['iron', 'Iron'], ['rise', 'Rise']];
+const bnExt = id => ['block', 'smash', 'dig'].includes(id) ? 'jpg' : 'svg';
 function bnApply() {
-  const b = data.settings.banner, id = data.settings.bannerId || 'spike', r = document.documentElement;
-  r.style.setProperty('--vbart', b ? `url("${b}")` : `url("${new URL(`img/banners/${id}.svg`, location.href).href}")`);
+  const b = data.settings.banner, id = data.settings.bannerId || 'block', r = document.documentElement;
+  r.style.setProperty('--vbart', b ? `url("${b}")` : `url("${new URL(`img/banners/${id}.${bnExt(id)}`, location.href).href}")`);
 }
 async function bnTake(f) {
   if (!f) return;
@@ -79,5 +80,5 @@ ACTIONS['bn.file'] = () => {
   i.value = ''; i.onchange = () => bnTake(i.files && i.files[0]); i.click();
 };
 ACTIONS['bn.set'] = el => { data.settings.banner = ''; data.settings.bannerId = el.dataset.arg; save(); bnApply(); refreshSheet(); render(); };
-ACTIONS['bn.pick'] = () => openSheet({ title: 'Banner', eyebrow: 'GYM CARDS', render: () => ({ body: `<div class="bngrid">${BANNERS.map(([k, n]) => `<button type="button" class="bnopt ${!data.settings.banner && (data.settings.bannerId || 'spike') === k ? 'on' : ''}" data-act="bn.set" data-arg="${k}" aria-label="${n}" style="background-image:url('img/banners/${k}.svg')"><span>${n}</span></button>`).join('')}</div><button type="button" class="btn ghost bnfile" data-act="bn.file">${data.settings.banner ? 'Change my own picture' : 'Use a picture from my phone'}</button>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
+ACTIONS['bn.pick'] = () => openSheet({ title: 'Banner', eyebrow: 'GYM CARDS', render: () => ({ body: `<div class="bngrid">${BANNERS.map(([k, n]) => `<button type="button" class="bnopt ${!data.settings.banner && (data.settings.bannerId || 'block') === k ? 'on' : ''}" data-act="bn.set" data-arg="${k}" aria-label="${n}" style="background-image:url('img/banners/${k}.${bnExt(k)}')"><span>${n}</span></button>`).join('')}</div><button type="button" class="btn ghost bnfile" data-act="bn.file">${data.settings.banner ? 'Change my own picture' : 'Use a picture from my phone'}</button>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
 bnApply();

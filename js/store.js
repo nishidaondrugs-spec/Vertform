@@ -161,7 +161,7 @@ function normaliseData(o) {
   out.settings.creatine = { on: !!(isObj(s.creatine) && s.creatine.on), dose: clamp(Number(isObj(s.creatine) ? s.creatine.dose : 5) || 5, 1, 20) };
   out.settings.photo = typeof s.photo === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.photo) && s.photo.length < 80000 ? s.photo : '';
   out.settings.banner = typeof s.banner === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.banner) && s.banner.length < 400000 ? s.banner : '';
-  out.settings.bannerId = ['spike', 'net', 'court', 'iron', 'rise'].includes(s.bannerId) ? s.bannerId : 'spike';
+  out.settings.bannerId = ['block', 'smash', 'dig', 'spike', 'net', 'court', 'iron', 'rise'].includes(s.bannerId) ? s.bannerId : 'block';
   out.settings.photoUp = Number.isFinite(s.photoUp) ? s.photoUp : 0;
   out.settings.logo = typeof s.logo === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.logo) && s.logo.length < 200000 ? s.logo : '';
   out.settings.weighSnooze = isISO(s.weighSnooze) ? s.weighSnooze : null;
