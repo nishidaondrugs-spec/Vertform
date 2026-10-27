@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.73.0 — Session icons
+Pick an emoji (or type any) for a session in its editor. It replaces the letter in Train, the weekly plan, the calendar and Home. Editing a built-in session copies it, so you can give A–D icons too.
+
 ## 2.72.1 — Your sessions list
 Open session cards no longer sit in a filled box that stops short of the screen edge; rows run on the page like the rest of the screen.
 

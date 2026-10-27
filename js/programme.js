@@ -40,7 +40,7 @@ const SESSION_KEYS = ['A', 'B', 'C', 'D'];
 const BUILTIN_KEYS = ['A', 'B', 'C', 'D'];
 /* Heavy lower-body days are kept away from matches. Session A always is; your own sessions can opt in. */
 const sName = k => templates[k]?.custom ? templates[k].title : 'Session ' + k;
-const sBadge = k => templates[k]?.custom ? ((templates[k].title.trim()[0] || '•').toUpperCase()) : k;
+const sBadge = k => templates[k]?.emoji ? templates[k].emoji : templates[k]?.custom ? ((templates[k].title.trim()[0] || '•').toUpperCase()) : k;
 const sChip = k => templates[k]?.custom ? templates[k].title : `${k} · ${templates[k].title}`;
 /* Team trainings are described by intensity, not by drills. Each level maps to a session RPE. */
 const INTENSITY = { light: { label: 'Light', rpe: 3, hint: 'Easy, could chat' }, moderate: { label: 'Moderate', rpe: 5, hint: 'Steady, working' }, hard: { label: 'Hard', rpe: 7, hint: 'Tough, few words' }, max: { label: 'Max', rpe: 9, hint: 'All out' } };
@@ -55,7 +55,7 @@ function syncCustomSessions(list, hide) {
   SESSION_KEYS.length = 0; if (!hide) SESSION_KEYS.push(...BUILTIN_KEYS.filter(k => !hiddenBuiltin.includes(k)));
   for (const s of (Array.isArray(list) ? list : [])) {
     const sets = s.exercises.reduce((n, e) => n + e.sets, 0), est = Math.max(10, Math.round((sets * 2.5 + 5) / 5) * 5);
-    templates[s.key] = { custom: true, deleted: !!s.deleted, heavy: !!s.heavy, title: s.title, subtitle: 'Your session', type: (s.type || 'CUSTOM').toUpperCase(), duration: s.minutes ? `~${s.minutes} min` : `~${est} min`, colour: 'blue', exercises: s.exercises.map(e => ({ ...e })) };
+    templates[s.key] = { custom: true, emoji: s.emoji || '', deleted: !!s.deleted, heavy: !!s.heavy, title: s.title, subtitle: 'Your session', type: (s.type || 'CUSTOM').toUpperCase(), duration: s.minutes ? `~${s.minutes} min` : `~${est} min`, colour: 'blue', exercises: s.exercises.map(e => ({ ...e })) };
     if (!s.deleted) SESSION_KEYS.push(s.key);
   }
 }

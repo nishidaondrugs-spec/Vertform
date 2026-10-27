@@ -10,14 +10,14 @@ const nextKey = () => { const used = new Set([...data.mySessions.map(s => s.key)
 /* Built-in sessions are never changed in place: editing one opens a copy that replaces it when saved. */
 function openBuiltinCopy(k) {
   const t = templates[k]; if (!t) return;
-  se = { key: null, replaces: k, title: t.title, type: '', minutes: '', heavy: isHeavy(k), exercises: allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: !!e.load, hint: e.hint || '', rest: e.rest || '', optional: false })), inPlan: activeSessions().includes(k), idx: -1, ex: blankEx(), isNew: true, err: '' };
+  se = { key: null, replaces: k, emoji: t.emoji || '', title: t.title, type: '', minutes: '', heavy: isHeavy(k), exercises: allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: !!e.load, hint: e.hint || '', rest: e.rest || '', optional: false })), inPlan: activeSessions().includes(k), idx: -1, ex: blankEx(), isNew: true, err: '' };
   openSheet({ title: 'Edit session', eyebrow: 'YOUR SESSION', size: 'tall', render: renderSessionEditor });
 }
 ACTIONS['ses.edit'] = el => { const k = el.dataset.arg; if (templates[k]?.custom) openSessionEditor(k); else openBuiltinCopy(k); };
 function openSessionEditor(key) {
   const cur = key ? data.mySessions.find(s => s.key === key) : null;
-  se = cur ? { key, title: cur.title, type: cur.type, minutes: cur.minutes || '', heavy: cur.heavy, exercises: cur.exercises.map(e => ({ ...e })), inPlan: activeSessions().includes(key), idx: -1, ex: blankEx(), isNew: false, err: '' }
-    : { key: null, title: '', type: '', minutes: '', heavy: false, exercises: [], inPlan: true, idx: -1, ex: blankEx(), isNew: true, err: '' };
+  se = cur ? { key, emoji: cur.emoji || '', title: cur.title, type: cur.type, minutes: cur.minutes || '', heavy: cur.heavy, exercises: cur.exercises.map(e => ({ ...e })), inPlan: activeSessions().includes(key), idx: -1, ex: blankEx(), isNew: false, err: '' }
+    : { key: null, emoji: '', title: '', type: '', minutes: '', heavy: false, exercises: [], inPlan: true, idx: -1, ex: blankEx(), isNew: true, err: '' };
   openSheet({ title: cur ? 'Edit session' : 'New session', eyebrow: 'YOUR SESSION', size: 'tall', render: renderSessionEditor });
 }
 ACTIONS['ys.new'] = () => openSessionEditor(null);
@@ -31,7 +31,9 @@ function renderSessionEditor() {
   const copy = se.isNew && !se.exercises.length ? `<div class="sxstart"><div class="sxlab">Start from</div><div class="sxscroll"><span class="chip on" aria-hidden="true">Blank</span>${Object.entries(YS_TEMPLATES).map(([id, t]) => `<button type="button" class="chip tpl" data-act="ys.tpl" data-id="${id}">${esc(t.title)}</button>`).join('')}${BUILTIN_KEYS.map(k => `<button type="button" class="chip" data-act="ys.copy" data-id="${k}">Copy of ${k}</button>`).join('')}</div></div>` : '';
   const xo = se.idx >= 0 || x.unit !== 'reps' || x.rest || x.hint || !x.load;
   const lastN = se.exercises.length;
-  return { body: `<input id="setitle" class="sename" data-in="setitle" maxlength="40" autocomplete="off" aria-label="Session name" placeholder="Name your session" value="${esc(se.title)}">
+  const EMO = ['🏋️', '💪', '🦵', '🔥', '⚡', '🏐', '🦘', '🏃', '🧘', '🎯', '🚀', '🐻', '🦍', '🏆', '❤️', '🌙'];
+  return { body: `<div class="seemo" role="group" aria-label="Session icon"><button type="button" class="seemo-none ${se.emoji ? '' : 'on'}" data-act="ys.emoji" data-arg="" aria-label="No icon">${esc(se.title.trim()[0] || 'A').toUpperCase()}</button>${EMO.map(e => `<button type="button" class="${se.emoji === e ? 'on' : ''}" data-act="ys.emoji" data-arg="${e}" aria-label="Icon ${e}">${e}</button>`).join('')}<input id="seemoin" data-in="seemoin" maxlength="8" autocomplete="off" inputmode="text" placeholder="Any" aria-label="Type any emoji" value="${EMO.includes(se.emoji) ? '' : esc(se.emoji || '')}"></div>
+    <input id="setitle" class="sename" data-in="setitle" maxlength="40" autocomplete="off" aria-label="Session name" placeholder="Name your session" value="${esc(se.title)}">
     ${copy}
     <div class="sxhead"><b>${lastN ? plural(lastN, 'exercise') : 'Exercises'}</b></div>
     ${rows ? `<ul class="mlist">${rows}</ul>` : `<p class="sxempty">Nothing here yet. Search the library, or type your own below.</p>`}
@@ -53,6 +55,8 @@ function renderSessionEditor() {
     footer: `${se.isNew && !se.replaces ? '' : `<button type="button" class="btn ghost warnText" data-act="${se.replaces ? 'ys.deletebuiltin' : 'ys.delete'}">Delete</button>`}<button type="button" class="btn primary" data-act="ys.save">Save session</button>` };
 }
 ACTIONS['ys.sets'] = el => { const v = clamp((parseInt(se.ex.sets) || 3) + Number(el.dataset.arg), 1, 12); se.ex.sets = v; const o = $('#exsv'); if (o) o.textContent = v; };
+ACTIONS['ys.emoji'] = el => { se.emoji = el.dataset.arg || ''; refreshSheet(); };
+INPUTS.seemoin = el => { se.emoji = Array.from(el.value.trim())[0] || ''; };
 INPUTS.setitle = el => { se.title = el.value; }; INPUTS.setype = el => { se.type = el.value; }; INPUTS.semin = el => { se.minutes = el.value; };
 INPUTS.seheavy = el => { se.heavy = el.checked; }; INPUTS.seplan = el => { se.inPlan = el.checked; };
 INPUTS.exn = el => { se.ex.name = el.value; }; INPUTS.exs = el => { se.ex.sets = el.value; }; INPUTS.exr = el => { se.ex.reps = el.value; };
@@ -99,7 +103,7 @@ ACTIONS['ys.save'] = () => {
   const title = se.title.trim();
   if (!title) { se.err = 'Give the session a name.'; refreshSheet(); return; }
   if (!se.exercises.length) { se.err = 'Add at least one exercise.'; refreshSheet(); return; }
-  const rec = { title, type: se.type.trim(), minutes: clamp(parseInt(se.minutes) || 0, 0, 240), heavy: se.heavy, deleted: false, exercises: se.exercises.map(e => ({ ...e, optional: false })) };
+  const rec = { title, emoji: Array.from(String(se.emoji || '').trim())[0] || '', type: se.type.trim(), minutes: clamp(parseInt(se.minutes) || 0, 0, 240), heavy: se.heavy, deleted: false, exercises: se.exercises.map(e => ({ ...e, optional: false })) };
   let key = se.key;
   if (se.isNew) { key = nextKey(); if (!key) { se.err = 'You have reached the limit of 12 own sessions. Delete one first.'; refreshSheet(); return; } data.mySessions.push({ key, ...rec }); }
   else Object.assign(data.mySessions.find(s => s.key === key), rec);

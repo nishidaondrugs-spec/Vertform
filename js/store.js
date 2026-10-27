@@ -58,7 +58,7 @@ function cleanMySessions(arr) {
   const used = new Set(), out = [];
   for (const s of (Array.isArray(arr) ? arr : []).slice(0, 12)) {
     if (!isObj(s) || !/^[E-P]$/.test(s.key || '') || used.has(s.key) || !String(s.title || '').trim()) continue; used.add(s.key);
-    out.push({ key: s.key, title: String(s.title).trim().slice(0, 40), type: String(s.type || '').slice(0, 30), minutes: clamp(parseInt(s.minutes) || 0, 0, 240), heavy: !!s.heavy, deleted: !!s.deleted,
+    out.push({ key: s.key, title: String(s.title).trim().slice(0, 40), type: String(s.type || '').slice(0, 30), minutes: clamp(parseInt(s.minutes) || 0, 0, 240), heavy: !!s.heavy, deleted: !!s.deleted, emoji: Array.from(String(s.emoji || '').trim())[0] || '',
       exercises: (Array.isArray(s.exercises) ? s.exercises : []).filter(e => isObj(e) && String(e.name || '').trim()).slice(0, 25).map(e => ({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 60) : 'cx-' + uid(), name: String(e.name).trim().slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10').slice(0, 30), unit: ['reps', 'seconds', 'metres'].includes(e.unit) ? e.unit : 'reps', load: !!e.load, hint: String(e.hint || '').slice(0, 140), optional: false, rest: clamp(parseInt(e.rest) || 0, 0, 600) })) });
   }
   return out;
