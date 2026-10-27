@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.55.0 — Banner gallery
+- Five premium banner graphics (Spike, Net, Court, Iron, Rise) drawn for the app; pick one under Gym → Today → Change banner, or use your own picture from your phone.
+
 ## 2.54.1 — Your own banner
 - Gym → Today: "Change banner" lets you pick any picture from your phone for the banner and gym cards. Stored on this phone only.
 

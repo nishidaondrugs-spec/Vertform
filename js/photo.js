@@ -54,9 +54,10 @@ ACTIONS['ph.clear'] = async () => {
 setTimeout(() => { if (myPhoto() && lbCfg() && data.settings.photoUp !== myPhoto().length) phUpload(); }, 4000);
 
 /* your own banner picture for gym cards: chosen from your phone, kept on this phone only (never uploaded, never part of the app) */
+const BANNERS = [['spike', 'Spike'], ['net', 'Net'], ['court', 'Court'], ['iron', 'Iron'], ['rise', 'Rise']];
 function bnApply() {
-  const b = data.settings.banner, r = document.documentElement;
-  if (b) { r.style.setProperty('--vbart', `url("${b}")`); r.classList.add('has-banner'); } else { r.style.removeProperty('--vbart'); r.classList.remove('has-banner'); }
+  const b = data.settings.banner, id = data.settings.bannerId || 'spike', r = document.documentElement;
+  r.style.setProperty('--vbart', b ? `url("${b}")` : `url("${new URL(`img/banners/${id}.svg`, location.href).href}")`);
 }
 async function bnTake(f) {
   if (!f) return;
@@ -72,10 +73,11 @@ async function bnTake(f) {
     data.settings.banner = out; save(); bnApply(); render(); toast('Banner set');
   } catch (_) { toast('Could not read that picture'); }
 }
-ACTIONS['bn.pick'] = () => {
+ACTIONS['bn.file'] = () => {
   let i = $('#bnfile');
   if (!i) { i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.id = 'bnfile'; i.hidden = true; i.setAttribute('aria-label', 'Banner picture'); document.body.appendChild(i); }
   i.value = ''; i.onchange = () => bnTake(i.files && i.files[0]); i.click();
 };
-ACTIONS['bn.clear'] = () => { data.settings.banner = ''; save(); bnApply(); render(); toast('Banner reset'); };
+ACTIONS['bn.set'] = el => { data.settings.banner = ''; data.settings.bannerId = el.dataset.arg; save(); bnApply(); refreshSheet(); render(); };
+ACTIONS['bn.pick'] = () => openSheet({ title: 'Banner', eyebrow: 'GYM CARDS', render: () => ({ body: `<div class="bngrid">${BANNERS.map(([k, n]) => `<button type="button" class="bnopt ${!data.settings.banner && (data.settings.bannerId || 'spike') === k ? 'on' : ''}" data-act="bn.set" data-arg="${k}" aria-label="${n}" style="background-image:url('img/banners/${k}.svg')"><span>${n}</span></button>`).join('')}</div><button type="button" class="btn ghost bnfile" data-act="bn.file">${data.settings.banner ? 'Change my own picture' : 'Use a picture from my phone'}</button>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
 bnApply();
