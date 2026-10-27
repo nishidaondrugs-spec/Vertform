@@ -374,6 +374,10 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.53.1 — One palette, edge-to-edge posts
+- Removed the leftover navy/blue surfaces and blue-tinted greys; one neutral dark palette with red as the single accent.
+- Photos and gym cards run the full width of the screen. Plan calendar is monochrome (filled = done, outline = planned, red = missed).
+
 ## 2.53.0 — Clearer feed, profile photos
 - Feed: VERT/FORM wordmark on top, a row of friends' faces (red ring = posted today), one continuous feed with no section headers, gym sessions as big headline cards (lifts behind a tap), a proper empty state, a solid tab bar.
 - Profile photo: choose a picture on You (cropped square, shown on posts and the friends row). The 3D player stays as "Player look". Needs vertform-photos.sql on the friends database for friends to see it.
