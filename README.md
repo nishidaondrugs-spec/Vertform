@@ -374,6 +374,14 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.51.0 — Cleaner tabs, Lifts, own-post preview
+- Removed the big page titles on Feed, You and Gym, and the repeated week label (it stays in the top bar only).
+- Fuel notices (under-eating, match carbs, protein) have a close button; weekly ones stay away for 3 days.
+- Swiping between Feed and You only changes tab, and the tap that follows a swipe is ignored.
+- Your own posts are no longer in the feed. The "You posted today" strip shows mini previews and opens a larger list of your posts.
+- You > Lifts replaces Plan: every weighted lift, sortable (heaviest, biggest gain, most trained, recent, A-Z), with sparkline and dashed trend; tap for the full chart. Charts everywhere now show a trend line.
+- The Mifflin-St Jeor targets paragraph is gone from Fuel (still in the targets calculator).
+
 ## 2.50.0 — Training partners
 - "Trained with" in Workout options and the Finish sheet: pick friends or type a name. Saved workouts count per person; top partners show on the You page (See all for the full list) and each workout record lists who you trained with. Stored on this device only.
 

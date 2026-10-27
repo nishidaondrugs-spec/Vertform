@@ -216,7 +216,7 @@ function paintWorkout() {
   const root = $('#wk-root'); const prevScroll = $('.wk-body', root)?.scrollTop || 0;
   root.innerHTML = `<div class="overlay wk-layer"><section class="wk" role="dialog" aria-modal="true" aria-label="Workout: ${esc(sName(w.session))}">
     <header class="wk-head"><button type="button" class="iconbtn" data-act="wk.close" aria-label="Close workout and keep draft">${icon('back')}</button>
-      <div class="wk-title min0"><span class="wk-code" aria-hidden="true">${esc(w.session)}</span><div class="min0"><strong>${esc(t.title)}</strong><small>${esc(weekdayShort(w.date))} ${esc(pretty(w.date))} · Week ${wkNo}${isDeload(wkNo) ? ' · easy week' : ''}</small></div></div>
+      <div class="wk-title min0"><span class="wk-code" aria-hidden="true">${esc(w.session)}</span><div class="min0"><strong>${esc(t.title)}</strong><small>${esc(weekdayShort(w.date))} ${esc(pretty(w.date))}</small></div></div>
       <button type="button" class="iconbtn" data-act="wk.menu" aria-label="Workout options">${icon('more')}</button></header>
     <div class="wk-progress" id="wk-progress" role="group" aria-label="Exercise progress">${progressSegs()}</div>
     <main class="wk-body" id="wk-body" tabindex="-1">${exercisePanel()}</main>
@@ -335,11 +335,12 @@ function progressChart(e, chron) {
   const x = i => L + (W - L - R) * (pts.length === 1 ? .5 : i / (pts.length - 1)), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
   const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const first = pts[0].v, lastV = pts.at(-1).v, diff = lastV - first, unit = e.load ? ' kg' : '';
+  let trend = ''; if (pts.length >= 3) { const n = pts.length, mx = (n - 1) / 2, my = vs.reduce((a, b) => a + b, 0) / n; let nu = 0, de = 0; vs.forEach((v, i) => { nu += (i - mx) * (v - my); de += (i - mx) ** 2; }); const sl = de ? nu / de : 0, y0 = my + sl * (0 - mx), y1 = my + sl * (n - 1 - mx); trend = `<path class="pc-trend" d="M${x(0).toFixed(1)},${y(Math.min(hi, Math.max(lo, y0))).toFixed(1)}L${x(n - 1).toFixed(1)},${y(Math.min(hi, Math.max(lo, y1))).toFixed(1)}"/>`; }
   const dots = pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="${i === pts.length - 1 ? 4.5 : 3}"><title>${esc(pretty(p.d))}: ${fmt(p.v, 1)}${unit}</title></circle>`).join('');
   const ticks = []; for (let v = lo; v <= hi + 1e-9; v += (hi - lo) / 2) ticks.push(v); const grid = ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${fmt(v, 1)}</text>`).join('');
   return `<figure class="pchart" aria-label="${what} over ${pts.length} sessions, from ${fmt(first, 1)} to ${fmt(lastV, 1)}${unit}">
     <div class="pc-top"><div><span class="tiny">${what}</span><b>${fmt(lastV, 1)}${unit}</b></div><span class="pc-diff ${diff > 0 ? 'up' : diff < 0 ? 'down' : ''}">${diff > 0 ? '+' : ''}${fmt(diff, 1)}${unit} since ${esc(pretty(pts[0].d))}</span></div>
-    <svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true"><g class="pc-grid">${grid}</g><path class="pc-line" d="${line}"/><g class="pc-dots">${dots}</g>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true"><g class="pc-grid">${grid}</g><path class="pc-line" d="${line}"/>${trend}<g class="pc-dots">${dots}</g>
     <text class="pc-x" x="${L}" y="${H - 6}">${esc(pretty(pts[0].d))}</text><text class="pc-x" x="${W - R}" y="${H - 6}" text-anchor="end">${esc(pretty(pts.at(-1).d))}</text></svg></figure>`;
 }
 function openExerciseHistory(e) {

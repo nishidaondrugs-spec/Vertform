@@ -32,7 +32,9 @@ function layoutSection() {
 
 /* swipe sideways between Feed and You */
 (function () {
-  let sx = 0, sy = 0, t0 = 0, on = false;
+  let sx = 0, sy = 0, t0 = 0, on = false, swallowUntil = 0;
+  addEventListener('click', e => { if (Date.now() < swallowUntil) { e.stopPropagation(); e.preventDefault(); } }, true);
+  const flipTab = p => { ui.page = p; ui.panel = null; navStack.length = 0; closeAllSheets(); render(); window.scrollTo(0, 0); };
   const blocked = t => t.closest && t.closest('input,textarea,select,iframe,video,.sheet,.dialog,#wk-root,.wk,[data-noswipe],table,.chip-row,.seg,pre');
   addEventListener('touchstart', e => {
     on = false; if (!navNew() || e.touches.length !== 1 || !['post', 'home'].includes(ui.page) || ui.panel || sheetOpen() || blocked(e.target)) return;
@@ -42,7 +44,8 @@ function layoutSection() {
   addEventListener('touchend', e => {
     if (!on) return; on = false; const t = e.changedTouches[0], dx = t.clientX - sx, dy = Math.abs(t.clientY - sy);
     if (Math.abs(dx) < 80 || dy > 50 || dy > Math.abs(dx) / 1.6 || Date.now() - t0 > 700) return;
-    if (dx < 0 && ui.page === 'post') go('home'); else if (dx > 0 && ui.page === 'home') go('post');
+    swallowUntil = Date.now() + 400;
+    if (dx < 0 && ui.page === 'post') flipTab('home'); else if (dx > 0 && ui.page === 'home') flipTab('post');
   }, { passive: true });
 })();
 
@@ -76,7 +79,7 @@ function youBoard() {
     : `<div class="yrow"><span class="yn ys">${lbUi.rows === null ? 'Loading…' : 'No one on the board yet'}</span></div>`;
   return `<div class="ysec"><div class="yhead"><div class="yeye">LEADERBOARD · THIS WEEK</div><button type="button" class="ylink" data-act="board.open">See all</button></div><div class="yrows">${body}</div></div>`;
 }
-const YOU_MORE = [['trophy', 'Progress', 'you.prog'], ['camera', 'Jump test', 'jt.open'], ['bolt', 'Vertical plan', 'vert.open'], ['plan', 'Plan', 'you.plan'], ['history', 'Logbook', 'hub.log'], ['post', 'Friends', 'lb.open']];
+const YOU_MORE = [['trophy', 'Progress', 'you.prog'], ['camera', 'Jump test', 'jt.open'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts'], ['history', 'Logbook', 'hub.log'], ['post', 'Friends', 'lb.open']];
 ACTIONS['you.prog'] = () => { ui.trainTab = 'jump'; go('train'); };
 ACTIONS['you.plan'] = () => go('plan');
 
@@ -146,7 +149,7 @@ function viewGym() {
   ui.trainDate = ui.trainDate && isISO(ui.trainDate) ? ui.trainDate : todayISO();
   const segs = [['today', 'Today'], ['plan', 'Plan'], ['sessions', 'Sessions'], ['history', 'History']];
   const body = tab === 'plan' ? gymPlan() : tab === 'sessions' ? gymSessions() : tab === 'history' ? trainHistory() : tab === 'vb' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainVb()}` : tab === 'jump' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainJump()}` : gymToday();
-  return `${pageHead('', 'Gym', `<span class="tag ${isDeload(w) ? 'ochre' : ''}">Week ${w} of 12${isDeload(w) ? ' · easy' : ''}</span>`)}${banners()}
+  return `${pageHead('', 'Gym')}${banners()}
     <div class="seg" role="tablist" aria-label="Gym sections">${segs.map(([k, n]) => `<button type="button" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-act="gym.tab" data-arg="${k}">${n}</button>`).join('')}</div>
     ${body}`;
 }

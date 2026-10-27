@@ -79,7 +79,8 @@ ACTIONS.nav = el => go(el.dataset.arg);
 
 /* ---------- shared fragments ---------- */
 const softCase = t => (typeof t === 'string' && /[A-Z]/.test(t) && t === t.toUpperCase() && !/[<&]/.test(t)) ? t.charAt(0) + t.slice(1).toLowerCase() : t;
-const pageHead = (eyebrow, title, right = '') => `<header class="pagehead"><div class="min0">${eyebrow ? `<div class="eyebrow">${softCase(eyebrow)}</div>` : ''}<h1>${softCase(title)}</h1></div>${right}</header>`;
+const SLIM_TITLES = ['Friends', 'You', 'Gym', 'Fuel'];
+const pageHead = (eyebrow, title, right = '') => (typeof navNew === 'function' && navNew() && typeof isTopPage === 'function' && isTopPage(ui.page) && SLIM_TITLES.includes(title) && !eyebrow) ? (right ? `<header class="pagehead slim">${right}</header>` : '') : `<header class="pagehead"><div class="min0">${eyebrow ? `<div class="eyebrow">${softCase(eyebrow)}</div>` : ''}<h1>${softCase(title)}</h1></div>${right}</header>`;
 const sectionHead = (eyebrow, title, right = '') => `<div class="sechead"><div class="min0">${eyebrow ? `<div class="eyebrow">${softCase(eyebrow)}</div>` : ''}<h2>${softCase(title)}</h2></div>${right}</div>`;
 function bar(v, max, label) { const pct = clamp(max > 0 ? v / max * 100 : 0, 0, 100); return `<div class="track" role="progressbar" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="${Math.round(max)}" aria-valuenow="${Math.round(v)}"><span style="width:${pct}%"></span></div>`; }
 function macroLane(label, v, max, cls) { return `<div class="lane ${cls}"><div class="between"><b>${label}</b><span class="mono">${Math.round(v)}<small> / ${max} g</small></span></div>${bar(v, max, label)}</div>`; }
@@ -261,7 +262,6 @@ function viewFuel() {
     ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyBox('Save a meal from your diary (the bookmark icon on any meal), or build a recipe from ingredients with a yield, and log servings in one tap.')}</details>` : ''}
     ${fuelIs('progress') ? `<details class="explain" ${navNew() ? 'open' : ''}><summary><span>Targets &amp; last 7 days</span><b class="mono">${t.cal}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="calc.open">Adjust targets</button></div>
     <dl class="tally four"><div><dt>Protein</dt><dd class="mono">${t.protein}<small> g</small></dd></div><div><dt>Carbs</dt><dd class="mono">${t.carbs}<small> g</small></dd></div><div><dt>Fat</dt><dd class="mono">${t.fat}<small> g</small></dd></div><div><dt>Energy</dt><dd class="mono">${t.cal}<small> kcal</small></dd></div></dl>
-    <p class="note">${esc(t.estimate.method)}: ${t.estimate.cal} kcal average-day maintenance. ${t.dayDelta >= 0 ? '+' : ''}${t.dayDelta} kcal for ${esc(t.type === 'RECOVERY' ? 'a rest day' : t.type === 'TEAM' ? 'a volleyball day' : t.type === 'MATCH' ? 'a match day' : 'a gym day')}; ${t.goalDelta >= 0 ? '+' : ''}${t.goalDelta} kcal goal adjustment. These are starting estimates, not measured energy needs.</p>
 </details>` : ''}`;
 }
 ACTIONS['food.open2'] = () => { ui.fuelMeal = null; openFoodSearch(); };

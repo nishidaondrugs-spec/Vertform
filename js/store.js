@@ -157,6 +157,7 @@ function normaliseData(o) {
   };
   out.settings.theme = ['dark', 'light', 'auto'].includes(s.theme) ? s.theme : 'dark';
   out.settings.nav = s.nav === 'hub' ? 'hub' : 'feed';
+  out.settings.flagHide = {}; if (isObj(s.flagHide)) for (const [k, v] of Object.entries(s.flagHide)) if (/^[a-z-]{1,20}$/.test(k) && isISO(v)) out.settings.flagHide[k] = v;
   out.settings.creatine = { on: !!(isObj(s.creatine) && s.creatine.on), dose: clamp(Number(isObj(s.creatine) ? s.creatine.dose : 5) || 5, 1, 20) };
   out.settings.logo = typeof s.logo === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.logo) && s.logo.length < 200000 ? s.logo : '';
   out.settings.weighSnooze = isISO(s.weighSnooze) ? s.weighSnooze : null;

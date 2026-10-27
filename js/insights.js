@@ -7,26 +7,28 @@ function fuelFlags() {
   const today = todayISO(), hr = new Date().getHours(), out = [];
   const t = targetsFor(today), v = foodTotals(today), n = foodsFor(today).length;
   if (t.type !== 'RECOVERY' && n > 0 && hr >= 17 && v.kcal < t.cal * 0.65)
-    out.push({ tone: 'warn', title: `Light on fuel for a ${dayTypeLabel(t.type).toLowerCase()}`, text: `${Math.round(v.kcal).toLocaleString('en-GB')} of ${t.cal.toLocaleString('en-GB')} kcal so far. Under-eating around hard training costs power and slows recovery. Add a proper meal.`, act: { label: 'Add food', act: 'food.open2' } });
+    out.push({ tone: 'warn', key: 'light', title: `Light on fuel for a ${dayTypeLabel(t.type).toLowerCase()}`, text: `${Math.round(v.kcal).toLocaleString('en-GB')} of ${t.cal.toLocaleString('en-GB')} kcal so far. Under-eating around hard training costs power and slows recovery. Add a proper meal.`, act: { label: 'Add food', act: 'food.open2' } });
   const tm = addDays(today, 1);
   if (plannedFor(tm) === 'MATCH') {
-    if (n > 0 && hr >= 15 && v.carbs < t.carbs * 0.8) out.push({ tone: 'warn', title: 'Match tomorrow — carbs are behind', text: `${Math.round(v.carbs)} of ${t.carbs} g carbs today. Rice, pasta, potatoes or oats at dinner will top you up.`, act: { label: 'Add food', act: 'food.open2' } });
-    else out.push({ tone: '', title: 'Match tomorrow', text: 'Keep carbs at target today, hydrate, and aim for a full night’s sleep.' });
+    if (n > 0 && hr >= 15 && v.carbs < t.carbs * 0.8) out.push({ key: 'match-carbs', tone: 'warn', title: 'Match tomorrow — carbs are behind', text: `${Math.round(v.carbs)} of ${t.carbs} g carbs today. Rice, pasta, potatoes or oats at dinner will top you up.`, act: { label: 'Add food', act: 'food.open2' } });
+    else out.push({ key: 'match', tone: '', title: 'Match tomorrow', text: 'Keep carbs at target today, hydrate, and aim for a full night’s sleep.' });
   }
   const past = []; for (let i = 1; i <= 7; i++) { const d = addDays(today, -i); if (foodsFor(d).length >= 2) past.push(d); }
   if (past.length >= 3) {
     const k = mean(past.map(d => foodTotals(d).kcal)), tk = mean(past.map(d => targetsFor(d).cal)), p = mean(past.map(d => foodTotals(d).protein)), tp = mean(past.map(d => targetsFor(d).protein));
-    if (k < tk * 0.85) out.push({ tone: 'warn', title: 'Under-eating across the week', text: `Over your last ${past.length} logged days you averaged ${Math.round(k).toLocaleString('en-GB')} kcal against targets averaging ${Math.round(tk).toLocaleString('en-GB')}. If that is not deliberate, jumping and recovery suffer first.` });
-    else if (p < tp * 0.8) out.push({ tone: '', title: 'Protein is running low', text: `About ${Math.round(p)} g a day against a ${Math.round(tp)} g target over your last ${past.length} logged days.` });
+    if (k < tk * 0.85) out.push({ key: 'week-under', hold: 3, tone: 'warn', title: 'Under-eating across the week', text: `Over your last ${past.length} logged days you averaged ${Math.round(k).toLocaleString('en-GB')} kcal against targets averaging ${Math.round(tk).toLocaleString('en-GB')}. If that is not deliberate, jumping and recovery suffer first.` });
+    else if (p < tp * 0.8) out.push({ key: 'protein', hold: 3, tone: '', title: 'Protein is running low', text: `About ${Math.round(p)} g a day against a ${Math.round(tp)} g target over your last ${past.length} logged days.` });
   }
   const lw = entriesOf('weight').at(-1), snooze = data.settings.weighSnooze;
   if (false && data.user.profileSet && (!lw || daysBetween(lw.date, today) > 7) && !(snooze && snooze >= today)) /* 2.16: the Bodyweight card on the diary handles this */
     out.push({ tone: '', title: 'Time to weigh in', text: lw ? `Your last bodyweight was ${daysBetween(lw.date, today)} days ago. Calories follow your weight, so keep it current.` : 'Log a bodyweight so calories can follow it.', act: { label: 'Log weight', act: 'ms.add', arg: 'weight' }, act2: { label: 'Not now', act: 'weigh.snooze' } });
-  return out.slice(0, 3);
+  const hide = data.settings.flagHide || {};
+  return out.filter(f => !(f.key && hide[f.key] && hide[f.key] >= today)).slice(0, 3);
 }
 function fuelFlagsHtml() {
-  return fuelFlags().map(f => `<div class="banner ${f.tone}">${icon(f.tone === 'warn' ? 'warn' : 'info')}<div class="grow"><b>${esc(f.title)}</b><p>${esc(f.text)}</p>${f.act ? `<div class="actions"><button type="button" class="btn sm primary" data-act="${f.act.act}"${f.act.arg ? ` data-arg="${f.act.arg}"` : ''}>${esc(f.act.label)}</button>${f.act2 ? `<button type="button" class="btn sm ghost" data-act="${f.act2.act}">${esc(f.act2.label)}</button>` : ''}</div>` : ''}</div></div>`).join('');
+  return fuelFlags().map(f => `<div class="banner ${f.tone}">${icon(f.tone === 'warn' ? 'warn' : 'info')}${f.key ? `<button type="button" class="iconbtn bx" data-act="flag.hide" data-arg="${f.key}" data-hold="${f.hold || 0}" aria-label="Dismiss">${icon('close')}</button>` : ''}<div class="grow"><b>${esc(f.title)}</b><p>${esc(f.text)}</p>${f.act ? `<div class="actions"><button type="button" class="btn sm primary" data-act="${f.act.act}"${f.act.arg ? ` data-arg="${f.act.arg}"` : ''}>${esc(f.act.label)}</button>${f.act2 ? `<button type="button" class="btn sm ghost" data-act="${f.act2.act}">${esc(f.act2.label)}</button>` : ''}</div>` : ''}</div></div>`).join('');
 }
+ACTIONS['flag.hide'] = el => { const h = data.settings.flagHide = data.settings.flagHide || {}; h[el.dataset.arg] = addDays(todayISO(), Number(el.dataset.hold) || 0); save(); render(); };
 ACTIONS['weigh.snooze'] = () => { data.settings.weighSnooze = addDays(todayISO(), 3); save(); render(); };
 /* one-line nudge on the hub */
 function hubNote() {

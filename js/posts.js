@@ -219,7 +219,10 @@ function pHero(todayRows) {
   if (navNew()) {
     const mineRow = todayRows.find(r => r.mine), f = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size;
     const sub = mineRow ? `${new Date(mineRow.created).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}${Number(mineRow.reacts?.photo) ? ` · ${plural(Number(mineRow.reacts.photo), 'camera reaction')}` : ''}` : (f ? `${plural(f, 'friend')} posted today` : 'No friends have posted yet');
-    return `<div class="pstrip"><span class="pst-ic" aria-hidden="true">${icon('camera')}</span><span class="pst-tx"><b>${mineRow ? 'You posted today' : 'Post today'}</b><small>${sub}</small></span><button type="button" class="btn ghost" data-act="post.compose">${mineRow ? 'Post again' : 'Post'}</button></div>`;
+    const mineRows = todayRows.filter(r => r.mine).slice(0, 3);
+    const thumb = r => (r.photo || r.video) ? `<span class="pthumb pphoto" data-id="${esc(r.id)}"></span>` : `<span class="pthumb">${esc(String(r.body || 'Post').slice(0, 14))}</span>`;
+    if (!mineRow) return `<div class="pstrip"><span class="pst-ic" aria-hidden="true">${icon('camera')}</span><span class="pst-tx"><b>Post today</b><small>${sub}</small></span><button type="button" class="btn ghost" data-act="post.compose">Post</button></div>`;
+    return `<div class="pstrip"><button type="button" class="pst-open" data-act="post.mine" aria-label="Open your posts"><span class="pthumbs">${mineRows.map(thumb).join('')}</span><span class="pst-tx"><b>You posted today</b><small>${sub}</small></span></button><button type="button" class="btn ghost" data-act="post.compose">Post again</button></div>`;
   }
   const friends = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size, mine = todayRows.filter(r => r.mine).length;
   const sub = friends ? `${plural(friends, 'friend')} posted today` : 'No friends have posted yet';
@@ -234,14 +237,14 @@ function viewPost() {
   if (!pUi.loading && (pUi.rows === null || pUi.day !== today || Date.now() - pUi.at > 90000)) setTimeout(postLoad, 0);
   setTimeout(pPaint, 0);
   const rows = pUi.rows || [], isToday = r => (r.day || today) === today;
-  const todayRows = rows.filter(isToday), earlier = rows.filter(r => !isToday(r));
+  const todayAll = rows.filter(isToday), todayRows = todayAll.filter(r => !r.mine), earlier = rows.filter(r => !isToday(r) && !r.mine);
   const days = [...new Set(earlier.map(r => r.day))].sort().reverse();
   const nothingYet = pUi.rows !== null && !rows.length;
-  return `${pageHead('', navNew() ? 'Friends' : 'Post', right)}${pagerDots(0)}${banners()}
-    ${pUi.compose ? postComposer() : pHero(todayRows)}
-    ${navNew() ? `<div class="yhead"><div class="yeye">TODAY</div><button type="button" class="ylink" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>` : `<div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>`}
+  return `${pageHead('', navNew() ? 'Friends' : 'Post', navNew() ? '' : right)}${pagerDots(0)}${banners()}
+    ${pUi.compose ? postComposer() : pHero(todayAll)}
+    ${navNew() ? `<div class="yhead"><div class="yeye">TODAY</div><span><button type="button" class="ylink" data-act="lb.open">Leaderboard</button> <button type="button" class="ylink" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></span></div>` : `<div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>`}
     ${pUi.err ? `<div class="status warn" role="alert">${esc(pUi.err)}</div>` : ''}
-    ${todayRows.length ? `<ul class="pfeed">${todayRows.map(postCard).join('')}</ul>` : `<p class="tiny">${pUi.rows === null ? 'Loading your feed…' : 'Nothing posted today yet. Be the first.'}</p>`}
+    ${todayRows.length ? `<ul class="pfeed">${todayRows.map(postCard).join('')}</ul>` : `<p class="tiny">${pUi.rows === null ? 'Loading your feed…' : 'No friend posts yet today.'}</p>`}
     ${nothingYet || (pUi.rows && rows.every(r => r.mine)) ? `<div class="goalcard"><p class="tiny">Add a friend with their code to see their posts here.</p><button type="button" class="btn ghost" data-act="lb.open">Add a friend</button></div>` : ''}
     ${days.length ? `<details class="explain earlier"><summary><span>Earlier this week</span><b class="mono">${earlier.length}</b></summary>${days.map(d => `<div class="eyebrow pday">${esc(pDayLabel(d, today).toUpperCase())}</div><ul class="pfeed">${earlier.filter(r => r.day === d).map(postCard).join('')}</ul>`).join('')}</details>` : ''}`;
 }
@@ -459,3 +462,12 @@ function foodPickHtml() {
 }
 ACTIONS['post.food'] = el => { pUi.body = $('#pbody')?.value ?? pUi.body; pUi.foodScope = el.dataset.arg; render(); };
 ACTIONS['post.food.meal'] = el => { pUi.body = $('#pbody')?.value ?? pUi.body; pUi.foodMeal = el.dataset.arg; render(); };
+
+/* your own posts live behind the "You posted today" strip */
+ACTIONS['post.mine'] = () => {
+  openSheet({ title: 'Your posts', size: 'tall', render: () => {
+    const today = todayISO(), mine = (pUi.rows || []).filter(r => r.mine), days = [...new Set(mine.map(r => r.day || today))].sort().reverse();
+    return { body: days.length ? days.map(d => `<div class="eyebrow pday">${esc(pDayLabel(d, today).toUpperCase())}</div><ul class="pfeed">${mine.filter(r => (r.day || today) === d).map(postCard).join('')}</ul>`).join('') : '<p class="note">Nothing posted yet.</p>', footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` };
+  } });
+  setTimeout(() => { if (typeof pPaint === 'function') pPaint(); }, 80);
+};
