@@ -1,0 +1,41 @@
+/* VERTFORM 2.52 — premium pass: flat near-black, borderless surfaces, one red accent, gold only for rewards */
+body.nav2{--pm-bg:#0b0b0c;--pm-s1:#151517;--pm-s2:#1c1c1f;--pm-line:rgba(255,255,255,.06);--pm-acc:#e5383b;--pm-gold:#f2b84b;--pm-mut:#8e8e93}
+html:not([data-theme="light"]) body.nav2,html:not([data-theme="light"]) body.nav2 .shell{background:var(--pm-bg)!important;background-image:none!important;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter Tight",system-ui,sans-serif}
+html:not([data-theme="light"]) body.nav2::before,html:not([data-theme="light"]) body.nav2::after{display:none!important}
+/* surfaces: no borders, no glow */
+html:not([data-theme="light"]) body.nav2 :is(.ycard,.ytile,.yrows,.pstrip,.setgroup,.explain,.goalcard,.banner,.status,.readout,.plan-item,.session-row,.mlist li,.history-entry,.log-row,.pchart,.mealgroup,.ctrend,.pcompose){background:var(--pm-s1)!important;border:0!important;box-shadow:none!important;border-radius:22px}
+html:not([data-theme="light"]) body.nav2 .ymore button{background:var(--pm-s1);border:0}
+html:not([data-theme="light"]) body.nav2 .yrow+.yrow{border-top:1px solid var(--pm-line)}
+html:not([data-theme="light"]) body.nav2 .yrow.me{background:var(--pm-s2)}
+html:not([data-theme="light"]) body.nav2 .yrow b.acc{color:var(--pm-gold)}
+html:not([data-theme="light"]) body.nav2 .banner.warn{background:linear-gradient(0deg,rgba(242,184,75,.08),rgba(242,184,75,.08)),var(--pm-s1)!important}
+/* feed cards: photo first, borderless */
+html:not([data-theme="light"]) body.nav2 .pcard.bm{border:0!important;background:var(--pm-s1)!important;border-radius:28px!important;box-shadow:none!important}
+html:not([data-theme="light"]) body.nav2 .pcard.bm .pphoto,html:not([data-theme="light"]) body.nav2 .pcard.bm .pvid,html:not([data-theme="light"]) body.nav2 .pcard .bmedia{border-radius:22px}
+html:not([data-theme="light"]) body.nav2 .pcard .bcap{background:linear-gradient(0deg,rgba(0,0,0,.7),rgba(0,0,0,0));border-radius:0 0 22px 22px;left:0;right:0;bottom:0;padding:34px 14px 12px;font-size:19px;letter-spacing:-.01em}
+html:not([data-theme="light"]) body.nav2 .pcard.bm > :is(.wkcard,.pattach,.jpost){background:var(--pm-s2)!important;border:0!important;border-radius:18px}
+html:not([data-theme="light"]) body.nav2 .pcard .pbody.bbig{font-size:20px;font-weight:600;letter-spacing:-.01em}
+html:not([data-theme="light"]) body.nav2 .rcam,html:not([data-theme="light"]) body.nav2 .pcm{background:var(--pm-s2);border:0}
+/* segmented controls: iOS style */
+html:not([data-theme="light"]) body.nav2 .seg{background:var(--pm-s1)!important;border:0!important;border-radius:22px;padding:3px;box-shadow:none}
+html:not([data-theme="light"]) body.nav2 .seg button{background:transparent!important;border:0!important;box-shadow:none!important;color:var(--pm-mut)!important;border-radius:19px}
+html:not([data-theme="light"]) body.nav2 .seg button.on,html:not([data-theme="light"]) body.nav2 .seg button[aria-selected="true"]{background:#2c2c30!important;color:#fff!important}
+/* one accent: red */
+html:not([data-theme="light"]) body.nav2 .btn.primary{background:var(--pm-acc)!important;border-color:transparent!important;color:#fff!important;box-shadow:none!important;border-radius:26px}
+html:not([data-theme="light"]) body.nav2 .btn.ghost{background:var(--pm-s2)!important;border:0!important;box-shadow:none!important}
+html:not([data-theme="light"]) body.nav2 :is(.ylink,.linkbtn){color:var(--pm-acc)}
+html:not([data-theme="light"]) body.nav2 .pager span.on{background:var(--pm-acc)}
+html:not([data-theme="light"]) body.nav2 #tab-buttons button.active:not(.postfab){color:#fff}
+html:not([data-theme="light"]) body.nav2 #tab-buttons button.active .ico{color:#fff}
+html:not([data-theme="light"]) body.nav2 #tab-buttons .postfab{background:var(--pm-acc)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 22px rgba(229,56,59,.45)}
+html:not([data-theme="light"]) body.nav2 .chip.on,html:not([data-theme="light"]) body.nav2 .chip[aria-pressed=true]{background:#2c2c30!important;border-color:transparent!important;color:#fff!important;box-shadow:none!important}
+html:not([data-theme="light"]) body.nav2 .chip{background:var(--pm-s1);border-color:transparent}
+html:not([data-theme="light"]) body.nav2 .liftsort .chip{background:var(--pm-s1)}
+html:not([data-theme="light"]) body.nav2 .lspark .ln{stroke:#f5f5f4}
+html:not([data-theme="light"]) body.nav2 .pc-line{stroke:#f5f5f4}
+html:not([data-theme="light"]) body.nav2 .pc-dots circle{fill:#f5f5f4;stroke:#0b0b0c}
+html:not([data-theme="light"]) body.nav2 .yme .ycrest{box-shadow:0 0 0 2px var(--pm-bg),0 0 0 3px var(--pm-gold)}
+html:not([data-theme="light"]) body.nav2 .ytile b{font-weight:700;letter-spacing:-.02em;font-size:26px}
+html:not([data-theme="light"]) body.nav2 .yeye{letter-spacing:.04em;font-weight:600;color:var(--pm-mut);font-size:13px;text-transform:none}
+/* sheets */
+html:not([data-theme="light"]) body.nav2 .sheet,html:not([data-theme="light"]) .sheet{background:#121214!important;border:0!important}

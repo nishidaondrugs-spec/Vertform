@@ -374,6 +374,11 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.52.0 — Notifications + premium look
+- Push notifications (Settings → Notifications): a friend posts, you're @mentioned in a post or comment, someone comments on your post, and a "session today" reminder at a time you choose. Needs the server setup in vertform-push.sql + the vf-push edge function; on iPhone the app must be installed to the home screen.
+- Composer tag chips insert @nickname.
+- css/premium2.css: flat near-black, borderless surfaces, single red accent, gold only for streak/PB.
+
 ## 2.51.1 — Glass tab bar
 - The bottom tab bar is now a floating frosted-glass pill (blur, soft highlight edge), light and dark.
 

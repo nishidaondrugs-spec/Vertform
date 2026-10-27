@@ -104,6 +104,7 @@ function postComposer() {
   const prev = pUi.attach ? pAttachHtml(pUi.attach, pMeta(pUi.attach)) : '';
   return `<section class="pcompose"><div class="between"><div class="eyebrow">NEW POST</div><button type="button" class="linkbtn" data-act="post.compose.close">Cancel</button></div><label class="vh" for="pbody">Write a post</label>
     <div class="ptext"><textarea id="pbody" data-in="pbody" rows="3" maxlength="${P_MAX}" placeholder="What did you train today?">${esc(pUi.body)}</textarea><span class="tiny mono pcount" id="pcount">${P_MAX - pUi.body.length}</span></div>
+    ${typeof tagChips === 'function' ? tagChips() : ''}
     <div class="eyebrow">ATTACH A SESSION</div>
     <div class="ptiles" role="radiogroup" aria-label="Attach a session">${tiles}</div>
     ${pUi.attach === 'food' ? foodPickHtml() : ''}

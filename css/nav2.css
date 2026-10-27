@@ -183,3 +183,4 @@ html[data-theme="light"] body.nav2:not(.on-home) .tabbar{background:linear-gradi
 body.nav2 #tab-buttons button.active:not(.postfab){background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);border-radius:26px}
 body.nav2 #tab-buttons .postfab{border:1px solid rgba(255,255,255,.35)!important;top:-26px;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 22px rgba(37,99,235,.5)}
 body.nav2 .shell{padding-bottom:calc(118px + var(--safe-b))}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}.tagrow .chip{min-height:36px;padding:0 12px}
