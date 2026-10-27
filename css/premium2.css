@@ -629,3 +629,26 @@ body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:1}
 #view[data-view="fuel"] .recipe .actions .btn.primary{background:#e5383b!important}
 #view[data-view="fuel"] .recipe .actions .btn svg{width:15px;height:15px;margin-right:6px}
 #view[data-view="fuel"] .recipe .actions .iconbtn{width:38px;height:38px;background:#1c1c1e!important;border:0!important;border-radius:50%;color:#fff}
+
+/* ===== Recipe editor ===== */
+.rdh{margin:26px 0 6px!important}
+.ing-list{list-style:none;margin:0 0 6px;padding:0}
+.ing-list li{display:flex;align-items:center;gap:10px;min-height:60px;padding:8px 0;border-top:1px solid var(--hair,rgba(255,255,255,.07))!important;background:none!important;border-radius:0!important}
+.ing-list li strong{display:block;font-size:16px;font-weight:600}.ing-list li small{display:block;font-size:13px;color:#8e8e93;margin-top:2px}
+.ing-list li.empty-li{min-height:48px;color:#6c6c70;font-size:15px;justify-content:flex-start}
+.ing-list .iconbtn{width:36px;height:36px;background:#1c1c1e!important;border:0!important;border-radius:50%;flex:none}
+.sheet .btn.ghost.full[data-act="rd.adding"]{height:50px;margin-top:4px;background:#1c1c1e!important;border:0!important;color:#fff!important;border-radius:25px}
+.sheet .sumbox{margin:24px 0 8px;padding:16px 0 0;border:0!important;border-top:1px solid var(--hair,rgba(255,255,255,.07))!important;background:none!important;border-radius:0}
+.rsum{display:flex;align-items:flex-end;gap:22px;margin-top:8px}
+.rsum b{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1}.rsum b small{font-size:14px;font-weight:500;color:#8e8e93;margin-left:2px}
+.rsum span{display:flex;flex-direction:column;font-size:12px;color:#8e8e93;line-height:1.3}.rsum span i{font-style:normal;font-size:17px;font-weight:700;color:#fff}
+.rwhole{margin:10px 0 0;font-size:13px;color:#8e8e93}
+.pickrow{display:flex;gap:10px;align-items:center}.pickrow input{flex:1;min-width:0}.pickrow .fscan{flex:none}
+.sheet .sumbox{display:block!important}
+.sheet .sumbox>div,.sheet .sumbox>.eyebrow{border:0!important;background:none!important;padding:0!important;border-radius:0!important;text-align:left;box-shadow:none!important}
+.sheet .sumbox .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8e8e93}
+.sheet .sumbox .rsum span{font-size:12px}.sheet .sumbox .rsum span i{font-size:17px}
+.sheet .sumbox .rsum b{display:block;font:800 34px/1 -apple-system,Inter,sans-serif;color:#fff}
+.ing-list li{border-left:0!important;border-right:0!important;border-bottom:0!important;box-shadow:none!important}
+.sheet .field textarea{min-height:84px}
+.rwhole{margin-bottom:18px!important}

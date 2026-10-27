@@ -97,7 +97,7 @@ INPUTS.manualcode = el => {
   const ok = gtinValid(v); h.textContent = ok ? 'Check digit is correct.' : 'Check digit does not match. A digit may be mistyped.'; h.className = 'hint ' + (ok ? 'okText' : 'warnText');
 };
 INPUTS.scanzoom = el => { try { scan.track?.applyConstraints({ advanced: [{ zoom: Number(el.value) }] }); } catch (_) { /* ignore */ } };
-ACTIONS['food.scan'] = () => openScanner();
+ACTIONS['food.scan'] = () => { scanForIngredient = false; openScanner(); };
 ACTIONS['scan.search'] = () => { openFoodSearch(searchState.meal); };
 ACTIONS['scan.file'] = () => $('#scanphoto')?.click();
 ACTIONS['scan.lookup'] = () => {
@@ -166,10 +166,17 @@ document.addEventListener('change', async e => {
 
 /* ---------- lookup, with saved-by-you products ---------- */
 let lastLookup = null;
+/* scanning from "Add ingredient" hands the product to the recipe instead of the diary */
+let scanForIngredient = false;
+function deliverProduct(prod, cached) {
+  if (scanForIngredient && typeof rd !== 'undefined' && rd && typeof portionForIngredient === 'function') { scanForIngredient = false; closeSheet(); portionForIngredient(foodLikeFromProduct(prod)); return; }
+  openProductSheet(prod, cached, true);
+}
+ACTIONS['pick.scan'] = () => { openScanner(); scanForIngredient = true; };
 async function lookupBarcode(raw) {
   const code = normaliseBarcode(raw); if (!code) { toast('Enter a valid 8–14 digit barcode'); return; }
   await stopScanner(); const variants = barcodeVariants(code);
-  for (const v of variants) { const cached = data.nutrition.productCache?.[v]; if (cached) { openProductSheet(cached, true, true); return; } }
+  for (const v of variants) { const cached = data.nutrition.productCache?.[v]; if (cached) { deliverProduct(cached, true); return; } }
   lastLookup = { code, name: '', brand: '' };
   replaceSheet({ title: 'Looking up food', eyebrow: 'OPEN FOOD FACTS', render: () => ({ body: `<div class="spinner" role="status" aria-label="Looking up"></div><p class="note center">Checking Open Food Facts for <span class="mono">${esc(code)}</span>… (needs internet)</p>` }) });
   let failure = 'Product not found';
@@ -182,7 +189,7 @@ async function lookupBarcode(raw) {
       const j = await r.json(); if (!j.product) continue;
       const prod = productFromOff(v, j.product); lastLookup = { code, name: prod.name === 'Scanned food' ? '' : prod.name, brand: prod.brand };
       if (!productHasMacros(prod)) { failure = 'Found in the database, but it has no nutrition values'; continue; }
-      data.nutrition.productCache[v] = prod; data.nutrition.productCache[code] = prod; save(); openProductSheet(prod, false, true); return;
+      data.nutrition.productCache[v] = prod; data.nutrition.productCache[code] = prod; save(); deliverProduct(prod, false); return;
     }
   } catch (err) { failure = (!navigator.onLine || /fetch|network|load failed/i.test(err?.message || '')) ? 'offline' : (err.message || 'Unable to look up this barcode'); }
   const offline = failure === 'offline' || !navigator.onLine;

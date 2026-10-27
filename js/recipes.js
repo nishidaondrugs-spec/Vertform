@@ -103,18 +103,17 @@ ACTIONS['adj.save'] = () => {
 let rd = null; // working copy
 function openRecipeEditor(id, preset) {
   const r = id ? recipeById(id) : null;
-  rd = r ? deepCopy(r) : (preset || { id: null, type: 'recipe', name: '', servings: 4, notes: '', ingredients: [] });
+  rd = r ? deepCopy(r) : (preset || { id: null, type: 'recipe', name: '', servings: 4, notes: '', ingredients: [] }); if (r && r.type === 'meal') rd.servings = 1;
   if (sheetOpen()) closeAllSheets();
   openSheet({ title: r ? 'Edit ' + (r.type === 'meal' ? 'saved meal' : 'recipe') : (rd.type === 'meal' ? 'New saved meal' : 'New recipe'), eyebrow: 'MEALS & RECIPES', size: 'tall', autofocus: rd.name ? null : '#rdname', render: renderRecipeEditor });
 }
 function renderRecipeEditor() {
-  const t = recipeTotals(rd), s = Number(rd.servings) || 1, per = { kcal: t.kcal / s, protein: t.protein / s, carbs: t.carbs / s, fat: t.fat / s }, isMeal = rd.type === 'meal';
+  const t = recipeTotals(rd), s = Number(rd.servings) || 1, per = { kcal: t.kcal / s, protein: t.protein / s, carbs: t.carbs / s, fat: t.fat / s }, isMeal = Number(rd.servings) === 1;
   return {
-    body: `<div class="seg" role="radiogroup" aria-label="Type"><button type="button" role="radio" aria-checked="${!isMeal}" class="${!isMeal ? 'on' : ''}" data-act="rd.type" data-arg="recipe">Recipe<small>makes several servings</small></button><button type="button" role="radio" aria-checked="${isMeal}" class="${isMeal ? 'on' : ''}" data-act="rd.type" data-arg="meal">Saved meal<small>logged as one portion</small></button></div>
-      <div class="field"><label for="rdname">Name</label><input id="rdname" data-in="rd" maxlength="60" placeholder="${isMeal ? 'e.g. Post-training rice bowl' : 'e.g. Turkey chilli'}" value="${esc(rd.name)}"></div>
-      ${isMeal ? '' : `<div class="field"><label for="rdservings">Recipe yield — makes how many servings?</label><input id="rdservings" data-in="rd" type="number" inputmode="decimal" min="0.25" max="200" step="any" value="${esc(rd.servings)}"><div class="hint">Calories and macros are divided by this number to give values per serving.</div></div>`}
-      <div class="between mt"><div class="eyebrow">INGREDIENTS · ${rd.ingredients.length}</div></div>
-      <ul class="ing-list">${rd.ingredients.length ? rd.ingredients.map((i, ix) => { const n = ingNutr(i); return `<li><div class="grow min0"><strong>${esc(i.name)}</strong><small>${esc(ingLabel(i))} · ${Math.round(n.kcal)} kcal</small></div><button type="button" class="iconbtn" data-act="rd.editing" data-id="${ix}" aria-label="Edit quantity of ${esc(i.name)}">${icon('edit')}</button><button type="button" class="iconbtn" data-act="rd.deling" data-id="${ix}" aria-label="Remove ${esc(i.name)}">${icon('close')}</button></li>`; }).join('') : `<li class="empty-li">No ingredients yet. Add foods with quantities such as 2 tbsp, 1 whole or 250 g.</li>`}</ul>
+    body: `<div class="field"><label for="rdname">Name</label><input id="rdname" data-in="rd" maxlength="60" placeholder="e.g. Turkey chilli" value="${esc(rd.name)}"></div>
+      <div class="field"><label for="rdservings">Servings it makes</label><input id="rdservings" data-in="rd" type="number" inputmode="decimal" min="0.25" max="200" step="any" value="${esc(isMeal ? 1 : rd.servings)}"><div class="hint">Use 1 for a single meal. Calories and macros are shown per serving.</div></div>
+      <div class="eyebrow rdh">Ingredients${rd.ingredients.length ? ` · ${rd.ingredients.length}` : ''}</div>
+      <ul class="ing-list">${rd.ingredients.length ? rd.ingredients.map((i, ix) => { const n = ingNutr(i); return `<li><div class="grow min0"><strong>${esc(i.name)}</strong><small>${esc(ingLabel(i))} · ${Math.round(n.kcal)} kcal</small></div><button type="button" class="iconbtn" data-act="rd.editing" data-id="${ix}" aria-label="Edit quantity of ${esc(i.name)}">${icon('edit')}</button><button type="button" class="iconbtn" data-act="rd.deling" data-id="${ix}" aria-label="Remove ${esc(i.name)}">${icon('close')}</button></li>`; }).join('') : `<li class="empty-li">Nothing added yet</li>`}</ul>
       <button type="button" class="btn ghost full" data-act="rd.adding">${icon('plus')}Add ingredient</button>
       <div class="sumbox" id="rdsum" aria-live="polite">${recipeSummary(t, per, s, isMeal)}</div>
       <div class="field"><label for="rdnotes">Notes (optional)</label><textarea id="rdnotes" data-in="rd" rows="2" maxlength="400" placeholder="Method, tips…">${esc(rd.notes || '')}</textarea></div>`,
@@ -122,17 +121,18 @@ function renderRecipeEditor() {
   };
 }
 function recipeSummary(t, per, s, isMeal) {
-  return `<div class="eyebrow">${isMeal ? 'WHOLE MEAL' : 'PER SERVING'}</div>${macroLine(isMeal ? t : per)}${isMeal ? '' : `<div class="tiny mt-s">Whole recipe: ${Math.round(t.kcal)} kcal · ${fmt(t.protein, 0)}g P · ${fmt(t.carbs, 0)}g C · ${fmt(t.fat, 0)}g F · ${fmt(s, 2)} servings</div>`}`;
+  const v = isMeal ? t : per;
+  return `<div class="eyebrow">${isMeal ? 'Whole meal' : 'Per serving'}</div><div class="rsum"><b>${Math.round(v.kcal)}<small> kcal</small></b><span><i>${fmt(v.protein, 0)}g</i>protein</span><span><i>${fmt(v.carbs, 0)}g</i>carbs</span><span><i>${fmt(v.fat, 0)}g</i>fat</span></div>${isMeal ? '' : `<p class="rwhole">Whole recipe ${Math.round(t.kcal)} kcal · ${fmt(s, 2)} servings</p>`}`;
 }
 const macroLine = v => `<div class="macroline"><b>${Math.round(v.kcal)}<small> kcal</small></b><span>${fmt(v.protein, 1)}g <small>protein</small></span><span>${fmt(v.carbs, 1)}g <small>carbs</small></span><span>${fmt(v.fat, 1)}g <small>fat</small></span></div>`;
 INPUTS.rd = el => {
-  if (el.id === 'rdname') rd.name = el.value; else if (el.id === 'rdnotes') rd.notes = el.value; else if (el.id === 'rdservings') rd.servings = el.value === '' ? '' : Number(el.value);
+  if (el.id === 'rdname') rd.name = el.value; else if (el.id === 'rdnotes') rd.notes = el.value; else if (el.id === 'rdservings') { rd.servings = el.value === '' ? '' : Number(el.value); rd.type = Number(rd.servings) === 1 ? 'meal' : 'recipe'; }
   const t = recipeTotals(rd), s = Number(rd.servings) > 0 ? Number(rd.servings) : 1; const box = $('#rdsum'); if (box) box.innerHTML = recipeSummary(t, { kcal: t.kcal / s, protein: t.protein / s, carbs: t.carbs / s, fat: t.fat / s }, s, rd.type === 'meal');
 };
 ACTIONS['rd.type'] = el => { rd.type = el.dataset.arg; if (rd.type === 'meal') rd.servings = 1; else if (!(rd.servings > 1)) rd.servings = 4; refreshSheet(); };
 ACTIONS['rd.deling'] = el => { rd.ingredients.splice(Number(el.dataset.id), 1); refreshSheet(); };
 ACTIONS['rd.save'] = () => {
-  const name = (rd.name || '').trim(), servings = rd.type === 'meal' ? 1 : Number(rd.servings);
+  const name = (rd.name || '').trim(), servings = Number(rd.servings); rd.type = servings === 1 ? 'meal' : 'recipe';
   if (!name) { toast('Give it a name'); return; } if (!rd.ingredients.length) { toast('Add at least one ingredient'); return; }
   if (!(servings >= 0.25 && servings <= 200)) { toast('Servings must be between 0.25 and 200'); return; }
   if (recipes().some(r => r.id !== rd.id && r.name.toLowerCase() === name.toLowerCase())) { toast('You already have one with that name. Choose another name.'); return; }
@@ -166,8 +166,8 @@ function pickerResults(q) {
   return out.length ? out.join('') : emptyBox('Nothing found. Try another name or add the ingredient manually.');
 }
 function renderPicker() {
-  return { body: `<div class="field first"><label for="iq">Search ingredients</label><input id="iq" data-in="pickq" type="search" autocomplete="off" autocapitalize="none" placeholder="e.g. chicken breast, oats, olive oil" value="${esc(pick.q)}"></div>
-    <div id="iresults" class="results mt">${pickerResults(pick.q)}</div><p class="note">Everyday foods support household measures (tablespoon, teaspoon, whole item…). Packaged foods you have scanned before appear here too.</p>`,
+  return { body: `<div class="field first"><label for="iq">Search ingredients</label><div class="pickrow"><input id="iq" data-in="pickq" type="search" autocomplete="off" autocapitalize="none" placeholder="e.g. chicken breast, oats, olive oil" value="${esc(pick.q)}"><button type="button" class="fscan" data-act="pick.scan" aria-label="Scan a barcode">${icon('scan')}</button></div></div>
+    <div id="iresults" class="results mt">${pickerResults(pick.q)}</div><p class="note">Everyday foods support household measures (tablespoon, teaspoon, whole item…). Tap the scan button for packaged foods.</p>`,
     footer: `<button type="button" class="btn ghost" data-act="sheet.close">Back</button><button type="button" class="btn primary grow" data-act="pick.manual">Add manually</button>` };
 }
 INPUTS.pickq = el => { pick.q = el.value; const b = $('#iresults'); if (b) b.innerHTML = pickerResults(el.value); };
