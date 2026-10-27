@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.71.1 — Version line and Update the app
+Settings ends with the version number and an Update the app button that clears the app's cached files and reloads (records are untouched).
+
 ## 2.71.0 — Edit any session
 Every session, including the built-in A–D, has a big Edit session button: rename it, rename/reorder/remove/add exercises, change sets and reps, or delete it. Editing a built-in session saves your version in its place (the original can be restored from Restore built-in sessions).
 

@@ -103,6 +103,13 @@ function banners() {
 ACTIONS['notice.seen'] = () => { data.meta.upgradeNoticeSeen = true; save(); render(); };
 ACTIONS['backup.snooze'] = () => { data.settings.backup.snoozedUntil = new Date(Date.now() + 86400000).toISOString(); save(); render(); };
 ACTIONS['app.reload'] = () => location.reload();
+/* force the newest files: drop the app's cached copies and its service worker, then reload (records are not touched) */
+ACTIONS['app.refresh'] = async () => {
+  toast('Updating…');
+  try { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); } catch (_) { /* ignore */ }
+  try { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } catch (_) { /* ignore */ }
+  setTimeout(() => location.reload(), 300);
+};
 
 /* =============== TODAY =============== */
 function weekStrip(mon, selectable = true) {
@@ -324,6 +331,7 @@ function viewSettings() {
     <details class="explain"><summary>Food scanner database &amp; privacy</summary><p class="note">When you scan packaged food, VERTFORM reads the barcode on your device and sends only the barcode number to Open Food Facts for a UK-localised lookup. Camera frames are not uploaded. Successful lookups are cached here so repeat scans are quick. Open Food Facts is community-maintained, so check unusual values against the packet. Data is reused under the ODbL; images follow contributor licensing.</p></details>
       <footer class="about mono"><div>VERTFORM v${APP_VERSION} · ${esc(APP_RELEASE)}</div><div>Records layout ${SCHEMA_VERSION} · storage key ${KEY}</div><div>No accounts, analytics or paid food database.</div></footer>`)}
     ${setGroup('Delete everything', 'Danger zone', `<p class="tiny">Removes all VERTFORM records, copies and settings from this device. Export a backup first.</p><button type="button" class="btn critical" data-act="data.reset">${icon('trash')}Delete all local data</button>`)}`;
+    <div class="verline"><span>VERTFORM v${APP_VERSION}</span><button type="button" class="linkbtn" data-act="app.refresh">Update the app</button></div>
 }
 let persistState = null;
 function persistNote() { return persistState === true ? 'Your browser has agreed to keep this site\'s storage unless you clear it yourself.' : persistState === false ? 'Your browser has not promised to keep this storage, so it can be cleared if the device runs low on space. Keep regular backups.' : 'Storage persistence is not reported by this browser.'; }
