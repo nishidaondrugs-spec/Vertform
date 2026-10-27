@@ -105,7 +105,7 @@ function gymToday() {
   const today = todayISO(), mon = monday(today), d = data.draft;
   const draft = d && !(dayPlan(today).items.some(i => i.kind === 'gym' && i.session === d.session && d.date === today));
   return `${draft ? `<div class="banner">${icon('play')}<div class="grow"><b>${esc(sName(d.session))} is still open</b><p>From ${esc(pretty(d.date))} · ${sum_sets(d)} sets ticked.</p><div class="actions"><button type="button" class="btn sm primary" data-act="wk.resume">Resume</button><button type="button" class="btn sm ghost" data-act="wk.discard">Discard</button></div></div></div>` : ''}
-    <div class="gbanner" aria-hidden="true"><b>TODAY'S SESSION</b></div>
+    <div class="gbanner"><b>TODAY'S SESSION</b><span class="gbtns"><button type="button" class="gbtn" data-act="bn.pick">Change banner</button>${data.settings.banner ? '<button type="button" class="gbtn" data-act="bn.clear">Reset</button>' : ''}</span></div>
     ${todayItems()}
     ${gymFocusBanner()}
     <details class="explain feelbox"><summary><span>How do you feel today?</span></summary>${readinessBlock()}</details>

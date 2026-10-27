@@ -244,3 +244,10 @@ body.nav2 .gymhero.compact{border-radius:0}
 .gymhero:not(.compact) .gh-pill{position:absolute;left:20px;top:20px;align-self:flex-start}
 .gymhero:not(.compact) .gh-t{margin-top:0}
 .gymhero:not(.compact)::after{height:54%!important}.gymhero:not(.compact){min-height:330px}
+
+.gbtns{position:absolute;right:12px;top:10px;z-index:3;display:flex;gap:8px}
+.gbtn{height:32px;padding:0 12px;border:0;border-radius:16px;background:rgba(0,0,0,.45);color:#fff;font:inherit;font-size:12px;font-weight:600;backdrop-filter:blur(8px)}
+.has-banner .gymhero::after,.has-banner .gbanner::after{background-size:cover!important;background-position:center!important;mask-image:none!important;-webkit-mask-image:none!important}
+.has-banner .gymhero:not(.compact)::after{height:100%!important;opacity:.55}
+.has-banner .gbanner::after{opacity:1}
+body.nav2 .gbtns .gbtn{background:rgba(0,0,0,.55)!important;color:#fff!important;white-space:nowrap;border:0!important}

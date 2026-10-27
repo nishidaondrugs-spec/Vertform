@@ -52,3 +52,30 @@ ACTIONS['ph.clear'] = async () => {
   const c = lbCfg(); if (c) lbCall('vf_avatar_clear', { p_id: c.id, p_secret: c.secret }).catch(() => {});
 };
 setTimeout(() => { if (myPhoto() && lbCfg() && data.settings.photoUp !== myPhoto().length) phUpload(); }, 4000);
+
+/* your own banner picture for gym cards: chosen from your phone, kept on this phone only (never uploaded, never part of the app) */
+function bnApply() {
+  const b = data.settings.banner, r = document.documentElement;
+  if (b) { r.style.setProperty('--vbart', `url("${b}")`); r.classList.add('has-banner'); } else { r.style.removeProperty('--vbart'); r.classList.remove('has-banner'); }
+}
+async function bnTake(f) {
+  if (!f) return;
+  try {
+    const url = URL.createObjectURL(f), im = new Image();
+    await new Promise((ok, no) => { im.onload = ok; im.onerror = no; im.src = url; });
+    const W = 900, H = 520, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const k = Math.max(W / im.naturalWidth, H / im.naturalHeight), sw = W / k, sh = H / k;
+    cv.getContext('2d').drawImage(im, (im.naturalWidth - sw) / 2, (im.naturalHeight - sh) / 2, sw, sh, 0, 0, W, H);
+    URL.revokeObjectURL(url);
+    let q = 0.8, out = cv.toDataURL('image/jpeg', q);
+    while (out.length > 300000 && q > 0.4) { q -= 0.1; out = cv.toDataURL('image/jpeg', q); }
+    data.settings.banner = out; save(); bnApply(); render(); toast('Banner set');
+  } catch (_) { toast('Could not read that picture'); }
+}
+ACTIONS['bn.pick'] = () => {
+  let i = $('#bnfile');
+  if (!i) { i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.id = 'bnfile'; i.hidden = true; i.setAttribute('aria-label', 'Banner picture'); document.body.appendChild(i); }
+  i.value = ''; i.onchange = () => bnTake(i.files && i.files[0]); i.click();
+};
+ACTIONS['bn.clear'] = () => { data.settings.banner = ''; save(); bnApply(); render(); toast('Banner reset'); };
+bnApply();
