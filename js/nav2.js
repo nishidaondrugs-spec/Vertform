@@ -90,6 +90,7 @@ function viewYou() {
       <button type="button" class="btn ghost" data-act="lk.open">Edit look</button></div></div>
     ${youTiles()}
     ${youBoard()}
+    ${partnersCard()}
     <div class="ysec"><div class="yeye">MORE</div><div class="ymore">${YOU_MORE.map(([i, n, a]) => `<button type="button" data-act="${a}">${icon(i)}<span>${n}</span></button>`).join('')}</div></div>
   </div>`;
 }

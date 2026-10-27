@@ -2,7 +2,7 @@
 /* VERTFORM 2.0 — shared helpers (classic script; globals are shared across files) */
 
 const APP_NAME = 'VERTFORM';
-const APP_VERSION = '2.49.0';
+const APP_VERSION = '2.50.0';
 const APP_RELEASE = 'Courtside Notebook';
 const SCHEMA_VERSION = 2;     // record layout inside the stored data
 const BACKUP_FORMAT = 2;      // layout of exported backup files
@@ -96,3 +96,9 @@ function icon(id, cls = '') {
 
 /* Tiny debounce helper for storage writes */
 function debounce(fn, ms) { let t; const f = (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; f.flush = (...a) => { clearTimeout(t); fn(...a); }; return f; }
+
+function cleanWith(a) {
+  const seen = new Set(), out = [];
+  for (const x of Array.isArray(a) ? a : []) { const n = String(x || '').trim().slice(0, 20); const k = n.toLowerCase(); if (n && !seen.has(k)) { seen.add(k); out.push(n); } if (out.length >= 8) break; }
+  return out;
+}

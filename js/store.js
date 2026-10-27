@@ -110,7 +110,7 @@ function normaliseData(o) {
   if (isObj(o.matchInfo)) for (const [d, v] of Object.entries(o.matchInfo)) if (isISO(d) && isObj(v)) out.matchInfo[d] = { opponent: String(v.opponent || '').slice(0, 60), venue: String(v.venue || '').slice(0, 60), time: String(v.time || '').slice(0, 10), notes: String(v.notes || '').slice(0, 300) };
 
   out.logs = o.logs.filter(l => (isObj(l) && isISO(l.date) && typeof l.session === 'string' && Array.isArray(l.exercises)) || skip()).map(l => ({
-    ...l, id: freshId(l.id), completed: l.completed !== false,
+    ...l, id: freshId(l.id), completed: l.completed !== false, with: cleanWith(l.with),
     exercises: l.exercises.filter(e => isObj(e) && Array.isArray(e.sets)).map(e => ({ ...e, sets: e.sets.filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done })) }))
   }));
   out.metrics = o.metrics.filter(m => (isObj(m) && isISO(m.date) && METRIC_KEYS.has(m.key) && Number.isFinite(Number(m.value)) && (Number(m.value) > 0 || (m.key === 'pullup' && m.value !== '' && Number(m.value) === 0))) || skip()).map(m => {
@@ -121,7 +121,7 @@ function normaliseData(o) {
   out.readiness = {}; for (const [d, v] of Object.entries(o.readiness)) if (isISO(d) && isObj(v)) out.readiness[d] = v;
 
   if (o.draft && isObj(o.draft) && isISO(o.draft.date) && templates[o.draft.session] && Array.isArray(o.draft.exercises)) {
-    out.draft = { ...o.draft, exercises: o.draft.exercises.filter(isObj).map(e => ({ ...e, sets: (Array.isArray(e.sets) ? e.sets : []).filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done })) })) };
+    out.draft = { ...o.draft, with: cleanWith(o.draft.with), exercises: o.draft.exercises.filter(isObj).map(e => ({ ...e, sets: (Array.isArray(e.sets) ? e.sets : []).filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done })) })) };
     ids.add(out.draft.id);
   } else if (o.draft) warnings.push('An unfinished workout draft in this data was damaged and could not be kept.');
 

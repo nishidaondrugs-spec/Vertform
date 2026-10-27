@@ -356,7 +356,7 @@ function openExerciseHistory(e) {
 ACTIONS['wk.menu'] = () => openSheet({ title: 'Workout options', eyebrow: `${sName(data.draft.session).toUpperCase()}`, render: () => {
   const w = data.draft; return { body: `<div class="field first"><label for="wkdate">Session date</label><input id="wkdate" type="date" data-in="wkdate" value="${esc(w.date)}"><div class="hint">Last-time comparisons use sessions on or before this date.</div></div>
     <div class="list-actions"><button type="button" class="btn ghost full" data-act="timer.open">${icon('timer')}Rest timer settings</button><button type="button" class="btn ghost full" data-act="wk.list">${icon('list')}Jump to an exercise</button><button type="button" class="btn ghost full" data-act="wk.addex">${icon('plus')}Add an exercise</button><button type="button" class="btn ghost full" data-act="wk.rmex" data-arg="${wkIndex}">${icon('trash')}Remove this exercise</button><button type="button" class="btn critical full" data-act="wk.discard">${icon('trash')}Discard this draft</button></div>
-    <p class="note">Your draft saves automatically and stays here if you leave, switch apps or close VERTFORM.</p>`, footer: `<button type="button" class="btn primary grow" data-act="wk.menuok">Done</button>` };
+    ${withRow(w)}<p class="note">Your draft saves automatically and stays here if you leave, switch apps or close VERTFORM.</p>`, footer: `<button type="button" class="btn primary grow" data-act="wk.menuok">Done</button>` };
 } });
 /* adding and removing exercises mid-workout lives in library.js */
 INPUTS.wkdate = el => { if (isISO(el.value) && data.draft) { data.draft.date = el.value; save(); } };
@@ -375,7 +375,7 @@ ACTIONS['wk.finish'] = () => {
     return { body: `<div class="finish-sum"><div class="big mono">${done}<small> / ${total}</small></div><div>sets ticked${done < total ? `<br><span class="tiny">${total - done} un-ticked ${total - done === 1 ? 'set stays' : 'sets stay'} in the record as not completed, and ${total - done === 1 ? 'is' : 'are'} not counted as achievements.</span>` : ''}</div></div>
       <div class="field"><label>Overall effort (RPE 1–10)</label><div class="rpe-grid" role="radiogroup" aria-label="Session RPE">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<button type="button" role="radio" aria-checked="${Number(finishRPE) === n}" class="rpe ${Number(finishRPE) === n ? 'on' : ''}" data-act="wk.rpe" data-arg="${n}">${n}</button>`).join('')}</div>
       <div class="hint">1 = very easy · 5 = hard but steady · 10 = maximal. Optional.</div></div>
-      <div class="field"><label for="wknotes">Notes</label><textarea id="wknotes" data-in="wknotes" rows="3" placeholder="Jump quality, energy, technique, recovery…">${esc(w.notes)}</textarea></div>
+      ${withRow(w)}<div class="field"><label for="wknotes">Notes</label><textarea id="wknotes" data-in="wknotes" rows="3" placeholder="Jump quality, energy, technique, recovery…">${esc(w.notes)}</textarea></div>
       <div class="field"><label for="wkfocus">Focus for next time</label><input id="wkfocus" data-in="wkfocus" maxlength="100" autocomplete="off" placeholder="One cue to carry into your next session" value="${esc(w.focus || '')}"><div class="hint">Shown at the start of your next ${esc(sName(w.session))} session. Optional.</div></div>`,
       footer: `${typeof lbCfg === 'function' && lbCfg() ? `<label class="sharetog"><input type="checkbox" id="wkshare" ${data.settings.shareWk === false ? '' : 'checked'}><span>Share to friends</span></label>` : ''}<button type="button" class="btn ghost" data-act="sheet.close">Back</button><button type="button" class="btn primary grow" data-act="wk.save">${icon('check')}Save workout</button>` };
   } });
@@ -398,7 +398,7 @@ function openLogView(id) {
   openSheet({ title: templates[l.session]?.title || sName(l.session), eyebrow: `${weekdayShort(l.date)} ${pretty(l.date)}${l.rpe ? ` · RPE ${l.rpe}` : ''}`, size: 'tall', render: () => ({
     body: `<ul class="hist2 logex2">
       ${l.exercises.map((e, i) => { const done = e.sets.filter(s => s.done); return `<li><button type="button" class="exlink" data-act="ex.progress" data-id="${esc(l.id)}" data-arg="${i}">${esc(e.name)}</button><span class="h-s">${done.length ? esc(formatSets(e, done.filter(s => !s.wu).length ? done.filter(s => !s.wu) : done)) : '<span class="tiny">skipped</span>'}</span></li>`; }).join('')}</ul>
-      ${l.notes ? `<p class="lognote">${esc(l.notes)}</p>` : ''}${l.focus ? `<p class="tiny">Focus next time: ${esc(l.focus)}</p>` : ''}`,
+      ${cleanWith(l.with).length ? `<p class="tiny">Trained with ${esc(cleanWith(l.with).join(', '))}</p>` : ''}${l.notes ? `<p class="lognote">${esc(l.notes)}</p>` : ''}${l.focus ? `<p class="tiny">Focus next time: ${esc(l.focus)}</p>` : ''}`,
     footer: `<button type="button" class="btn critical" data-act="log.remove" data-id="${esc(l.id)}" aria-label="Delete this workout">${icon('trash')}</button><button type="button" class="btn ghost grow" data-act="log.edit" data-id="${esc(l.id)}">${icon('edit')}Edit</button><button type="button" class="btn primary" data-act="sheet.close">Done</button>` }) });
 }
 ACTIONS['log.view'] = el => openLogView(el.dataset.id);
