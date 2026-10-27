@@ -357,3 +357,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.44.0 — Sessions tab and no doubled exercises
 - Gym now has **Today / Plan / Sessions / History**. Sessions lists every session; open one to see its exercises, remove one (bin), or **Add exercise** from the library. Plan links to it.
 - The library marks exercises **Already added** for the session or workout you are adding to. Adding one again asks you to confirm first (in a saved session, a session being edited, or a workout in progress).
+
+## 2.45.0 — Fuel tab sections and new app icon
+- Fuel now has **Today / Meals / Progress**. Today: calories and macros, Add food / Scan / Manual, and the day's meals. Meals: saved meals and recipes. Progress: calorie trend, bodyweight, and targets with the last 7 days.
+- New home-screen icon.

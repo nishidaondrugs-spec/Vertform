@@ -248,19 +248,20 @@ function viewFuel() {
     return `<section class="mealgroup ${list.length ? '' : 'empty'}" aria-label="${m}"><div class="mealhead"><div class="mealtitle" data-meal="${m}"><span class="mdot" aria-hidden="true"></span><b class="mname">${m}</b>${list.length ? `<span class="mk mono">${Math.round(kc)} kcal</span>` : ''}</div><div class="mh-act">${list.length ? `<button type="button" class="iconbtn" data-act="meal.fromdiary" data-arg="${m}" aria-label="Save ${m.toLowerCase()} as a meal">${icon('bookmark')}</button>` : ''}<button type="button" class="iconbtn plus" data-act="food.openmeal" data-arg="${m}" aria-label="Add food to ${m.toLowerCase()}">${icon('plus')}</button></div></div>${list.length ? `<ul class="foodlist">${list.map(entryRow).join('')}</ul>` : `<p class="mealempty">Nothing logged</p>`}</section>`; }).join('');
   const recs = recipesByRecency();
   return `${banners()}
+    ${typeof fuelSegs === 'function' ? fuelSegs() : ''}
     <div class="datebar nav deskonly"><button type="button" class="iconbtn" data-act="fuel.prev" aria-label="Previous day">${icon('back')}</button><input id="fuelday" type="date" data-in="fuelday" aria-label="Food diary date" value="${esc(date)}"><button type="button" class="iconbtn" data-act="fuel.next" aria-label="Next day">${icon('chev')}</button>${diff !== 0 ? `<button type="button" class="btn sm ghost" data-act="fuel.today">Today</button>` : ''}</div>
     ${diff === 0 ? '' : `<div class="datelabel fuelpast"><span>${esc(longDate(date))}</span><button type="button" class="btn sm ghost" data-act="fuel.today">Back to today</button></div>`}
-    ${readout(date)}
-    <div class="quick three"><button type="button" class="btn primary" data-act="food.open2">${icon('search')}Add food</button><button type="button" class="btn ghost" data-act="food.scan">${icon('scan')}Scan</button><button type="button" class="btn ghost" data-act="food.manual">${icon('plus')}Manual</button></div>
-    ${calTrendHtml(date)}
-    <div class="meals">${groups}</div>
-    ${weightCard()}
-    <details class="explain mt" ${recs.length ? 'open' : ''}><summary><span>Saved meals &amp; recipes</span><b class="mono">${recs.length}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="btn sm primary" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div>
-    ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyBox('Save a meal from your diary (the bookmark icon on any meal), or build a recipe from ingredients with a yield, and log servings in one tap.')}</details>
-    <details class="explain"><summary><span>Targets &amp; last 7 days</span><b class="mono">${t.cal}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="calc.open">Adjust targets</button></div>
+    ${fuelIs('today') ? readout(date) : ''}
+    ${fuelIs('today') ? `<div class="quick three"><button type="button" class="btn primary" data-act="food.open2">${icon('search')}Add food</button><button type="button" class="btn ghost" data-act="food.scan">${icon('scan')}Scan</button><button type="button" class="btn ghost" data-act="food.manual">${icon('plus')}Manual</button></div>` : ''}
+    ${fuelIs('progress') ? calTrendHtml(date) : ''}
+    ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}
+    ${fuelIs('progress') ? weightCard() : ''}
+    ${fuelIs('meals') ? `<details class="explain mt" ${recs.length || navNew() ? 'open' : ''}><summary><span>Saved meals &amp; recipes</span><b class="mono">${recs.length}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="btn sm primary" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div>
+    ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyBox('Save a meal from your diary (the bookmark icon on any meal), or build a recipe from ingredients with a yield, and log servings in one tap.')}</details>` : ''}
+    ${fuelIs('progress') ? `<details class="explain" ${navNew() ? 'open' : ''}><summary><span>Targets &amp; last 7 days</span><b class="mono">${t.cal}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="calc.open">Adjust targets</button></div>
     <dl class="tally four"><div><dt>Protein</dt><dd class="mono">${t.protein}<small> g</small></dd></div><div><dt>Carbs</dt><dd class="mono">${t.carbs}<small> g</small></dd></div><div><dt>Fat</dt><dd class="mono">${t.fat}<small> g</small></dd></div><div><dt>Energy</dt><dd class="mono">${t.cal}<small> kcal</small></dd></div></dl>
     <p class="note">${esc(t.estimate.method)}: ${t.estimate.cal} kcal average-day maintenance. ${t.dayDelta >= 0 ? '+' : ''}${t.dayDelta} kcal for ${esc(t.type === 'RECOVERY' ? 'a rest day' : t.type === 'TEAM' ? 'a volleyball day' : t.type === 'MATCH' ? 'a match day' : 'a gym day')}; ${t.goalDelta >= 0 ? '+' : ''}${t.goalDelta} kcal goal adjustment. These are starting estimates, not measured energy needs.</p>
-</details>`;
+</details>` : ''}`;
 }
 ACTIONS['food.open2'] = () => { ui.fuelMeal = null; openFoodSearch(); };
 ACTIONS['food.openmeal'] = el => { ui.fuelMeal = el.dataset.arg; openFoodSearch(el.dataset.arg); };

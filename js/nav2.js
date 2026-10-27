@@ -143,3 +143,12 @@ function gymSessions() {
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercise library</button></div>`;
 }
+
+/* ---------- Fuel tab: Today / Meals / Progress ---------- */
+const fuelIs = tab => !navNew() || (ui.fuelTab || 'today') === tab;
+function fuelSegs() {
+  if (!navNew()) return '';
+  const cur = ui.fuelTab || 'today';
+  return `<div class="seg" role="tablist" aria-label="Fuel sections">${[['today', 'Today'], ['meals', 'Meals'], ['progress', 'Progress']].map(([k, n]) => `<button type="button" role="tab" aria-selected="${cur === k}" class="${cur === k ? 'on' : ''}" data-act="fuel.tab" data-arg="${k}">${n}</button>`).join('')}</div>`;
+}
+ACTIONS['fuel.tab'] = el => { ui.fuelTab = el.dataset.arg; render(); window.scrollTo(0, 0); };
