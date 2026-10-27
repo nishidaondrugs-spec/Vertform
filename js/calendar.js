@@ -18,7 +18,8 @@ function planDefaults() {
 }
 function renderVbLog() {
   const isM = vl.kind === 'match', moreOpen = vl.moreOpen || !!(vl.id && (vl.jumps !== '' || vl.notes)) || vl.date !== todayISO();
-  return { body: `<div class="seg" role="radiogroup" aria-label="Session type"><button type="button" role="radio" aria-checked="${!isM}" class="${!isM ? 'on' : ''}" data-act="vl.kind" data-arg="training">Club training</button><button type="button" role="radio" aria-checked="${isM}" class="${isM ? 'on' : ''}" data-act="vl.kind" data-arg="match">Match</button></div>
+  return { body: `<div class="seg" role="radiogroup" aria-label="Session type">${[['training', 'Training'], ['match', 'Match'], ['social', 'Social']].map(([k, n]) => `<button type="button" role="radio" aria-checked="${vl.kind === k}" class="${vl.kind === k ? 'on' : ''}" data-act="vl.kind" data-arg="${k}">${n}</button>`).join('')}</div>
+    ${vl.kind === 'social' ? '<p class="tiny vlhint">Casual play, a social game or a fun session. It counts as a volleyball session but does not tick off your club training.</p>' : ''}
     <div class="field"><label id="vldurl">How long?</label><div class="chip-row vldur" role="group" aria-labelledby="vldurl">${[60, 90, 120].map(n => `<button type="button" class="chip ${Number(vl.durationMin) === n ? 'on' : ''}" data-act="vl.dur" data-arg="${n}">${n} min</button>`).join('')}<input id="vldur" class="durin" data-in="vl" type="number" inputmode="numeric" min="1" max="600" step="5" placeholder="Other" aria-label="Duration in minutes" value="${[60, 90, 120].includes(Number(vl.durationMin)) ? '' : esc(vl.durationMin)}"></div></div>
     <div class="field"><label id="vlint">How hard was it?</label><div class="intens" role="radiogroup" aria-labelledby="vlint">${Object.entries(INTENSITY).map(([k, v]) => `<button type="button" role="radio" aria-checked="${intensityOfRpe(vl.rpe) === k}" class="${intensityOfRpe(vl.rpe) === k ? 'on' : ''}" data-act="vl.int" data-arg="${k}"><b>${v.label}</b></button>`).join('')}</div></div>
     ${isM ? `<div class="form-row"><div class="field"><label for="vlopp">Opponent</label><input id="vlopp" data-in="vl" maxlength="60" value="${esc(vl.opponent)}"></div><div class="field"><label for="vlres">Result</label><input id="vlres" data-in="vl" maxlength="40" placeholder="e.g. Won 3–1" value="${esc(vl.result)}"></div></div>` : ''}
@@ -30,7 +31,7 @@ function renderVbLog() {
         <select id="vljt" data-in="vl" aria-label="Jump count type"><option value="est" ${vl.jumpsEstimate ? 'selected' : ''}>Estimate</option><option value="counted" ${!vl.jumpsEstimate ? 'selected' : ''}>Counted</option></select></div></div>
       <div class="field"><label for="vlnotes">Notes</label><textarea id="vlnotes" data-in="vl" rows="3" maxlength="600" placeholder="How it went, anything to remember">${esc(vl.notes)}</textarea></div>
     </details>`,
-    footer: `${vl.id ? `<button type="button" class="btn critical" data-act="vl.delete" aria-label="Delete this session">${icon('trash')}</button>` : ''}<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="vl.save">Save ${isM ? 'match' : 'session'}</button>` };
+    footer: `${vl.id ? `<button type="button" class="btn critical" data-act="vl.delete" aria-label="Delete this session">${icon('trash')}</button>` : ''}<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="vl.save">Save ${isM ? 'match' : vl.kind === 'social' ? 'social game' : 'session'}</button>` };
 }
 document.addEventListener('toggle', e => { if (e.target.matches?.('details[data-more="vl"]') && typeof vl === 'object' && vl) vl.moreOpen = e.target.open; }, true);
 function refreshVbLoad() {
@@ -57,7 +58,7 @@ ACTIONS['vl.save'] = () => {
   if (j !== null && !(Number.isInteger(j) && j >= 0 && j <= 2000)) { toast('Jumps must be a whole number from 0 to 2000'); return; }
   const rec = { kind: vl.kind, date: vl.date, durationMin: d, rpe: r, jumps: j, jumpsEstimate: j === null ? null : !!vl.jumpsEstimate, opponent: vl.kind === 'match' ? vl.opponent.trim().slice(0, 60) : '', result: vl.kind === 'match' ? vl.result.trim().slice(0, 40) : '', notes: vl.notes.trim().slice(0, 600) };
   if (vl.id) { const old = data.vb.logs.find(l => l.id === vl.id); delete old.blocks; Object.assign(old, rec); } else data.vb.logs.push({ id: uid(), ...rec, createdAt: new Date().toISOString() });
-  save(); closeAllSheets(); render(); toast(`${vl.kind === 'match' ? 'Match' : 'Training'} saved`);
+  save(); closeAllSheets(); render(); toast(`${vl.kind === 'match' ? 'Match' : vl.kind === 'social' ? 'Social game' : 'Training'} saved`);
 };
 ACTIONS['vl.delete'] = async () => {
   if (!await askConfirm({ title: 'Delete this session?', message: '<p>It will be removed from your volleyball history and weekly summaries.</p>', confirmLabel: 'Delete', danger: true })) return;

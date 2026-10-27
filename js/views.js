@@ -190,7 +190,7 @@ function trainGym() {
 ACTIONS['train.today'] = () => { ui.trainDate = todayISO(); render(); };
 function vbRow(l) {
   const ld = sessionLoad(l);
-  return `<li class="log-row"><span class="code ball">${icon('ball')}</span><div class="grow min0"><div class="eyebrow">${l.kind === 'match' ? 'Match' : 'Club training'}</div><strong>${esc(weekdayShort(l.date))} ${esc(pretty(l.date))}${l.opponent ? ' · vs ' + esc(l.opponent) : ''}</strong><small>${esc(fmtMins(l.durationMin))}${l.rpe ? ` · RPE ${esc(l.rpe)}` : ''}${ld ? ` · load ${ld}` : ''}${jumpsText(l) ? ' · ' + esc(jumpsText(l)) : ''}</small></div><button type="button" class="iconbtn" data-act="vb.edit" data-id="${esc(l.id)}" aria-label="Edit session on ${esc(pretty(l.date))}">${icon('edit')}</button></li>`;
+  return `<li class="log-row"><span class="code ball">${icon('ball')}</span><div class="grow min0"><div class="eyebrow">${l.kind === 'match' ? 'Match' : l.kind === 'social' ? 'Social' : 'Club training'}</div><strong>${esc(weekdayShort(l.date))} ${esc(pretty(l.date))}${l.opponent ? ' · vs ' + esc(l.opponent) : ''}</strong><small>${esc(fmtMins(l.durationMin))}${l.rpe ? ` · RPE ${esc(l.rpe)}` : ''}${ld ? ` · load ${ld}` : ''}${jumpsText(l) ? ' · ' + esc(jumpsText(l)) : ''}</small></div><button type="button" class="iconbtn" data-act="vb.edit" data-id="${esc(l.id)}" aria-label="Edit session on ${esc(pretty(l.date))}">${icon('edit')}</button></li>`;
 }
 function trainVb() {
   const mon = monday(todayISO()), s = weekSummary(mon), logs = [...data.vb.logs].sort((a, b) => (b.date + (b.createdAt || '')).localeCompare(a.date + (a.createdAt || ''))).slice(0, 15);

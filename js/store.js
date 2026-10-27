@@ -139,7 +139,7 @@ function normaliseData(o) {
 
   const v = isObj(o.vb) ? o.vb : {};
   out.vb = {
-    logs: (Array.isArray(v.logs) ? v.logs : []).filter(l => (isObj(l) && isISO(l.date) && ['training', 'match'].includes(l.kind)) || skip()).map(l => { const r = { ...l, id: freshId(l.id) }; delete r.blocks; return r; }),
+    logs: (Array.isArray(v.logs) ? v.logs : []).filter(l => (isObj(l) && isISO(l.date) && ['training', 'match', 'social'].includes(l.kind)) || skip()).map(l => { const r = { ...l, id: freshId(l.id) }; delete r.blocks; return r; }),
     extras: (Array.isArray(v.extras) ? v.extras : []).filter(x => (isObj(x) && isISO(x.date)) || skip()).map(x => ({ ...x, id: freshId(x.id) })),
     skips: [...new Set((Array.isArray(v.skips) ? v.skips : []).filter(isISO))],
     schedule: (Array.isArray(v.schedule) ? v.schedule : []).filter(s => isObj(s) && typeof s.from === 'string' && Array.isArray(s.days) && s.days.every(d => Number.isInteger(d) && d >= 0 && d <= 6)).sort((a, b) => a.from.localeCompare(b.from))

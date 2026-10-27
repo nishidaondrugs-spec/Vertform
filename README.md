@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.64.1 — Social volleyball
+- Log volleyball now has Training, Match and Social. Social is casual play: it counts as a volleyball session in your week and history but does not tick off club training.
+
 ## 2.64.0 — Match-day fuel plan
 - On a match day with a kick-off time, Fuel → Today shows a timeline: main carb meal 4h before, top-up 2.5h, easy carbs 1h, a honey shot 20 min before, sips between sets, recovery meal after. The day before shows an extra-carbs dinner note.
 - Optional push reminders for each step (Settings → Notifications → Match-day fuel reminders). Needs the updated vf-push function to be redeployed.
