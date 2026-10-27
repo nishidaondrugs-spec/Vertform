@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.71.2 — Fix
+2.71.1 shipped with a syntax error in views.js that stopped the app loading; fixed. All JS files are now syntax-checked before every push.
+
 ## 2.71.1 — Version line and Update the app
 Settings ends with the version number and an Update the app button that clears the app's cached files and reloads (records are untouched).
 
