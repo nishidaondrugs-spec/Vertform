@@ -93,3 +93,34 @@ function viewYou() {
     <div class="ysec"><div class="yeye">MORE</div><div class="ymore">${YOU_MORE.map(([i, n, a]) => `<button type="button" data-act="${a}">${icon(i)}<span>${n}</span></button>`).join('')}</div></div>
   </div>`;
 }
+
+/* ---------- Gym tab: Today / Plan / History ---------- */
+ACTIONS['gym.tab'] = el => { ui.trainTab = el.dataset.arg; render(); window.scrollTo(0, 0); };
+function gymToday() {
+  const today = todayISO(), mon = monday(today), d = data.draft;
+  const draft = d && !(dayPlan(today).items.some(i => i.kind === 'gym' && i.session === d.session && d.date === today));
+  return `${draft ? `<div class="banner">${icon('play')}<div class="grow"><b>${esc(sName(d.session))} is still open</b><p>From ${esc(pretty(d.date))} · ${sum_sets(d)} sets ticked.</p><div class="actions"><button type="button" class="btn sm primary" data-act="wk.resume">Resume</button><button type="button" class="btn sm ghost" data-act="wk.discard">Discard</button></div></div></div>` : ''}
+    ${todayItems()}
+    ${gymFocusBanner()}
+    ${readinessBlock()}
+    ${sectionHead('THIS WEEK', `${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}`, `<button type="button" class="linkbtn" data-act="gym.tab" data-arg="plan">Plan ${icon('chev')}</button>`)}
+    ${weekStrip(mon)}
+    <div class="gymbtns"><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercises</button><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button><button type="button" class="btn ghost" data-act="gym.tab" data-arg="jump">${icon('bolt')}Jump tracker</button></div>`;
+}
+function gymPlan() {
+  ui.trainDate = todayISO();
+  return `${calendarBody(ui.planWeek)}
+    ${sectionHead('', 'Your programme', `<button type="button" class="linkbtn" data-act="ys.new">${icon('plus')}New session</button>`)}
+    <p class="tiny">Tap a session to start it. Inside a workout, use the bin to remove an exercise, or the menu to add one for today or for good.</p>
+    <ul class="sessionlist">${SESSION_KEYS.map(sessionRow).join('')}</ul>
+    <button type="button" class="btn ghost block mt" data-act="lib.open">${icon('list')}Open exercise library</button>`;
+}
+function viewGym() {
+  const w = getWeek(), t = ui.trainTab, tab = ['plan', 'history', 'vb', 'jump'].includes(t) ? t : 'today';
+  ui.trainDate = ui.trainDate && isISO(ui.trainDate) ? ui.trainDate : todayISO();
+  const segs = [['today', 'Today'], ['plan', 'Plan'], ['history', 'History']];
+  const body = tab === 'plan' ? gymPlan() : tab === 'history' ? trainHistory() : tab === 'vb' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainVb()}` : tab === 'jump' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainJump()}` : gymToday();
+  return `${pageHead('', 'Gym', `<span class="tag ${isDeload(w) ? 'ochre' : ''}">Week ${w} of 12${isDeload(w) ? ' · easy' : ''}</span>`)}${banners()}
+    <div class="seg" role="tablist" aria-label="Gym sections">${segs.map(([k, n]) => `<button type="button" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-act="gym.tab" data-arg="${k}">${n}</button>`).join('')}</div>
+    ${body}`;
+}

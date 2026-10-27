@@ -2,7 +2,7 @@
 /* VERTFORM 2.0 — pages: Today, Train, Fuel, Plan, Progress, Settings */
 
 const TABS = [['home', 'Home', 'home'], ['train', 'Train', 'train'], ['fuel', 'Fuel', 'fuel'], ['plan', 'Plan', 'plan'], ['post', 'Post', 'post']];
-const PAGES = { home: () => navNew() ? viewYou() : viewHome(), today: viewToday, train: viewTrain, fuel: viewFuel, plan: viewPlan, post: viewPost, friend: () => viewFriend(), settings: viewSettings, board: () => viewBoard() };
+const PAGES = { home: () => navNew() ? viewYou() : viewHome(), today: viewToday, train: () => navNew() ? viewGym() : viewTrain(), fuel: viewFuel, plan: viewPlan, post: viewPost, friend: () => viewFriend(), settings: viewSettings, board: () => viewBoard() };
 let updateReady = false;
 
 const markHTML = '<span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 6h6l5 15 5-15h6L19 27h-6z" fill="currentColor"/></svg></span>';

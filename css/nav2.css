@@ -55,3 +55,8 @@ body.nav2.page-sub .topbar .topback{display:inline-flex}
 .ymore button{height:72px;border-radius:16px;border:1px solid #1f2b45;background:#0e1627;color:#f2f5fb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font:700 12px var(--sans)}
 .ymore .ico{width:22px;height:22px}
 html[data-theme="light"] body.nav2 .ycard,html[data-theme="light"] body.nav2 .ytile,html[data-theme="light"] body.nav2 .yrows,html[data-theme="light"] body.nav2 .ymore button{background:#fff;border-color:#d5dcea;color:#101828}
+
+/* ---- Gym tab ---- */
+.gymbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.gymbtns .btn{min-height:48px;justify-content:center}
+.linkbtn.back{display:inline-flex;align-items:center;gap:4px;margin:10px 0 0}
