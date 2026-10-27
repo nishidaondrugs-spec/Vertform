@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.74.0 — Weekly recap cards + grace day
+You → Weekly recap draws a shareable 9:16 card (Black or Red) from what you logged: the hero number is picked from your week (matches, a PR, full house, hours on court, protein days or your streak), plus a Match-day card. Share saves or sends the image. A Home banner appears on Saturday and Sunday. Streaks now allow one missed session a week when you have 3 or more planned.
+
 ## 2.73.0 — Session icons
 Pick an emoji (or type any) for a session in its editor. It replaces the letter in Train, the weekly plan, the calendar and Home. Editing a built-in session copies it, so you can give A–D icons too.
 

@@ -837,3 +837,11 @@ body.nav2 .mealgroup .foodlist li.food .fdel{width:34px;height:34px;justify-self
 .seemo .seemo-none{font-size:15px;font-weight:700;color:#a1a1a6}
 .seemo input{flex:none;width:64px;height:40px;border-radius:20px;border:0!important;background:#1c1c1e!important;color:#fff;text-align:center;font-size:18px;padding:0 8px!important}
 .seemo input::placeholder{font-size:13px;color:#8e8e93}
+
+/* 2.74.0 — weekly recap sheet */
+.rcbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.rcbar b{font-size:16px}
+.rcseg{display:flex;gap:8px;margin-bottom:14px;align-items:center}.rcgap{flex:1}
+.rcseg button{height:34px;padding:0 14px;border-radius:17px;border:0;background:#1c1c1e;color:#a1a1a6;font:600 13px inherit;font-family:inherit}
+.rcseg button.on{background:#fff;color:#000}.rcseg button:disabled{opacity:.35}
+.rcimg{display:block;width:100%;max-width:340px;margin:0 auto;border-radius:22px}
+.rcnote{text-align:center;margin:0 0 10px}

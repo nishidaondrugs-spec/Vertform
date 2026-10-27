@@ -43,7 +43,7 @@ function lbStats() {
   const vbWeek = data.vb.logs.filter(l => l.date >= mon && l.date < addDays(mon, 7)).length;
   const sessions = gymWeek(mon);
   let streak = 0;
-  for (let i = sessions >= target ? 0 : 1; i < 520; i++) { const m = addDays(mon, -7 * i); if (m < addDays(monday(data.user.startDate || today), -7 * 52)) break; if (gymWeek(m) >= target) streak++; else break; }
+  for (let i = graceOk(sessions, target) ? 0 : 1; i < 520; i++) { const m = addDays(mon, -7 * i); if (m < addDays(monday(data.user.startDate || today), -7 * 52)) break; if (graceOk(gymWeek(m), target)) streak++; else break; }
   const cm = entriesOf('cmj').map(e => Number(e.value)).filter(Number.isFinite), aj = latestMetric('approachJump');
   const best = cm.length ? Math.max(...cm) : null; void aj;
   return { week: mon, sessions: Math.min(14, sessions), target, vb: Math.min(14, vbWeek), streak, jump: data.settings.shareJump === false || best === null || best < 5 || best > 150 ? null : Math.round(best * 10) / 10, lifts: lbSharesLifts() ? lbLifts() : [] };

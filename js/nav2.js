@@ -80,7 +80,7 @@ function youBoard() {
     : `<div class="yrow"><span class="yn ys">${lbUi.rows === null ? 'Loading…' : 'No one on the board yet'}</span></div>`;
   return `<div class="ysec"><div class="yhead"><div class="yeye">LEADERBOARD · THIS WEEK</div><button type="button" class="ylink" data-act="board.open">See all</button></div><div class="yrows">${body}</div></div>`;
 }
-const YOU_MORE = [['trophy', 'Jump progress', 'you.prog'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts']];
+const YOU_MORE = [['trophy', 'Jump progress', 'you.prog'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts'], ['trophy', 'Weekly recap', 'recap.open']];
 ACTIONS['you.prog'] = () => { ui.trainTab = 'jump'; go('train'); };
 ACTIONS['you.plan'] = () => go('plan');
 
