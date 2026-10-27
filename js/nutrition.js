@@ -12,12 +12,12 @@ function foodTotals(date) {
 const dayTypeLabel = t => t === 'MATCH' ? 'Match day' : t === 'TEAM' ? 'Volleyball day' : t === 'RECOVERY' ? 'Rest day' : 'Gym day';
 
 /* ---------- unit helpers ---------- */
-const SHORT_UNIT = { g: 'g', tbsp: 'tbsp', tsp: 'tsp', cup: 'cup', whole: 'whole', half: 'half', small: 'small', medium: 'medium', large: 'large', slice: 'slice', tin: 'tin', handful: 'handful', scoop: 'scoop', serving: 'serving' };
+const SHORT_UNIT = { g: 'g', tbsp: 'tbsp', tsp: 'tsp', cup: 'cup', whole: 'whole', half: 'half', small: 'small', medium: 'medium', large: 'large', slice: 'slice', tin: 'tin', handful: 'handful', scoop: 'scoop', serving: 'serving', cup: 'cup' };
 const everydayById = id => EVERYDAY_FOODS.find(f => f.id === id);
 function foodLikeFromEveryday(f) {
   const u = f.units || {};
   return { kind: 'everyday', id: f.id, name: f.name, per100: { kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat }, units: { g: 1, ...u },
-    defaultUnit: u.whole ? 'whole' : u.tbsp ? 'tbsp' : u.slice ? 'slice' : u.scoop ? 'scoop' : 'g', note: 'General food composition average' };
+    defaultUnit: u.serving ? 'serving' : u.whole ? 'whole' : u.tbsp ? 'tbsp' : u.slice ? 'slice' : u.scoop ? 'scoop' : 'g', note: 'General food composition average' };
 }
 function foodLikeFromProduct(p) {
   const per = {};
@@ -36,17 +36,19 @@ function portionNutr(food, unit, qty) {
 
 /* ---------- search ---------- */
 function foodMatches(query) {
-  const q = query.trim().toLowerCase();
-  let a = EVERYDAY_FOODS.filter(f => !q || `${f.name} ${f.alias}`.toLowerCase().includes(q));
-  if (q) a.sort((x, y) => (x.name.toLowerCase().startsWith(q) ? -3 : 0) - (y.name.toLowerCase().startsWith(q) ? -3 : 0));
-  return a.slice(0, q ? 30 : 14);
+  const q = query.trim().toLowerCase().replace(/[’']/g, ''), toks = q.split(/\s+/).filter(Boolean);
+  const hay = f => `${f.name} ${f.alias}`.toLowerCase().replace(/[’']/g, '');
+  const sc = f => { const n = f.name.toLowerCase().replace(/[’']/g, ''); return n.startsWith(q) ? 0 : n.includes(q) ? 1 : 2; };
+  let a = EVERYDAY_FOODS.filter(f => { const h = hay(f); return toks.every(t => h.includes(t) || (t.length > 3 && t.endsWith('s') && h.includes(t.slice(0, -1)))); });
+  if (q) a.sort((x, y) => sc(x) - sc(y));
+  return a.slice(0, q ? 40 : 14);
 }
 const recentFoods = (n = 6) => [...data.nutrition.entries].reverse().filter(e => !e.recipeId).filter((e, i, a) => a.findIndex(y => y.name.toLowerCase() === e.name.toLowerCase()) === i).slice(0, n);
 function foodSearchResults(q) {
   const recipes = typeof recipeMatches === 'function' ? recipeMatches(q) : [];
   const foods = foodMatches(q);
   const rec = recipes.map(r => { const ps = recipePerServing(r); return `<button type="button" class="result" data-act="recipe.log" data-id="${esc(r.id)}"><div class="grow"><strong>${esc(r.name)}</strong> ${tag(r.type === 'meal' ? 'Saved meal' : 'Recipe', 'sage')}<small>${Math.round(ps.kcal)} kcal · ${fmt(ps.protein, 0)}g P per ${r.type === 'meal' ? 'portion' : 'serving'}</small></div>${icon('chev')}</button>`; });
-  const fl = foods.map(f => `<button type="button" class="result" data-act="food.pick" data-id="${esc(f.id)}"><div class="grow"><strong>${esc(f.name)}</strong><small>${Math.round(f.kcal)} kcal per 100 g · ${fmt(f.protein, 1)}g protein</small></div>${icon('chev')}</button>`);
+  const fl = foods.map(f => `<button type="button" class="result" data-act="food.pick" data-id="${esc(f.id)}"><div class="grow"><strong>${esc(f.name)}</strong><small>${f.units && f.units.serving ? `${Math.round(f.kcal * f.units.serving / 100)} kcal per serving · ${fmt(f.protein * f.units.serving / 100, 0)}g protein` : `${Math.round(f.kcal)} kcal per 100 g · ${fmt(f.protein, 1)}g protein`}</small></div>${icon('chev')}</button>`);
   const all = [...rec, ...fl];
   const ai = `<button type="button" class="result airow" data-act="ai.open"><div class="grow"><strong>Ask AI about "${esc(q.trim().length > 30 ? q.trim().slice(0, 29) + '…' : q.trim())}"</strong><small>Chat it through, then save the macros</small></div>${icon('plus')}</button>`;
   return ai + (all.length ? all.join('') : emptyBox('No matching everyday food. Try another name, search UK packaged products online, or use manual entry.'));

@@ -105,3 +105,4 @@ const field = (label, id, inner, hint = '') => `<div class="field"><label for="$
 const mealOptions = (sel) => ['Breakfast', 'Lunch', 'Dinner', 'Snack'].map(m => `<option ${m === sel ? 'selected' : ''}>${m}</option>`).join('');
 const guessMeal = () => { const h = new Date().getHours(); return h < 11 ? 'Breakfast' : h < 15 ? 'Lunch' : h < 18 ? 'Snack' : 'Dinner'; };
 const emptyBox = (html) => `<div class="empty">${html}</div>`;
+const emptyState = (ic, title, text, cta) => `<div class="es"><span class="es-ic" aria-hidden="true">${icon(ic)}</span><b>${title}</b><p>${text}</p>${cta || ''}</div>`;

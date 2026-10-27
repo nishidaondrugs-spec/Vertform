@@ -374,6 +374,11 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.59.0 — Much bigger food library, and six screens redone
+- About 450 more foods: vegetables and mushrooms, fruit (incl. Malaysian fruit), meat, fish, dairy, cupboard items, drinks, UK dishes, Malaysian dishes (nasi lemak, roti canai, laksa, char kway teow, mamak), and menu items from McDonald's, KFC, Burger King, Five Guys, Nando's, Subway, Greggs, Pret, Costa, Starbucks, Domino's, Wagamama, Marrybrown, Texas Chicken, Old Town and more. Values are approximate.
+- Search matches every word and singular/plural.
+- New look for Settings, Exercise library, Fuel Meals and Progress, History, Jump test and Friends.
+
 ## 2.58.0 — Easier new sessions and Add food
 - New session: big name box, tap-to-start templates, a search-the-library row, a sets stepper, and advanced options tucked away.
 - Fuel: one big Add food button (scan is a round icon), a simpler Add food sheet with meal chips and four clear options, and a slim profile nudge.

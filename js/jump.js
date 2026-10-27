@@ -121,8 +121,8 @@ function jumpChart(rows) {
 }
 function trainJump() {
   const all = entriesOf('cmj').filter(e => Number(e.value) > 0), best = jumpBest(), last = all.at(-1);
-  const head = `<div class="quick"><button type="button" class="btn primary" data-act="jt.open">${icon('camera')}Jump test</button><button type="button" class="btn ghost" data-act="ms.add" data-arg="cmj">Type a result</button></div>`;
-  if (!all.length) return `${head}${emptyBox('Film a standing jump and tap the take-off and landing frames. VERTFORM works out the height from your time in the air.')}`;
+  const head = `<div class="fuelcta"><button type="button" class="btn primary" data-act="jt.open">${icon('camera')}Jump test</button><button type="button" class="linkbtn" data-act="ms.add" data-arg="cmj">Type result</button></div>`;
+  if (!all.length) return `${head}${emptyState('camera', 'Measure your jump', 'Film a standing jump and tap take-off and landing. VERTFORM works out the height from your time in the air.')}`;
   const first = Number(all[0].value), diff = Number(last.value) - first, yr = todayISO().slice(0, 4);
   return `<section class="jcard"><div><span class="tiny">Best standing jump</span><b>${fmt(best, 1)}<small> cm</small></b></div><div class="jc-side"><span class="tiny">Latest</span><b>${fmt(Number(last.value), 1)} cm</b>${all.length > 1 ? `<span class="pc-diff ${diff > 0 ? 'up' : diff < 0 ? 'down' : ''}">${diff > 0 ? '+' : ''}${fmt(diff, 1)} cm since ${esc(pretty(all[0].date))}</span>` : ''}</div></section>
     ${jumpChart(all.map(e => ({ d: e.date, v: Number(e.value) })))}${head}

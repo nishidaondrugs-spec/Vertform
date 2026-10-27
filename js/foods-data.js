@@ -64,4 +64,4 @@ const EVERYDAY_FOODS=[
   {"id":"cucumber","name":"Cucumber","kcal":15,"protein":0.7,"carbs":3,"fat":0.1,"units":{"cup":104},"alias":"cucumber"},
   {"id":"whey","name":"Whey protein powder, typical","kcal":400,"protein":80,"carbs":8,"fat":6,"units":{"scoop":30,"tbsp":8},"alias":"protein shake whey powder"}
 ];
-const FOOD_UNIT_NAMES={g:'grams (g)',tbsp:'tablespoon (tbsp)',tsp:'teaspoon (tsp)',cup:'cup ≈250 ml',whole:'whole item',half:'half item',small:'small item',medium:'medium item',large:'large item',slice:'slice',tin:'drained tin',handful:'handful',scoop:'scoop'};
+const FOOD_UNIT_NAMES={g:'grams (g)',tbsp:'tablespoon (tbsp)',tsp:'teaspoon (tsp)',cup:'cup ≈250 ml',whole:'whole item',half:'half item',small:'small item',medium:'medium item',large:'large item',slice:'slice',tin:'drained tin',handful:'handful',scoop:'scoop',serving:'1 serving / portion'};

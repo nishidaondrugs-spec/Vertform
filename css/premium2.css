@@ -362,3 +362,27 @@ body.nav2 .yrow .ys{color:#a1a1a6;font-size:15px}
 .tgtnudge span{flex:1}.tgtnudge small{display:block;opacity:.55;font-size:13px}.tgtnudge svg{width:18px;opacity:.6}
 body.nav2 .mealempty{display:none}
 :root:not([data-theme="light"]) body .sename,:root:not([data-theme="light"]) body input.sename{font-size:26px!important;font-weight:800!important;background:transparent!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;border-radius:0!important;padding:6px 0 12px!important}
+
+/* ---- 2.59 empty states, settings list, meals, library, friends ---- */
+.es{display:flex;flex-direction:column;align-items:center;text-align:center;padding:44px 24px 28px;gap:8px}
+.es-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.07);margin-bottom:6px}.es-ic svg{width:28px;height:28px;opacity:.8}
+.es b{font-size:19px}.es p{margin:0 0 10px;opacity:.6;font-size:15px;line-height:1.45;max-width:300px}
+.es .btn{margin-top:6px}
+:root:not([data-theme="light"]) body.nav2 .empty{border:0!important;background:transparent!important;text-align:center;opacity:.6;padding:28px 12px}
+.lbhero{padding-top:10px}
+.mealshead{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px}.mealshead h2{margin:0;font-size:24px}.mealshead small{opacity:.55}
+.mh-b{display:flex;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:9px 15px;background:rgba(255,255,255,.09);color:inherit;font:600 14px inherit;font-family:inherit;cursor:pointer}.pill svg{width:15px;height:15px}.pill.on{background:#fff;color:#000}
+/* settings as a grouped list */
+:root:not([data-theme="light"]) body.nav2 .setgroup{border:0!important;background:transparent!important;border-bottom:1px solid var(--hair,rgba(255,255,255,.08))!important;border-radius:0!important}
+body.nav2 .setgroup>summary{display:flex;align-items:center;gap:14px;padding:14px 2px;list-style:none;cursor:pointer}
+body.nav2 .setgroup>summary::-webkit-details-marker{display:none}
+.sg-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.09);flex:none;font-style:normal}.sg-ic svg{width:19px;height:19px;opacity:.9}
+body.nav2 .setgroup>summary>span{flex:1}body.nav2 .setgroup>summary b{font-size:16px}body.nav2 .setgroup>summary small{display:block;opacity:.55;font-size:13px;margin-top:2px}
+body.nav2 .setgroup[open]>summary>svg:last-child{transform:rotate(90deg)}
+/* exercise library + generic result rows */
+:root:not([data-theme="light"]) .result{background:transparent!important;border:0!important;border-bottom:1px solid var(--hair,rgba(255,255,255,.08))!important;border-radius:0!important}
+:root:not([data-theme="light"]) body .pill.on{background:#fff!important;color:#000!important}
+.mealshead h2{white-space:nowrap;font-size:22px}.mh-t{min-width:0}
+:root:not([data-theme="light"]) body.nav2 .tally>div{background:transparent!important;border:0!important;border-left:1px solid var(--hair,rgba(255,255,255,.1))!important;border-radius:0!important}
+:root:not([data-theme="light"]) body.nav2 .tally>div:first-child{border-left:0!important}

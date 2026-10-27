@@ -92,11 +92,11 @@ function lbHeadline(rows, tab) {
 }
 function renderLb() {
   const c = lbCfg();
-  if (!c) return { body: `<p class="note">Compare your week with friends. Create a nickname, get a 6-character code, and swap codes with the people you train with.</p>
-    <div class="tip"><b>What friends can see:</b> your nickname, gym sessions this week against your own target, your streak of weeks hitting it, volleyball sessions, your best lifts and best standing jump (you can turn those off), and any posts you write. <b>Never</b> your weight or notes. Food only when you choose to share it.</div>
-    ${typeof acctOn === 'function' && acctOn() && !signedIn() ? `<button type="button" class="btn primary" data-act="acct.in">Sign in to bring back your profile</button><p class="tiny center">or start a new one</p>` : ''}
-    <div class="field"><label for="lbnick">Nickname</label><input id="lbnick" data-in="lbnick" maxlength="20" autocomplete="off" placeholder="2 to 20 characters" value="${esc(lbUi.nick)}"></div>
-    ${lbUi.err ? `<div class="status warn" role="alert">${esc(lbUi.err)}</div>` : ''}`, footer: `<button type="button" class="btn primary block" data-act="lb.join">Create my friend code</button>` };
+  if (!c) return { body: `<div class="es lbhero"><span class="es-ic" aria-hidden="true">${icon('heart')}</span><b>Train with friends</b><p>See who hit their week, share lifts and post sessions. Swap a 6-character code with the people you train with.</p></div>
+    ${typeof acctOn === 'function' && acctOn() && !signedIn() ? `<button type="button" class="btn primary block" data-act="acct.in">Sign in to bring back your profile</button><p class="tiny center">or start a new one</p>` : ''}
+    <input id="lbnick" class="fdq" data-in="lbnick" maxlength="20" autocomplete="off" aria-label="Nickname" placeholder="Pick a nickname" value="${esc(lbUi.nick)}">
+    ${lbUi.err ? `<div class="status warn" role="alert">${esc(lbUi.err)}</div>` : ''}
+    <details class="sxmore"><summary>What friends can see</summary><p class="tiny">Your nickname, sessions this week, streak, volleyball sessions, best lifts and jump (switch these off any time) and posts you write. Never your weight or notes. Food only when you share it.</p></details>`, footer: `<button type="button" class="btn primary block" data-act="lb.join">Create my friend code</button>` };
   const rows = lbRowsFor(lbUi.tab);
   return { body: `<div class="lbcode"><div><div class="eyebrow">YOUR FRIEND CODE</div><b class="mono lbc">${esc(c.code)}</b></div><div class="quick"><button type="button" class="btn sm ghost" data-act="lb.share">${icon('upload')}Share</button><button type="button" class="btn sm ghost" data-act="lb.copy">Copy</button></div></div>
     <div class="seg lbtabs" role="tablist">${TABS_LB.map(([k, l]) => `<button type="button" role="tab" aria-selected="${lbUi.tab === k}" class="${lbUi.tab === k ? 'on' : ''}" data-act="lb.tab" data-arg="${k}">${l}</button>`).join('')}</div>

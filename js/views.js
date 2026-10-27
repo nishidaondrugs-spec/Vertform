@@ -207,7 +207,7 @@ function historyItems() {
 function trainHistory() {
   const f = ui.historyFilter, items = historyItems().filter(x => f === 'all' || (f === 'gym' ? x.type === 'gym' : x.type !== 'gym')).slice(0, 60);
   return `<div class="chip-row filt" role="group" aria-label="Filter history">${[['all', 'All'], ['gym', 'Gym'], ['vb', 'Volleyball']].map(([k, n]) => `<button type="button" class="chip ${f === k ? 'on' : ''}" aria-pressed="${f === k}" data-act="hist.filter" data-arg="${k}">${n}</button>`).join('')}</div>
-    ${items.length ? `<ul class="loglist">${items.map(x => x.type === 'gym' ? `<li class="log-row"><span class="code">${esc(x.l.session)}</span><div class="grow min0"><div class="eyebrow">Gym</div><strong>${esc(templates[x.l.session]?.title || 'Training')}</strong><small>${esc(weekdayShort(x.date))} ${esc(pretty(x.date))} · ${sum(x.l.exercises, e => e.sets.filter(s => s.done).length)} sets${x.l.rpe ? ` · RPE ${esc(x.l.rpe)}` : ''}</small></div><button type="button" class="btn sm ghost" data-act="log.view" data-id="${esc(x.l.id)}">View</button></li>` : vbRow(x.l)).join('')}</ul>` : emptyBox('Nothing logged yet. Start a gym session or log volleyball and it will appear here.')}`;
+    ${items.length ? `<ul class="loglist">${items.map(x => x.type === 'gym' ? `<li class="log-row"><span class="code">${esc(x.l.session)}</span><div class="grow min0"><div class="eyebrow">Gym</div><strong>${esc(templates[x.l.session]?.title || 'Training')}</strong><small>${esc(weekdayShort(x.date))} ${esc(pretty(x.date))} · ${sum(x.l.exercises, e => e.sets.filter(s => s.done).length)} sets${x.l.rpe ? ` · RPE ${esc(x.l.rpe)}` : ''}</small></div><button type="button" class="btn sm ghost" data-act="log.view" data-id="${esc(x.l.id)}">View</button></li>` : vbRow(x.l)).join('')}</ul>` : emptyState('progress', 'No workouts yet', 'Your gym sessions and volleyball will show up here.', `<button type="button" class="btn primary" data-act="train.tab" data-arg="today">Start training</button>`)}`;
 }
 ACTIONS['hist.filter'] = el => { ui.historyFilter = el.dataset.arg; render(); };
 
@@ -258,8 +258,8 @@ function viewFuel() {
     ${fuelIs('today') && typeof creatineRow === 'function' ? creatineRow(date) : ''}
     ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}
     ${fuelIs('progress') ? weightCard() : ''}
-    ${fuelIs('meals') ? `<details class="explain mt" ${recs.length || navNew() ? 'open' : ''}><summary><span>Saved meals &amp; recipes</span><b class="mono">${recs.length}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="btn sm primary" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div>
-    ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyBox('Save a meal from your diary (the bookmark icon on any meal), or build a recipe from ingredients with a yield, and log servings in one tap.')}</details>` : ''}
+    ${fuelIs('meals') ? `<section class="mealshead"><div class="mh-t"><h2>Saved meals</h2><small>${plural(recs.length, 'meal or recipe', 'meals and recipes')}</small></div><div class="mh-b"><button type="button" class="pill" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="pill on" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div></section><div class="mealsbody">
+    ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyState('fuel', 'No saved meals', 'Save a meal from your diary with the bookmark, or build a recipe once and log it in one tap.')}</div>` : ''}
     ${fuelIs('progress') ? `<details class="explain" ${navNew() ? 'open' : ''}><summary><span>Targets &amp; last 7 days</span><b class="mono">${t.cal}</b></summary><div class="quick"><button type="button" class="btn sm ghost" data-act="calc.open">Adjust targets</button></div>
     <dl class="tally four"><div><dt>Protein</dt><dd class="mono">${t.protein}<small> g</small></dd></div><div><dt>Carbs</dt><dd class="mono">${t.carbs}<small> g</small></dd></div><div><dt>Fat</dt><dd class="mono">${t.fat}<small> g</small></dd></div><div><dt>Energy</dt><dd class="mono">${t.cal}<small> kcal</small></dd></div></dl>
 </details>` : ''}`;
@@ -284,7 +284,8 @@ ACTIONS['plan.now'] = () => { ui.planWeek = monday(todayISO()); render(); };
 /* =============== PROGRESS =============== */
 
 /* =============== SETTINGS =============== */
-function setGroup(title, sub, inner, open) { return `<details class="setgroup" ${open ? 'open' : ''}><summary><span><b>${title}</b><small>${sub}</small></span>${icon('chev')}</summary><div class="sg-body">${inner}</div></details>`; }
+const SG_IC = { You: 'heart', Training: 'train', Appearance: 'gear', Notifications: 'post', Creatine: 'plus', 'Backup & data': 'download', 'Help & about': 'check', Account: 'home' };
+function setGroup(title, sub, inner, open) { return `<details class="setgroup" ${open ? 'open' : ''}><summary><i class="sg-ic" aria-hidden="true">${icon(SG_IC[title] || 'gear')}</i><span><b>${title}</b><small>${sub}</small></span>${icon('chev')}</summary><div class="sg-body">${inner}</div></details>`; }
 function viewSettings() {
   const b = backupStatus(), r = data.settings.rest, nT = vbDaysFor(todayISO()).length;
   return `${pageHead('', 'SETTINGS')}${banners()}
