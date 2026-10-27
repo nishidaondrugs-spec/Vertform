@@ -226,9 +226,9 @@ ACTIONS['meal.fromdiary'] = el => {
   if (!entries.length) { toast('Nothing in the diary to save yet'); return; }
   sm = { date, checked: new Set(entries.filter(e => !meal || e.meal === meal).map(e => e.id)), name: meal ? `${meal} · ${pretty(date)}` : `Meal · ${pretty(date)}` };
   openSheet({ title: 'Save foods as a meal', eyebrow: pretty(date).toUpperCase(), size: 'tall', render: () => ({
-    body: `<p class="lead first">Tick the foods that belong together. They are saved with their current quantities, ready to log again in one go.</p>
+    body: `<p class="smlead">Tick the foods that belong together.</p>
       <div class="field"><label for="smname">Meal name</label><input id="smname" data-in="smname" maxlength="60" value="${esc(sm.name)}"></div>
-      <div class="checks">${entries.map(e => `<label class="check"><input type="checkbox" data-in="smcheck" data-id="${esc(e.id)}" ${sm.checked.has(e.id) ? 'checked' : ''}><span class="grow min0"><strong>${esc(e.name)}</strong><small>${esc(e.meal)} · ${Math.round(e.kcal)} kcal</small></span></label>`).join('')}</div>`,
+      <div class="smlist">${entries.map(e => `<label class="smrow"><input type="checkbox" class="smck" data-in="smcheck" data-id="${esc(e.id)}" ${sm.checked.has(e.id) ? 'checked' : ''}><span class="smtx"><strong>${esc(e.name)}</strong><small>${esc(e.meal)}</small></span><b class="smkc">${Math.round(e.kcal)}<small>kcal</small></b></label>`).join('')}</div>`,
     footer: `<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="meal.savefromdiary">Save meal</button>` }) });
 };
 INPUTS.smname = el => { sm.name = el.value; };
