@@ -54,7 +54,7 @@ ACTIONS['ph.clear'] = async () => {
 setTimeout(() => { if (myPhoto() && lbCfg() && data.settings.photoUp !== myPhoto().length) phUpload(); }, 4000);
 
 /* your own banner picture for gym cards: chosen from your phone, kept on this phone only (never uploaded, never part of the app) */
-const BANNERS = [['block', 'Block'], ['smash', 'Smash'], ['dig', 'Dig']];
+const BANNERS = [['spike', 'Spike'], ['set', 'Set'], ['captain', 'Captain'], ['smile', 'Smile'], ['read', 'Read'], ['focus', 'Focus'], ['serve', 'Serve']];
 const bnExt = () => 'jpg';
 /* a stable pick from a seed (a post id or today's date): everyone sees the same banner on the same post */
 function bnPick(seed) { let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return BANNERS[h % BANNERS.length][0]; }

@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.65.0 — New banner set
+- Seven new illustrated banners (Spike, Set, Captain, Smile, Read, Focus, Serve) replace the old three. Gallery, daily shuffle and post banners all use them.
+
 ## 2.64.1 — Social volleyball
 - Log volleyball now has Training, Match and Social. Social is casual play: it counts as a volleyball session in your week and history but does not tick off club training.
 

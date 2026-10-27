@@ -196,7 +196,7 @@ body.nav2,html{overflow-x:clip}
 :root:not([data-theme="light"]) body.nav2 .dim{color:#a1a1a6}
 
 /* original volleyball-player artwork (drawn for VERTFORM) */
-:root{--vbart:url("../img/banners/block.jpg")}
+:root{--vbart:url("../img/banners/spike.jpg")}
 .gymhero::after,.gbanner::after{content:"";position:absolute;right:0;top:0;bottom:0;width:62%;background:var(--vbart) right center/cover no-repeat;opacity:.95;pointer-events:none;mask-image:linear-gradient(90deg,transparent 0,#000 38%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 38%)}
 .gymhero>*{position:relative;z-index:1}
 .gymhero{overflow:hidden;min-height:190px}
