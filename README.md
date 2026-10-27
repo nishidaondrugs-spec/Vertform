@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.51.1 — Glass tab bar
+- The bottom tab bar is now a floating frosted-glass pill (blur, soft highlight edge), light and dark.
+
 ## 2.51.0 — Cleaner tabs, Lifts, own-post preview
 - Removed the big page titles on Feed, You and Gym, and the repeated week label (it stays in the top bar only).
 - Fuel notices (under-eating, match carbs, protein) have a close button; weekly ones stay away for 3 days.
