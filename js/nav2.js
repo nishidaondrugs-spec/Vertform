@@ -13,9 +13,9 @@ const homePage = () => navNew() ? 'post' : 'home';
 function tabsHTML() {
   const b = (p, n, i) => `<button type="button" class="${p === ui.page ? 'active' : ''}" data-act="nav" data-arg="${p}" aria-current="${p === ui.page ? 'page' : 'false'}">${icon(i)}<span>${n}</span></button>`;
   const ph = data.settings.photo, you = `<button type="button" class="tabyou ${'home' === ui.page ? 'active' : ''}" data-act="nav" data-arg="home" aria-current="${'home' === ui.page ? 'page' : 'false'}">${ph ? `<img class="tabav" src="${ph}" alt="">` : icon('me')}<span>You</span></button>`;
-  return `${b('post', 'Feed', 'feed')}${b('fuel', 'Fuel', 'fuel')}<div class="tabpost"><button type="button" class="postfab" data-act="nav.snap" aria-label="Post a photo">${icon('camera')}</button></div>${b('train', 'Gym', 'train')}${you}`;
+  return `${b('post', 'Feed', 'feed')}${b('train', 'Gym', 'train')}<div class="tabpost"><button type="button" class="postfab" data-act="nav.snap" aria-label="Post a photo">${icon('camera')}</button></div>${b('fuel', 'Fuel', 'fuel')}${you}`;
 }
-function railTabs() { return [['post', 'Feed', 'feed'], ['fuel', 'Fuel', 'fuel'], ['train', 'Gym', 'train'], ['home', 'You', 'me']]; }
+function railTabs() { return [['post', 'Feed', 'feed'], ['train', 'Gym', 'train'], ['fuel', 'Fuel', 'fuel'], ['home', 'You', 'me']]; }
 
 ACTIONS['nav.snap'] = () => {
   if (ui.page !== 'post') go('post');

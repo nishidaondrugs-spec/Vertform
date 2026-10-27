@@ -214,7 +214,7 @@ ACTIONS['hist.filter'] = el => { ui.historyFilter = el.dataset.arg; render(); };
 /* =============== FUEL =============== */
 function entryRow(f) {
   const isRec = !!f.recipeSnapshot;
-  return `<li class="food"><div class="grow min0"><strong>${esc(f.name)}</strong>${f.barcode ? ' ' + tag('Scan', 'slate') : isRec ? ' ' + tag(f.recipeSnapshot.type === 'meal' ? 'Meal' : 'Recipe', 'sage') : f.source === 'Everyday food estimate' ? ' ' + tag('Generic') : ''}<small class="fm"><i class="p">${fmt(Number(f.protein) || 0, 0)}<u>P</u></i><i class="c">${fmt(Number(f.carbs) || 0, 0)}<u>C</u></i><i class="f">${fmt(Number(f.fat) || 0, 0)}<u>F</u></i></small></div><b class="kc mono">${Math.round(f.kcal)}<small>kcal</small></b><button type="button" class="iconbtn" data-act="food.edit" data-id="${esc(f.id)}" aria-label="Edit ${esc(f.name)}">${icon('edit')}</button><button type="button" class="iconbtn" data-act="food.del" data-id="${esc(f.id)}" aria-label="Delete ${esc(f.name)}">${icon('trash')}</button></li>`;
+  return `<li class="food" data-act="food.edit" data-id="${esc(f.id)}"><div class="grow min0"><strong>${esc(f.name)}</strong>${f.barcode ? ' ' + tag('Scan', 'slate') : isRec ? ' ' + tag(f.recipeSnapshot.type === 'meal' ? 'Meal' : 'Recipe', 'sage') : f.source === 'Everyday food estimate' ? ' ' + tag('Generic') : ''}<small class="fm"><i class="p">${fmt(Number(f.protein) || 0, 0)}<u>P</u></i><i class="c">${fmt(Number(f.carbs) || 0, 0)}<u>C</u></i><i class="f">${fmt(Number(f.fat) || 0, 0)}<u>F</u></i></small></div><b class="kc mono">${Math.round(f.kcal)}<small>kcal</small></b><button type="button" class="iconbtn fdel" data-act="food.del" data-id="${esc(f.id)}" aria-label="Delete ${esc(f.name)}">${icon('trash')}</button></li>`;
 }
 function recipeCard(r) {
   const p = recipePerServing(r);
@@ -243,6 +243,12 @@ function calTrendHtml(end) {
 }
 ACTIONS['fuel.bar'] = el => { ui.trendPick = ui.trendPick === el.dataset.id ? null : el.dataset.id; render(); };
 ACTIONS['fuel.pickday'] = el => { if (isISO(el.dataset.id)) { ui.fuelDate = el.dataset.id; ui.trendPick = null; render(); } };
+function fuelHero(date) {
+  const t = targetsFor(date), v = foodTotals(date), left = t.cal - v.kcal, R = 52, C = 2 * Math.PI * R, pct = Math.max(0, Math.min(1, t.cal ? v.kcal / t.cal : 0)), over = left < 0;
+  const m = (n, a, b) => `<div class="fh-m"><div class="fh-mt"><span>${n}</span><b class="mono">${Math.round(a)}<small> / ${b} g</small></b></div><i><u style="width:${Math.max(0, Math.min(100, b ? a / b * 100 : 0)).toFixed(0)}%"></u></i></div>`;
+  return `<section class="fhero" aria-label="Calories and macros"><div class="fh-ring ${over ? 'over' : ''}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="fh-bg" cx="60" cy="60" r="${R}"/><circle class="fh-fg" cx="60" cy="60" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}" transform="rotate(-90 60 60)"/></svg><div class="fh-c"><b class="mono">${Math.abs(Math.round(left)).toLocaleString('en-GB')}</b><span>${over ? 'kcal over' : 'kcal left'}</span></div></div>
+    <div class="fh-side"><div class="fh-eat"><b class="mono">${Math.round(v.kcal).toLocaleString('en-GB')}</b><span>of ${t.cal.toLocaleString('en-GB')} kcal · ${esc(dayTypeLabel(t.type))}</span></div>${m('Protein', v.protein, t.protein)}${m('Carbs', v.carbs, t.carbs)}${m('Fat', v.fat, t.fat)}</div></section>`;
+}
 function viewFuel() {
   const date = ui.fuelDate, t = targetsFor(date), fs = foodsFor(date), diff = daysBetween(todayISO(), date), barDays = Array.from({ length: 7 }, (_, i) => addDays(date, i - 6));
   const groups = MEALS.map(m => { const list = fs.filter(f => f.meal === m); const kc = sum(list, f => f.kcal);
@@ -252,7 +258,7 @@ function viewFuel() {
     ${typeof fuelSegs === 'function' ? fuelSegs() : ''}
     <div class="datebar nav deskonly"><button type="button" class="iconbtn" data-act="fuel.prev" aria-label="Previous day">${icon('back')}</button><input id="fuelday" type="date" data-in="fuelday" aria-label="Food diary date" value="${esc(date)}"><button type="button" class="iconbtn" data-act="fuel.next" aria-label="Next day">${icon('chev')}</button>${diff !== 0 ? `<button type="button" class="btn sm ghost" data-act="fuel.today">Today</button>` : ''}</div>
     ${diff === 0 ? '' : `<div class="datelabel fuelpast"><span>${esc(longDate(date))}</span><button type="button" class="btn sm ghost" data-act="fuel.today">Back to today</button></div>`}
-    ${fuelIs('today') ? readout(date) : ''}
+    ${fuelIs('today') ? fuelHero(date) : ''}
     ${fuelIs('today') ? `<div class="fuelcta"><button type="button" class="btn primary" data-act="food.open2">${icon('plus')}Add food</button><button type="button" class="fscan" data-act="food.scan" aria-label="Scan a barcode">${icon('scan')}</button></div>` : ''}
     ${fuelIs('progress') ? calTrendHtml(date) : ''}
     ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}
