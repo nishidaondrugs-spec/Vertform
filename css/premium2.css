@@ -54,3 +54,91 @@ body.nav2{--pm-bg:#0b0b0c;--pm-s1:#151517;--pm-s2:#1f1f23;--pm-line:rgba(255,255
 :root:not([data-theme="light"]) .sheet{background:#121214!important;border:0!important}
 :root:not([data-theme="light"]) body.nav2 .pcard.bm+.pcard.bm{border-top:1px solid var(--pm-line)!important;padding-top:16px!important}
 :root:not([data-theme="light"]) body.nav2 .pcard.bm{margin-bottom:0}
+
+/* ===== 2.53: BeReal-clear feed, stories row, hero cards, solid tab bar ===== */
+:root:not([data-theme="light"]) body.nav2{--pm-text:#f5f5f7;--pm-mut:#a1a1a6}
+/* wordmark in the top bar on the four main screens */
+body.nav2:not(.page-sub) .topbar{position:relative}
+body.nav2:not(.page-sub) .topbar .brand{display:flex!important;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+body.nav2:not(.page-sub) .topbar .brand .mark{display:none}
+body.nav2:not(.page-sub) .topbar .brand .word{display:inline!important;font-weight:800;font-size:19px;letter-spacing:.14em;color:#fff}
+body.nav2:not(.page-sub) .topbar .brand .word i{color:var(--pm-acc);font-style:normal}
+/* pager dots out: tabs already show where you are */
+body.nav2 .pager{display:none}
+/* solid tab bar so nothing shows through */
+:root:not([data-theme="light"]) body.nav2 .tabbar{background:rgba(24,24,27,.96)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 12px 30px rgba(0,0,0,.65)!important}
+body.nav2 #view::after{content:"";position:fixed;left:0;right:0;bottom:0;height:110px;background:linear-gradient(0deg,#0b0b0c 35%,rgba(11,11,12,0));pointer-events:none;z-index:20}
+body.nav2 .tabbar{z-index:30}
+/* stories row */
+.stories{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 16px;scrollbar-width:none}
+.stories::-webkit-scrollbar{display:none}
+.stb{flex:none;width:66px;background:none;border:0;padding:0;color:var(--pm-mut,#a1a1a6);font:inherit;text-align:center}
+.stb small{display:block;margin-top:6px;font-size:12px;font-weight:500;color:#c7c7cc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stc{display:grid;place-items:center;width:66px;height:66px;border-radius:50%;box-sizing:border-box;border:2px solid #3a3a3f;padding:3px;overflow:hidden;background:#151517}
+.stc .vav,.stc .pav,.stc img{width:100%!important;height:100%!important;border:0!important;border-radius:50%;object-fit:cover;font-size:24px}
+.stb.live .stc,.stb.done .stc{border-color:var(--pm-acc,#e5383b)}
+.stb.me:not(.done) .stc{border:2px dashed var(--pm-acc,#e5383b);color:var(--pm-acc,#e5383b)}
+.stb.me:not(.done) .stc svg{width:26px;height:26px}
+/* the feed: no headers, one list */
+.pfeed{list-style:none;margin:0;padding:0}
+:root:not([data-theme="light"]) body.nav2 .pcard .phead .phlink b{font-size:16px;font-weight:700;color:#fff}
+:root:not([data-theme="light"]) body.nav2 .pcard .phead .phlink small{font-size:13px;color:#a1a1a6}
+:root:not([data-theme="light"]) body.nav2 .pcard .phead .vav,:root:not([data-theme="light"]) body.nav2 .pcard .phead .pav{width:38px;height:38px;border:0}
+.fend{text-align:center;padding:6px 0 30px}
+/* empty state */
+.fempty{text-align:center;padding:26px 24px 10px}
+.fempty .fe-pic{display:grid;place-items:center;height:260px;border-radius:26px;background:var(--pm-s1,#151517);color:#4a4a50;margin-bottom:24px}
+.fempty .fe-pic svg{width:64px;height:64px}
+.fempty h3{font-size:25px;letter-spacing:-.02em;margin:0 0 8px;color:#fff}
+.fempty p{color:#a1a1a6;font-size:15px;line-height:1.4;margin:0 0 20px}
+.fempty .btn.primary{padding:0 30px;height:50px;font-size:16px;font-weight:700}
+.fempty .ylink{display:block;margin:12px auto 0}
+.fempty-load{text-align:center;color:#a1a1a6;padding:40px 0}
+/* gym post as a hero card */
+.gymhero{position:relative;border-radius:26px;padding:20px 20px 18px;margin:0;background:radial-gradient(120% 90% at 0% 0%,#3a2326 0%,#1b1b1f 55%,#111113 100%)}
+.gymhero.compact{margin-top:10px;padding:14px 16px;border-radius:20px}
+.gh-pill{display:inline-block;background:rgba(255,255,255,.16);border-radius:14px;padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:.04em}
+.gh-t{font-size:30px;line-height:1.05;letter-spacing:-.02em;margin:14px 0 14px;font-weight:700;color:#fff}
+.gymhero.compact .gh-t{font-size:22px;margin:10px 0}
+.gh-stats{display:flex;gap:22px;flex-wrap:wrap;color:#c7c7cc;font-size:14px}
+.gh-stats b{display:block;font-size:24px;letter-spacing:-.02em;color:#fff}
+.gh-stats .gpb b{color:var(--pm-gold,#f2b84b)}
+.gh-more{margin-top:14px;border-top:1px solid rgba(255,255,255,.1);padding-top:6px}
+.gh-more summary{cursor:pointer;color:#a1a1a6;font-size:14px;font-weight:600;padding:8px 0;list-style:none}
+.gh-more summary::after{content:" ›"}
+.gh-more[open] summary::after{content:" ⌄"}
+.gh-more .wk-list{margin:0;padding:0;list-style:none}
+.gh-more .wk-list li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:15px;border-top:1px solid rgba(255,255,255,.06)}
+/* You: profile header */
+:root:not([data-theme="light"]) body.nav2 .yme{display:flex;align-items:center;gap:18px;padding:6px 2px 14px!important}
+body.nav2 .ycphoto{flex:none;width:92px;height:92px;border-radius:50%;padding:0;border:0!important;background:var(--pm-s1,#151517);overflow:hidden;color:#a1a1a6;display:grid;place-items:center;box-shadow:0 0 0 2px #0b0b0c,0 0 0 3.5px var(--pm-gold,#f2b84b)}
+body.nav2 .ycphoto img,body.nav2 .ycphoto .fphoto{width:100%;height:100%;object-fit:cover;border:0;border-radius:50%}
+.phadd{display:flex;flex-direction:column;align-items:center;gap:4px}.phadd svg{width:28px;height:28px}.phadd small{font-size:11px;font-weight:600}
+body.nav2 .yme .yname{font-size:30px;font-weight:700;letter-spacing:-.02em}
+body.nav2 .ylinks{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+body.nav2 .ylink.mut{color:#a1a1a6}
+
+:root:not([data-theme="light"]) body.nav2 .topbar{background:var(--pm-bg)!important}
+:root:not([data-theme="light"]) body.nav2 .pcard .phead .vav,:root:not([data-theme="light"]) body.nav2 .pcard .phead .pav{background:#1f1f23!important}
+:root:not([data-theme="light"]) body.nav2 .pcard.bm{border-radius:0!important}
+
+:root:not([data-theme="light"]) body.nav2 .ylinks .ylink{font-size:14px;font-weight:600}
+:root:not([data-theme="light"]) body.nav2 .ylinks .ylink.mut{color:#a1a1a6}
+body.nav2 .ywk{font-size:13px;color:#a1a1a6;margin-top:4px}
+
+/* Fuel / Gym tidy */
+body.nav2.page-fuel .topbar .brand{display:none!important}
+:root:not([data-theme="light"]) body.nav2 .readout::after{display:none!important}
+:root:not([data-theme="light"]) body.nav2 .readout{padding:6px 2px 18px!important;border-bottom:1px solid var(--pm-line)!important;border-top:0!important}
+:root:not([data-theme="light"]) body.nav2 .mealgroup{border-left:0!important;border-bottom:1px solid var(--pm-line)!important;padding:0 2px!important}
+:root:not([data-theme="light"]) body.nav2 .mealgroup .mealtitle b{font-size:18px;color:#f5f5f7;font-weight:600}
+:root:not([data-theme="light"]) body.nav2 .mealgroup .mealhead .iconbtn,:root:not([data-theme="light"]) body.nav2 .mealgroup .mealhead button{background:#1f1f23!important;border:0!important;border-radius:50%;color:#fff}
+:root:not([data-theme="light"]) body.nav2 .mdot{display:none}
+:root:not([data-theme="light"]) body.nav2 .feelbox{border-top:1px solid var(--pm-line)!important;border-bottom:1px solid var(--pm-line)!important;margin:12px 0}
+/* week strip as plain day columns */
+:root:not([data-theme="light"]) body.nav2 .strip>*{background:transparent!important;border:0!important;box-shadow:none!important}
+:root:not([data-theme="light"]) body.nav2 .strip>*[aria-current],:root:not([data-theme="light"]) body.nav2 .strip>.today,:root:not([data-theme="light"]) body.nav2 .strip>.sel{background:#1f1f23!important;border-radius:16px!important}
+:root:not([data-theme="light"]) body.nav2 .seg3 button{background:#1c1c1f!important;border:0!important}
+:root:not([data-theme="light"]) body.nav2 :is(.mealgroup,.mealtitle)::before{display:none!important}
+:root:not([data-theme="light"]) body.nav2 .mealtitle{border-left:0!important;padding-left:0!important}
+body.nav2 .feelbox summary::after{content:" ›";color:#a1a1a6}

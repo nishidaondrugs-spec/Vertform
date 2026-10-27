@@ -159,6 +159,8 @@ function normaliseData(o) {
   out.settings.nav = s.nav === 'hub' ? 'hub' : 'feed';
   out.settings.flagHide = {}; if (isObj(s.flagHide)) for (const [k, v] of Object.entries(s.flagHide)) if (/^[a-z-]{1,20}$/.test(k) && isISO(v)) out.settings.flagHide[k] = v;
   out.settings.creatine = { on: !!(isObj(s.creatine) && s.creatine.on), dose: clamp(Number(isObj(s.creatine) ? s.creatine.dose : 5) || 5, 1, 20) };
+  out.settings.photo = typeof s.photo === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.photo) && s.photo.length < 80000 ? s.photo : '';
+  out.settings.photoUp = Number.isFinite(s.photoUp) ? s.photoUp : 0;
   out.settings.logo = typeof s.logo === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.logo) && s.logo.length < 200000 ? s.logo : '';
   out.settings.weighSnooze = isISO(s.weighSnooze) ? s.weighSnooze : null;
   /* 2.20: the player look was dropped on every load. Keep only small whole numbers; the editor cleans it fully when used. */

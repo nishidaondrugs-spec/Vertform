@@ -41,7 +41,7 @@ function pMeta(kind) {
   }
   return null;
 }
-function pAttachHtml(kind, m) {
+function pAttachHtml(kind, m, compact) {
   if (!m || kind === 'note') return '';
   if (kind === 'food') return foodAttachHtml(m);
   if (kind === 'jump') {
@@ -51,6 +51,12 @@ function pAttachHtml(kind, m) {
   if (kind === 'gym') {
     const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null, list = Array.isArray(m.l) ? m.l.slice(0, 6) : [];
     const stats = [n(m.min) && ['Time', `${n(m.min)} min`], n(m.vol) && ['Volume', `${Math.round(n(m.vol)).toLocaleString('en-GB')} kg`], ['Sets', `${Number(m.s) || 0}`], n(m.pb) && ['PBs', `${n(m.pb)}`]].filter(Boolean);
+    if (navNew()) {
+      const big = [n(m.min) && [n(m.min), 'min'], n(m.vol) && [Math.round(n(m.vol)).toLocaleString('en-GB'), 'kg'], n(m.pb) && [n(m.pb), n(m.pb) === 1 ? 'PB' : 'PBs', 1]].filter(Boolean);
+      return `<div class="gymhero ${compact ? 'compact' : ''}"><span class="gh-pill">GYM</span><h3 class="gh-t">${esc(m.t)}</h3>
+        <div class="gh-stats">${big.map(([v, l, pb]) => `<span class="${pb ? 'gpb' : ''}"><b>${esc(String(v))}</b>${l}</span>`).join('')}<span><b>${Number(m.s) || 0}</b>sets</span></div>
+        ${list.length ? `<details class="gh-more"><summary>Lifts</summary><ul class="wk-list">${list.map(r => `<li><span>${esc(r[0])}</span><span>${esc(r[1])}${r[2] ? ' <i class="pbt">PB</i>' : ''}</span></li>`).join('')}</ul></details>` : ''}</div>`;
+    }
     return `<div class="wkcard"><div class="wk-head"><b class="wk-t">${esc(m.t)}</b>${navNew() ? '<span class="wk-tag">GYM</span>' : ''}</div><dl class="wk-stats">${stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
       ${list.length ? `<ul class="wk-list">${list.map(r => `<li><span>${esc(r[0])}</span><span>${esc(r[1])}${r[2] ? ' <i class="pbt">PB</i>' : ''}</span></li>`).join('')}</ul>` : `<small>${plural(Number(m.ex) || 0, 'exercise')}${n(m.rpe) ? ` · RPE ${n(m.rpe)}` : ''}</small>`}</div>`;
   }
@@ -73,8 +79,8 @@ const P_REACTS = [['fire', '🔥', 'Fire'], ['laugh', '😂', 'Laugh'], ['vb', '
 function postCard(r) {
   const mine = !!r.mine, reacts = r.reacts || {};
   const who = mine || !r.pid
-    ? `<button type="button" class="phlink" data-act="me.open" aria-label="Your profile">${avatarHTML(myLook(), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${mine ? ' <i>you</i>' : ''}</b><small>${pWhen(r.created)}</small></span></button>`
-    : `<button type="button" class="phlink" data-act="fr.open" data-id="${esc(r.pid)}" aria-label="${esc(r.nickname)}, open profile">${avatarHTML(lookFor(r.pid), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}</b><small>${pWhen(r.created)}</small></span></button>`;
+    ? `<button type="button" class="phlink" data-act="me.open" aria-label="Your profile">${faceHTML(lbCfg()?.id, myLook(), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${mine ? ' <i>you</i>' : ''}</b><small>${pWhen(r.created)}</small></span></button>`
+    : `<button type="button" class="phlink" data-act="fr.open" data-id="${esc(r.pid)}" aria-label="${esc(r.nickname)}, open profile">${faceHTML(r.pid, lookFor(r.pid), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}</b><small>${pWhen(r.created)}</small></span></button>`;
   const hasMedia = !!(r.photo || r.video);
   /* camera reactions: small round selfies on the post (filled in by rxPaint); text-only posts show them in a row */
   const photoN = Number(reacts.photo) || 0;
@@ -88,7 +94,7 @@ function postCard(r) {
   const cam = !mine && r.pid ? `<button type="button" class="rcam" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}<span>React</span></button>` : '';
   return `<li class="pcard bm ${mine ? 'mine' : ''}">
     <div class="phead">${who}${mine ? `<button type="button" class="iconbtn" data-act="post.del" data-id="${esc(r.id)}" aria-label="Delete this post">${icon('trash')}</button>` : ''}</div>
-    ${media}${pAttachHtml(r.kind, r.meta)}${rx}
+    ${media}${pAttachHtml(r.kind, r.meta, hasMedia)}${rx}
     <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div></li>`;
 }
 const P_KINDS = [
@@ -215,16 +221,20 @@ async function pPump() {
   }
 }
 
+/* the row of faces at the top of the feed: you first, then friends (a red ring means they posted today) */
+function storiesRow() {
+  const c = lbCfg(), today = todayISO(), rows = pUi.rows || [];
+  const mine = rows.some(r => r.mine && (r.day || today) === today);
+  const seen = new Map();
+  rows.filter(r => !r.mine && r.pid).forEach(r => { const e = seen.get(r.pid) || { pid: r.pid, nick: r.nickname, t: false }; if ((r.day || today) === today) e.t = true; seen.set(r.pid, e); });
+  (lbUi.rows || []).forEach(r => { if (r.id && r.id !== c.id && !seen.has(r.id)) seen.set(r.id, { pid: r.id, nick: r.nickname, t: false }); });
+  const me = `<button type="button" class="stb me ${mine ? 'done' : ''}" data-act="${mine ? 'post.mine' : 'post.compose'}"><span class="stc">${mine ? faceHTML(c.id, myLook(), 'You') : icon('plus')}</span><small>${mine ? 'You' : 'Your post'}</small></button>`;
+  const fr = [...seen.values()].sort((a, b) => Number(b.t) - Number(a.t)).slice(0, 14).map(e => `<button type="button" class="stb ${e.t ? 'live' : ''}" data-act="fr.open" data-id="${esc(e.pid)}"><span class="stc">${faceHTML(e.pid, lookFor(e.pid), e.nick)}</span><small>${esc(String(e.nick || '').slice(0, 10))}</small></button>`).join('');
+  return `<div class="stories" role="list" aria-label="Friends">${me}${fr}</div>`;
+}
 const pDayLabel = (d, today) => d === today ? 'Today' : d === addDays(today, -1) ? 'Yesterday' : `${weekdayShort(d)} ${parseDate(d).getDate()}`;
 function pHero(todayRows) {
-  if (navNew()) {
-    const mineRow = todayRows.find(r => r.mine), f = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size;
-    const sub = mineRow ? `${new Date(mineRow.created).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}${Number(mineRow.reacts?.photo) ? ` · ${plural(Number(mineRow.reacts.photo), 'camera reaction')}` : ''}` : (f ? `${plural(f, 'friend')} posted today` : 'No friends have posted yet');
-    const mineRows = todayRows.filter(r => r.mine).slice(0, 3);
-    const thumb = r => (r.photo || r.video) ? `<span class="pthumb pphoto" data-id="${esc(r.id)}"></span>` : `<span class="pthumb">${esc(String(r.body || 'Post').slice(0, 14))}</span>`;
-    if (!mineRow) return `<div class="pstrip"><span class="pst-ic" aria-hidden="true">${icon('camera')}</span><span class="pst-tx"><b>Post today</b><small>${sub}</small></span><button type="button" class="btn ghost" data-act="post.compose">Post</button></div>`;
-    return `<div class="pstrip"><button type="button" class="pst-open" data-act="post.mine" aria-label="Open your posts"><span class="pthumbs">${mineRows.map(thumb).join('')}</span><span class="pst-tx"><b>You posted today</b><small>${sub}</small></span></button><button type="button" class="btn ghost" data-act="post.compose">Post again</button></div>`;
-  }
+  if (navNew()) return storiesRow();
   const friends = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size, mine = todayRows.filter(r => r.mine).length;
   const sub = friends ? `${plural(friends, 'friend')} posted today` : 'No friends have posted yet';
   return `<button type="button" class="phero" data-act="post.compose"><span class="phorb" aria-hidden="true">${icon('plus')}</span><span class="phtx"><b>${mine ? 'Post again' : 'Post today'}</b><small>${sub}</small></span>${icon('chev')}</button>`;
@@ -241,6 +251,15 @@ function viewPost() {
   const todayAll = rows.filter(isToday), todayRows = todayAll.filter(r => !r.mine), earlier = rows.filter(r => !isToday(r) && !r.mine);
   const days = [...new Set(earlier.map(r => r.day))].sort().reverse();
   const nothingYet = pUi.rows !== null && !rows.length;
+  if (navNew()) {
+    const feed = rows.filter(r => !r.mine).sort((x, y) => String(y.created).localeCompare(String(x.created)));
+    const loadingNow = pUi.rows === null;
+    const empty = loadingNow ? '<p class="fempty-load">Loading your feed…</p>' : `<div class="fempty"><div class="fe-pic" aria-hidden="true">${icon('camera')}</div><h3>Quiet today</h3><p>${nothingYet || rows.every(r => r.mine) ? 'Add a friend with their code, then post your session. Their posts show up here.' : 'Post your session and your friends see it here.'}</p><button type="button" class="btn primary" data-act="post.compose">Post now</button>${nothingYet || rows.every(r => r.mine) ? '<button type="button" class="ylink" data-act="lb.open">Add a friend</button>' : ''}</div>`;
+    return `${pagerDots(0)}${banners()}
+    ${pUi.compose ? postComposer() : pHero(todayAll)}
+    ${pUi.err ? `<div class="status warn" role="alert">${esc(pUi.err)}</div>` : ''}
+    ${feed.length ? `<ul class="pfeed">${feed.map(postCard).join('')}</ul><div class="fend"><button type="button" class="ylink" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>` : empty}`;
+  }
   return `${pageHead('', navNew() ? 'Friends' : 'Post', navNew() ? '' : right)}${pagerDots(0)}${banners()}
     ${pUi.compose ? postComposer() : pHero(todayAll)}
     ${navNew() ? `<div class="yhead"><div class="yeye">TODAY</div><span><button type="button" class="ylink" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></span></div>` : `<div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>`}

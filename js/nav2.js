@@ -88,9 +88,10 @@ function viewYou() {
   const crest = look ? `<span class="crest3d" data-keep="crest:${lookKey(look)}"><iframe class="f3d" src="${lookUrl(look, '&bare=1&lite=1')}" tabindex="-1" aria-hidden="true" title=""></iframe></span>` : `<span class="ycrestin">${crestInner()}</span>`;
   return `${pageHead('', 'You')}${pagerDots(1)}${banners()}
   <div class="ywrap">
-    <div class="ycard yme"><div class="ycrest">${crest}</div><div class="min0"><div class="yname">You</div>
+    <div class="ycard yme"><button type="button" class="ycrest ycphoto" data-act="ph.pick" aria-label="${myPhoto() ? 'Change your photo' : 'Choose your photo'}">${myPhoto() ? `<img class="fphoto big" src="${myPhoto()}" alt="">` : `<span class="phadd">${icon('camera')}<small>Add photo</small></span>`}</button><div class="min0"><div class="yname">${esc(lbCfg()?.nickname || 'You')}</div>
       <div class="ystreak">${fireIcon}${w.streak > 0 ? `${w.streak} week streak` : 'No streak yet'}</div>
-      <button type="button" class="btn ghost" data-act="lk.open">Edit look</button></div></div>
+      <div class="ywk">Week ${getWeek()} of 12</div>
+      <div class="ylinks"><button type="button" class="ylink" data-act="ph.pick">${myPhoto() ? 'Change photo' : 'Choose photo'}</button>${myPhoto() ? '<button type="button" class="ylink mut" data-act="ph.clear">Remove</button>' : ''}<button type="button" class="ylink mut" data-act="lk.open">Player look</button></div></div></div>
     ${youTiles()}
     ${youBoard()}
     ${partnersCard()}
@@ -106,7 +107,7 @@ function gymToday() {
   return `${draft ? `<div class="banner">${icon('play')}<div class="grow"><b>${esc(sName(d.session))} is still open</b><p>From ${esc(pretty(d.date))} · ${sum_sets(d)} sets ticked.</p><div class="actions"><button type="button" class="btn sm primary" data-act="wk.resume">Resume</button><button type="button" class="btn sm ghost" data-act="wk.discard">Discard</button></div></div></div>` : ''}
     ${todayItems()}
     ${gymFocusBanner()}
-    ${readinessBlock()}
+    <details class="explain feelbox"><summary><span>How do you feel today?</span></summary>${readinessBlock()}</details>
     ${sectionHead('THIS WEEK', `${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}`)}
     ${weekStrip(mon)}
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button></div>`;

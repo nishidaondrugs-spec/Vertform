@@ -16,7 +16,7 @@ function fuelDateBar(date, today) {
 function renderNav() {
   const tb = $('#topback'); if (tb) tb.hidden = isTopPage(ui.page);
   const td = $('#topdate'); if (td) { const on = ui.page === 'fuel'; td.hidden = !on; td.innerHTML = on ? fuelDateBar(ui.fuelDate, todayISO()) : ''; document.body.classList.toggle('page-fuel', on); }
-  const tw = $('#top-week'); tw.textContent = `WK ${pad2(getWeek())}/12`; tw.hidden = ui.page !== 'home';
+  const tw = $('#top-week'); tw.textContent = `WK ${pad2(getWeek())}/12`; tw.hidden = true;
   const me = $('#topme'); if (me) { const onMe = ui.page === 'friend' && ui.friendId === 'me'; me.hidden = onMe; if (!me.dataset.k) { me.dataset.k = 'logo'; me.innerHTML = markHTML; } }
   document.body.classList.toggle('nav2', navNew()); document.body.classList.toggle('page-sub', !isTopPage(ui.page));
   const tabs = navNew() ? railTabs() : TABS;
