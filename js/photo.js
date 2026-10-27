@@ -54,8 +54,8 @@ ACTIONS['ph.clear'] = async () => {
 setTimeout(() => { if (myPhoto() && lbCfg() && data.settings.photoUp !== myPhoto().length) phUpload(); }, 4000);
 
 /* your own banner picture for gym cards: chosen from your phone, kept on this phone only (never uploaded, never part of the app) */
-const BANNERS = [['block', 'Block'], ['smash', 'Smash'], ['dig', 'Dig'], ['spike', 'Silhouette'], ['net', 'Net'], ['court', 'Court'], ['iron', 'Iron'], ['rise', 'Rise']];
-const bnExt = id => ['block', 'smash', 'dig'].includes(id) ? 'jpg' : 'svg';
+const BANNERS = [['block', 'Block'], ['smash', 'Smash'], ['dig', 'Dig']];
+const bnExt = () => 'jpg';
 function bnApply() {
   const b = data.settings.banner, id = data.settings.bannerId || 'block', r = document.documentElement;
   r.style.setProperty('--vbart', b ? `url("${b}")` : `url("${new URL(`img/banners/${id}.${bnExt(id)}`, location.href).href}")`);

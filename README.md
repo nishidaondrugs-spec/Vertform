@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.55.2 — Illustrations only
+- Banner gallery now has only the three illustrated banners (Block, Smash, Dig).
+
 ## 2.55.1 — Illustrated banners
 - Three illustrated banners (Block, Smash, Dig) added to the banner gallery; Block is the default.
 
