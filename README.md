@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.57.0 — You screen redesign
+- Centered profile header (big photo with a camera badge, name, streak and week), one "Edit profile" button (photo, player look, gym banner), bold section titles and consistent list rows.
+
 ## 2.56.2 — Random banners
 - Gym post cards pick one of the three banners per post (same for everyone). Gym → Today banner shuffles daily by default; pick a fixed one any time.
 

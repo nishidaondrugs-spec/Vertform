@@ -88,10 +88,10 @@ function viewYou() {
   const crest = look ? `<span class="crest3d" data-keep="crest:${lookKey(look)}"><iframe class="f3d" src="${lookUrl(look, '&bare=1&lite=1')}" tabindex="-1" aria-hidden="true" title=""></iframe></span>` : `<span class="ycrestin">${crestInner()}</span>`;
   return `${pageHead('', 'You')}${pagerDots(1)}${banners()}
   <div class="ywrap">
-    <div class="ycard yme"><button type="button" class="ycrest ycphoto" data-act="ph.pick" aria-label="${myPhoto() ? 'Change your photo' : 'Choose your photo'}">${myPhoto() ? `<img class="fphoto big" src="${myPhoto()}" alt="">` : `<span class="phadd">${icon('camera')}<small>Add photo</small></span>`}</button><div class="min0"><div class="yname">${esc(lbCfg()?.nickname || 'You')}</div>
-      <div class="ystreak">${fireIcon}${w.streak > 0 ? `${w.streak} week streak` : 'No streak yet'}</div>
-      <div class="ywk">Week ${getWeek()} of 12</div>
-      <div class="ylinks"><button type="button" class="ylink" data-act="ph.pick">${myPhoto() ? 'Change photo' : 'Choose photo'}</button>${myPhoto() ? '<button type="button" class="ylink mut" data-act="ph.clear">Remove</button>' : ''}<button type="button" class="ylink mut" data-act="lk.open">Player look</button></div></div></div>
+    <div class="yprof"><button type="button" class="yav" data-act="ph.pick" aria-label="${myPhoto() ? 'Change your photo' : 'Choose your photo'}">${myPhoto() ? `<img class="fphoto" src="${myPhoto()}" alt="">` : `<span class="yinit">${esc(String(lbCfg()?.nickname || 'You').slice(0, 1).toUpperCase())}</span>`}<span class="yav-badge">${icon('camera')}</span></button>
+      <h1 class="yname">${esc(lbCfg()?.nickname || 'You')}</h1>
+      <p class="ymeta">${fireIcon}<span>${w.streak > 0 ? `${w.streak} week streak` : 'No streak yet'}</span><i></i><span>Week ${getWeek()} of 12</span></p>
+      <button type="button" class="yedit" data-act="prof.menu">Edit profile</button></div>
     ${youTiles()}
     ${youBoard()}
     ${partnersCard()}

@@ -85,3 +85,13 @@ ACTIONS['bn.file'] = () => {
 ACTIONS['bn.set'] = el => { data.settings.banner = ''; data.settings.bannerId = el.dataset.arg; save(); bnApply(); refreshSheet(); render(); };
 ACTIONS['bn.pick'] = () => openSheet({ title: 'Banner', eyebrow: 'GYM CARDS', render: () => ({ body: `<div class="bngrid"><button type="button" class="bnopt bnshuf ${!data.settings.banner && (data.settings.bannerId || 'random') === 'random' ? 'on' : ''}" data-act="bn.set" data-arg="random" aria-label="Shuffle"><span>Shuffle daily</span></button>${BANNERS.map(([k, n]) => `<button type="button" class="bnopt ${!data.settings.banner && (data.settings.bannerId || 'random') === k ? 'on' : ''}" data-act="bn.set" data-arg="${k}" aria-label="${n}" style="background-image:url('img/banners/${k}.${bnExt(k)}')"><span>${n}</span></button>`).join('')}</div><button type="button" class="btn ghost bnfile" data-act="bn.file">${data.settings.banner ? 'Change my own picture' : 'Use a picture from my phone'}</button>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
 bnApply();
+
+ACTIONS['prof.menu'] = () => openSheet({ title: 'Edit profile', render: () => ({ body: `<ul class="prow">
+  <li><button type="button" data-act="prof.photo">${icon('camera')}<span>${myPhoto() ? 'Change photo' : 'Choose photo'}</span></button></li>
+  ${myPhoto() ? `<li><button type="button" data-act="prof.remove">${icon('trash')}<span>Remove photo</span></button></li>` : ''}
+  <li><button type="button" data-act="prof.look">${icon('train')}<span>Player look</span></button></li>
+  <li><button type="button" data-act="prof.banner">${icon('post')}<span>Gym banner</span></button></li></ul>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
+ACTIONS['prof.photo'] = () => { closeAllSheets(); ACTIONS['ph.pick'](); };
+ACTIONS['prof.remove'] = () => { closeAllSheets(); ACTIONS['ph.clear'](); };
+ACTIONS['prof.look'] = () => { closeAllSheets(); setTimeout(() => ACTIONS['lk.open'](), 120); };
+ACTIONS['prof.banner'] = () => { closeAllSheets(); setTimeout(() => ACTIONS['bn.pick'](), 120); };
