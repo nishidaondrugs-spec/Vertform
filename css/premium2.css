@@ -267,3 +267,15 @@ body.nav2 .gbtns .gbtn{background:rgba(0,0,0,.55)!important;color:#fff!important
 
 .gbanner::after{background-position:center 25%!important}
 .bngrid{max-height:52vh;overflow:auto}
+
+/* BeReal-style comment line under each post */
+.bcline{padding:10px 2px 2px}
+.bc-view{display:block;background:none;border:0;padding:0 0 6px;color:#a1a1a6;font:inherit;font-size:14px;font-weight:500;text-align:left}
+.bc-row{display:flex;align-items:center;gap:12px;min-height:44px}
+:root:not([data-theme="light"]) body.nav2 .bc-add{flex:1;min-width:0;height:44px;padding:0;background:transparent!important;border:0!important;color:#8e8e93!important;font:inherit;font-size:15px;font-weight:400;text-align:left;border-radius:0}
+:root:not([data-theme="light"]) body.nav2 .bc-react{flex:none;width:44px;height:44px;border-radius:50%!important;background:#1c1c1f!important;border:0!important;color:#f5f5f7!important;display:grid;place-items:center;padding:0}
+.bc-react svg{width:22px;height:22px}
+.bmedia .rxbubbles{position:absolute;right:14px;bottom:14px;z-index:3}
+.bmedia .rxbubbles .rxb{width:48px;height:48px;border:2.5px solid #fff;margin-left:-14px}
+.bmedia .rxbubbles .rxb:first-child{margin-left:0}
+:root:not([data-theme="light"]) body.nav2 .bcline .bc-add{padding:0 !important;margin:0 !important;text-indent:0;justify-content:flex-start}
