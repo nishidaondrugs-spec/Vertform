@@ -156,7 +156,7 @@ ACTIONS['days.save'] = () => {
 /* =============== day sheet: everything about one date =============== */
 function openDaySheet(date) {
   ui.selectedDay = date;
-  openSheet({ title: longDate(date), eyebrow: date === todayISO() ? 'TODAY' : date < todayISO() ? 'PAST DAY' : 'PLANNED DAY', size: 'tall', render: () => renderDaySheet(date) });
+  openSheet({ title: date === todayISO() ? 'Today' : longDate(date), size: 'tall', render: () => renderDaySheet(date) });
 }
 const STATUS_LABEL = { planned: 'Planned', done: 'Completed', missed: 'Missed', cancelled: 'Cancelled', rest: 'Rest day' };
 const statusTag = s => tag(STATUS_LABEL[s] || s, s === 'done' ? 'sage' : s === 'missed' ? 'rose' : s === 'planned' ? 'clay' : '');
@@ -165,7 +165,7 @@ function renderDaySheet(date) {
   for (const it of day.items) {
     if (it.kind === 'gym') {
       const t = templates[it.session], draftHere = data.draft && data.draft.session === it.session && data.draft.date === d;
-      parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">GYM · ${sName(it.session).toUpperCase()}${it.pinned ? ' · MOVED BY YOU' : ''}</div>${statusTag(it.status)}</div><h3>${esc(t.title)}</h3><p class="dim">${esc(t.duration)} · ${esc(t.subtitle)}</p>
+      parts.push(`<section class="dayitem"><div class="dayhd"><span class="dcode">${sBadge(it.session)}</span><div class="min0"><h3>${esc(t.title)}</h3><p class="dim">${esc(t.duration)} · ${esc(t.subtitle)}${it.pinned ? ' · Moved by you' : ''}</p></div>${statusTag(it.status)}</div>
         ${it.log ? `<p class="tiny">Logged ${it.log.date === d ? 'on this day' : 'on ' + esc(pretty(it.log.date))}.</p>` : ''}
         <div class="actions">${it.log ? `<button type="button" class="btn ghost" data-act="log.view" data-id="${esc(it.log.id)}">View workout</button>` : `<button type="button" class="btn primary" data-act="wk.start" data-id="${it.session}" data-arg="${d}">${icon('play')}${draftHere ? 'Resume' : 'Start'} ${sName(it.session)}</button>`}
         ${it.log ? '' : `<button type="button" class="btn ghost" data-act="move.open" data-id="${it.session}" data-arg="${it.weekMon}">${icon('move')}Move</button>`}${it.pinned ? `<button type="button" class="btn ghost" data-act="move.reset" data-id="${it.session}" data-arg="${it.weekMon}">Reset to recommended</button>` : ''}</div></section>`);
@@ -185,10 +185,9 @@ function renderDaySheet(date) {
   if (!day.items.length) parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">REST</div>${tag(past ? 'No plan' : 'Rest day')}</div><h3>Nothing planned</h3><p class="dim">Rest or light mobility. An unscheduled day is not missed progress.</p></section>`);
   const hasGym = day.items.some(i => i.kind === 'gym');
   return { body: `${day.conflicts.length ? `<div class="flags">${day.conflicts.map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}<p class="tiny">Flagged, not changed: your plan stays exactly as you set it.</p></div>` : ''}${parts.join('')}
-    <div class="eyebrow mt">ADD TO THIS DAY</div>
-    <div class="chip-row"><button type="button" class="chip" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}Log volleyball</button><button type="button" class="chip" data-act="match.add" data-id="${d}">${icon('plus')}Match</button><button type="button" class="chip" data-act="extra.add" data-id="${d}">${icon('plus')}Extra session</button></div>
-    ${hasGym ? '' : `<div class="eyebrow mt">LOG A GYM SESSION ON THIS DATE</div><div class="chip-row">${SESSION_KEYS.map(k => `<button type="button" class="chip" data-act="wk.start" data-id="${k}" data-arg="${d}">${esc(sChip(k))}</button>`).join('')}</div>`}`,
-    footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` };
+    <ul class="prow dayadd"><li><button type="button" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}<span>Log volleyball</span></button></li><li><button type="button" data-act="match.add" data-id="${d}">${icon('plus')}<span>Add a match</span></button></li><li><button type="button" data-act="extra.add" data-id="${d}">${icon('plus')}<span>Extra session</span></button></li></ul>
+    ${hasGym ? '' : `<div class="eyebrow mt">Log a gym session on this day</div><div class="chip-row">${SESSION_KEYS.map(k => `<button type="button" class="chip" data-act="wk.start" data-id="${k}" data-arg="${d}">${esc(sChip(k))}</button>`).join('')}</div>`}`,
+    footer: '' };
 }
 ACTIONS['day.open'] = el => openDaySheet(el.dataset.id);
 
