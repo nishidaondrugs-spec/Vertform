@@ -60,3 +60,42 @@ html[data-theme="light"] body.nav2 .ycard,html[data-theme="light"] body.nav2 .yt
 .gymbtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
 .gymbtns .btn{min-height:48px;justify-content:center}
 .linkbtn.back{display:inline-flex;align-items:center;gap:4px;margin:10px 0 0}
+
+/* ---- Feed cards ---- */
+.pstrip{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:#0e1627;border:1px solid #1f2b45}
+.pst-ic{width:48px;height:48px;border-radius:12px;background:#1a2742;color:#6ea8ff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pst-tx{flex-grow:1;min-width:0;display:flex;flex-direction:column}
+.pst-tx b{font-size:15px;font-weight:700}.pst-tx small{font-size:12px;color:#a9b5cc}
+.pstrip .btn{min-height:44px;border-radius:22px;padding:0 14px;font-size:13px}
+body.nav2 .pfeed{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+body.nav2 .pcard.bm{border-radius:20px;background:#0e1627;border:1px solid #1f2b45;overflow:hidden;box-shadow:none;padding:0}
+body.nav2 .pcard.bm::before{display:none}
+body.nav2 .pcard.bm{border-left:1px solid #1f2b45}
+body.nav2 .pcard .phead{padding:10px 12px;border:0}
+body.nav2 .pcard .phlink b{font-size:14px}body.nav2 .pcard .phlink small{font-size:12px}
+body.nav2 .pcard .pbody.bbig{font-size:15px;font-weight:600;line-height:1.35;padding:0 12px 6px;border:0;margin:0}
+body.nav2 .pcard .bmedia{margin:0 10px;border-radius:14px;overflow:hidden}
+body.nav2 .pcard .bcap{background:rgba(6,11,22,.78);border-radius:12px;font-size:15px;font-weight:600;left:12px;right:12px;bottom:12px}
+body.nav2 .pcard .wkcard,body.nav2 .pcard .pattach{margin:10px 10px 0;padding:12px;border-radius:14px;background:#121c31;border:1px solid #1f2b45;border-left:1px solid #1f2b45}
+body.nav2 .wk-head{display:flex;align-items:center;justify-content:space-between}
+body.nav2 .wk-t{font-size:14px;font-weight:700}
+.wk-tag{font-size:11px;font-weight:700;color:#6ea8ff;letter-spacing:.08em}
+body.nav2 .pcard .pattach .pk.vb{border-color:#fcd9a0;color:#fcd9a0}
+body.nav2 .rbar{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;border:0}
+body.nav2 .rbar .rcam{min-height:44px;border-radius:22px;border:1px solid #2a3856;background:transparent;color:#f2f5fb;padding:0 14px;font:700 13px var(--sans);display:flex;align-items:center;gap:8px}
+body.nav2 .rbar .rcam .ico{width:18px;height:18px}
+body.nav2 .rbar .pcm{margin-left:0;min-height:44px;border-radius:22px;border:1px solid #2a3856;background:transparent;color:#f2f5fb;padding:0 14px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+body.nav2 .rbar .pcm .ico{width:18px;height:18px}
+body.nav2 .rxrow{margin-left:auto;padding:0 10px 4px}
+
+/* overrides for the older bm card rules in premium.css */
+body.nav2 .pcard.bm{border:1px solid #1f2b45!important;border-radius:20px!important;background:#0e1627!important;padding:0 0 4px!important}
+body.nav2 .pcard.bm .phead,body.nav2 .pcard.bm:not(.mine) .phead,body.nav2 .pcard.bm.mine .phead{background:none;border:0;box-shadow:none;min-height:56px}
+body.nav2 .pcard.bm > .wkcard,body.nav2 .pcard.bm > .pattach,body.nav2 .pcard.bm > .jpost{margin:10px 10px 0;padding:12px;border:1px solid #1f2b45!important;border-radius:14px;background:#121c31}
+body.nav2 .pcard.bm > .pattach:has(.pk.vb){border-left:1px solid #1f2b45!important}
+body.nav2 .pcard.bm > .bmedia{margin:0 10px;border-radius:14px;overflow:hidden}
+body.nav2 .pcard.bm .pphoto,body.nav2 .pcard.bm .pvid{border-radius:14px}
+body.nav2 .pcard.bm .rbar{margin:8px 10px 4px}
+body.nav2 .wk-head .wk-t{margin:0}
+body.nav2 .pcard.bm > .wkcard > *,body.nav2 .pcard.bm > .pattach > *{margin-left:0;margin-right:0}
+body.nav2 .pcard.bm .wk-head{margin:0 0 8px}

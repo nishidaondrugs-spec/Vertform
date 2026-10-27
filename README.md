@@ -349,3 +349,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 
 ## 2.42.0 — Gym tab
 - Gym now has **Today / Plan / History**. Today: the session card with Start, readiness check, week strip, and buttons for the Exercise library, a new session, volleyball and the jump tracker. Plan: the calendar plus your programme (tap a session to start it). History: the logbook.
+
+## 2.43.0 — Feed cards
+- Feed top strip now reads "You posted today" with the time and camera-reaction count and a Post again button (or "Post today" before you have posted).
+- Friend posts are rounded cards: header, photo with caption over it (or a short caption for text posts), a session card with a GYM / VB tag, then React and comment buttons.

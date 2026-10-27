@@ -51,7 +51,7 @@ function pAttachHtml(kind, m) {
   if (kind === 'gym') {
     const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null, list = Array.isArray(m.l) ? m.l.slice(0, 6) : [];
     const stats = [n(m.min) && ['Time', `${n(m.min)} min`], n(m.vol) && ['Volume', `${Math.round(n(m.vol)).toLocaleString('en-GB')} kg`], ['Sets', `${Number(m.s) || 0}`], n(m.pb) && ['PBs', `${n(m.pb)}`]].filter(Boolean);
-    return `<div class="wkcard"><b class="wk-t">${esc(m.t)}</b><dl class="wk-stats">${stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+    return `<div class="wkcard"><div class="wk-head"><b class="wk-t">${esc(m.t)}</b>${navNew() ? '<span class="wk-tag">GYM</span>' : ''}</div><dl class="wk-stats">${stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
       ${list.length ? `<ul class="wk-list">${list.map(r => `<li><span>${esc(r[0])}</span><span>${esc(r[1])}${r[2] ? ' <i class="pbt">PB</i>' : ''}</span></li>`).join('')}</ul>` : `<small>${plural(Number(m.ex) || 0, 'exercise')}${n(m.rpe) ? ` · RPE ${n(m.rpe)}` : ''}</small>`}</div>`;
   }
   const label = VB_KIND[m.k] || 'Volleyball';
@@ -216,6 +216,11 @@ async function pPump() {
 
 const pDayLabel = (d, today) => d === today ? 'Today' : d === addDays(today, -1) ? 'Yesterday' : `${weekdayShort(d)} ${parseDate(d).getDate()}`;
 function pHero(todayRows) {
+  if (navNew()) {
+    const mineRow = todayRows.find(r => r.mine), f = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size;
+    const sub = mineRow ? `${new Date(mineRow.created).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}${Number(mineRow.reacts?.photo) ? ` · ${plural(Number(mineRow.reacts.photo), 'camera reaction')}` : ''}` : (f ? `${plural(f, 'friend')} posted today` : 'No friends have posted yet');
+    return `<div class="pstrip"><span class="pst-ic" aria-hidden="true">${icon('camera')}</span><span class="pst-tx"><b>${mineRow ? 'You posted today' : 'Post today'}</b><small>${sub}</small></span><button type="button" class="btn ghost" data-act="post.compose">${mineRow ? 'Post again' : 'Post'}</button></div>`;
+  }
   const friends = new Set(todayRows.filter(r => !r.mine).map(r => r.pid || r.nickname)).size, mine = todayRows.filter(r => r.mine).length;
   const sub = friends ? `${plural(friends, 'friend')} posted today` : 'No friends have posted yet';
   return `<button type="button" class="phero" data-act="post.compose"><span class="phorb" aria-hidden="true">${icon('plus')}</span><span class="phtx"><b>${mine ? 'Post again' : 'Post today'}</b><small>${sub}</small></span>${icon('chev')}</button>`;
@@ -234,7 +239,7 @@ function viewPost() {
   const nothingYet = pUi.rows !== null && !rows.length;
   return `${pageHead('', navNew() ? 'Friends' : 'Post', right)}${pagerDots(0)}${banners()}
     ${pUi.compose ? postComposer() : pHero(todayRows)}
-    <div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>
+    ${navNew() ? `<div class="yhead"><div class="yeye">TODAY</div><button type="button" class="ylink" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>` : `<div class="sechead"><div class="min0"><div class="eyebrow">TODAY</div><h2>Friends and you</h2></div><button type="button" class="btn sm ghost" data-act="post.refresh" ${pUi.loading ? 'disabled' : ''}>${pUi.loading ? 'Loading…' : 'Refresh'}</button></div>`}
     ${pUi.err ? `<div class="status warn" role="alert">${esc(pUi.err)}</div>` : ''}
     ${todayRows.length ? `<ul class="pfeed">${todayRows.map(postCard).join('')}</ul>` : `<p class="tiny">${pUi.rows === null ? 'Loading your feed…' : 'Nothing posted today yet. Be the first.'}</p>`}
     ${nothingYet || (pUi.rows && rows.every(r => r.mine)) ? `<div class="goalcard"><p class="tiny">Add a friend with their code to see their posts here.</p><button type="button" class="btn ghost" data-act="lb.open">Add a friend</button></div>` : ''}
