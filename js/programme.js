@@ -48,9 +48,11 @@ const intensityOfRpe = r => { r = Number(r); return !r ? '' : r <= 3 ? 'light' :
 const trainInfoFor = date => { const t = data.vb.trainInfo?.[String(dayIndex(date))]; return { name: t?.name || 'Team training', intensity: t?.intensity || 'moderate', min: t?.min || 90 }; };
 const isHeavy = k => k === 'A' || !!templates[k]?.heavy;
 /* Your own sessions live in data.mySessions. This adds them to templates/SESSION_KEYS (deleted ones keep a template so old logs still show their name). */
+let hiddenBuiltin = [];
+const setHiddenBuiltin = a => { hiddenBuiltin = (Array.isArray(a) ? a : []).filter(k => BUILTIN_KEYS.includes(k)); };
 function syncCustomSessions(list, hide) {
   for (const k of Object.keys(templates)) if (templates[k].custom) delete templates[k];
-  SESSION_KEYS.length = 0; if (!hide) SESSION_KEYS.push(...BUILTIN_KEYS);
+  SESSION_KEYS.length = 0; if (!hide) SESSION_KEYS.push(...BUILTIN_KEYS.filter(k => !hiddenBuiltin.includes(k)));
   for (const s of (Array.isArray(list) ? list : [])) {
     const sets = s.exercises.reduce((n, e) => n + e.sets, 0), est = Math.max(10, Math.round((sets * 2.5 + 5) / 5) * 5);
     templates[s.key] = { custom: true, deleted: !!s.deleted, heavy: !!s.heavy, title: s.title, subtitle: 'Your session', type: (s.type || 'CUSTOM').toUpperCase(), duration: s.minutes ? `~${s.minutes} min` : `~${est} min`, colour: 'blue', exercises: s.exercises.map(e => ({ ...e })) };

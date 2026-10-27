@@ -21,7 +21,7 @@ function baseData() {
   return {
     version: 1,
     schemaVersion: SCHEMA_VERSION,
-    user: { startDate: todayISO(), height: 172, bodyweight: 78, trap1rm: '', proteinTarget: 150, profileSet: false, gymSessions: ['A', 'B', 'C', 'D'], onboarded: false, hideBuiltin: false, setupDate: '' },
+    user: { startDate: todayISO(), height: 172, bodyweight: 78, trap1rm: '', proteinTarget: 150, profileSet: false, gymSessions: ['A', 'B', 'C', 'D'], onboarded: false, hideBuiltin: false, hiddenKeys: [], setupDate: '' },
     matches: [],
     matchInfo: {},
     logs: [],
@@ -99,6 +99,7 @@ function normaliseData(o) {
   const out = { ...b, version: 1, schemaVersion: SCHEMA_VERSION };
   out.user = { ...b.user, ...(isObj(o.user) ? o.user : {}) };
   if (!isObj(o.user) || typeof o.user.onboarded !== 'boolean') out.user.onboarded = true; // anything saved before 2.8 already has its own setup
+  out.user.hiddenKeys = Array.isArray(out.user.hiddenKeys) ? out.user.hiddenKeys.filter(k => BUILTIN_KEYS.includes(k)) : []; setHiddenBuiltin(out.user.hiddenKeys);
   out.mySessions = cleanMySessions(o.mySessions); syncCustomSessions(out.mySessions, !!(o.user && o.user.hideBuiltin));
   out.catalogue = cleanCatalogue(o.catalogue); out.hiddenEx = cleanHiddenEx(o.hiddenEx); out.creatine = cleanCreatine(o.creatine);
   out.user.gymSessions = Array.isArray(out.user.gymSessions) ? SESSION_KEYS.filter(k => out.user.gymSessions.includes(k)) : SESSION_KEYS.slice();

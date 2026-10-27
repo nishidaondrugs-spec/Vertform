@@ -98,7 +98,7 @@ ACTIONS['ys.save'] = () => {
   else Object.assign(data.mySessions.find(s => s.key === key), rec);
   data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin);
   const act = activeSessions().filter(k => k !== key); data.user.gymSessions = SESSION_KEYS.filter(k => act.includes(k) || (k === key && se.inPlan));
-  if (!data.user.gymSessions.length) data.user.gymSessions = BUILTIN_KEYS.slice();
+  if (!data.user.gymSessions.length) data.user.gymSessions = SESSION_KEYS.slice();
   save(); closeAllSheets(); render(); toast(`“${title}” saved${se.inPlan ? ' and added to your week' : ''}`);
 };
 ACTIONS['ys.delete'] = async () => {

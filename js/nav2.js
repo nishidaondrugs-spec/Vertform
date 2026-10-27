@@ -172,13 +172,33 @@ function sesCard(k) {
   const t = templates[k], list = allExercises(k), open = ui.sesOpen === k;
   const rows = list.map(e => `<li class="serow"><div class="min0"><b>${esc(e.name)}</b><small>${libLine(e)}</small></div><button type="button" class="iconbtn" data-act="ses.rm" data-arg="${k}" data-id="${esc(e.id)}" aria-label="Remove ${esc(e.name)}">${icon('trash')}</button></li>`).join('');
   return `<li class="sescard ${open ? 'open' : ''}"><button type="button" class="seshead" data-act="ses.open" data-arg="${k}" aria-expanded="${open}"><span class="code">${sBadge(k)}</span><span class="min0"><b>${esc(t.title)}</b><small>${esc(String(t.duration || '').replace(/^~\s*/, ''))} · ${plural(list.length, 'exercise')}</small></span><span class="chevd">${icon('down')}</span></button>
-    ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.add" data-arg="${k}">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div>` : ''}</li>`;
+    ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.add" data-arg="${k}">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div><div class="sesmore">${t.custom ? `<button type="button" class="linkbtn" data-act="ys.edit" data-id="${k}">Edit session</button>` : ''}<button type="button" class="linkbtn sesdel" data-act="ses.delete" data-arg="${k}">Delete session</button></div>` : ''}</li>`;
+}
+function weekPlanBlock() {
+  const act = activeSessions(), n = act.length, rec = typeof recommendedGymCount === 'function' ? recommendedGymCount() : 3;
+  const rows = SESSION_KEYS.map(k => `<label class="wprow"><span class="code">${sBadge(k)}</span><span class="min0"><b>${esc(templates[k].title)}</b><small>${plural(allExercises(k).length, 'exercise')}</small></span><input type="checkbox" class="wpsw" data-act="gw.toggle" data-arg="${k}" ${act.includes(k) ? 'checked' : ''} aria-label="Include ${esc(templates[k].title)} in my week"></label>`).join('');
+  return `<section class="wplan"><div class="wphead"><div><div class="eyebrow">Your week</div><h3>${n} ${n === 1 ? 'session' : 'sessions'} a week</h3></div>${n === rec ? '<span class="wptag">Suggested</span>' : `<button type="button" class="wptag btn" data-act="gw.suggest">Suggested: ${rec}</button>`}</div>
+    <p class="wpsub">Switch on the sessions you want planned automatically. The rest stay here to start any time.</p>${SESSION_KEYS.length ? `<div class="wprows">${rows}</div>` : '<p class="wpsub">No sessions yet. Create one below.</p>'}</section>`;
 }
 function gymSessions() {
-  return `<button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>
+  return `${weekPlanBlock()}
+    <div class="eyebrow sesh">Your sessions</div>
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
-    <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button></div>`;
+    <div class="gymbtns"><button type="button" class="btn primary" data-act="ys.new">${icon('plus')}New session</button>${hiddenBuiltin.length ? `<button type="button" class="btn ghost" data-act="ses.restore">Restore built-in sessions (${hiddenBuiltin.length})</button>` : ''}</div>
+    <button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>`;
 }
+ACTIONS['gw.suggest'] = () => { const rec = recommendedGymCount(); const cur = activeSessions(); data.user.gymSessions = SESSION_KEYS.filter(k => cur.includes(k)).slice(0, rec); if (data.user.gymSessions.length < rec) SESSION_KEYS.forEach(k => { if (data.user.gymSessions.length < rec && !data.user.gymSessions.includes(k)) data.user.gymSessions.push(k); }); data.user.gymSessions = SESSION_KEYS.filter(k => data.user.gymSessions.includes(k)); save(); render(); toast(`${data.user.gymSessions.length} a week`); };
+ACTIONS['ses.delete'] = async el => {
+  const k = el.dataset.arg, t = templates[k]; if (!t) return;
+  const ok = await askChoice({ title: `Delete “${t.title}”?`, message: '<p>It leaves your sessions and your weekly plan. Workouts you already logged with it stay in your history.</p>', choices: [{ label: 'Cancel', value: false }, { label: 'Delete', kind: 'primary', value: true }] }); if (!ok) return;
+  const my = t.custom ? data.mySessions.find(x => x.key === k && !x.deleted) : null, wasPlanned = data.user.gymSessions.includes(k);
+  if (my) my.deleted = true; else { data.user.hiddenKeys = [...new Set([...(data.user.hiddenKeys || []), k])]; setHiddenBuiltin(data.user.hiddenKeys); }
+  data.pins = (data.pins || []).filter(p => p.session !== k); syncCustomSessions(data.mySessions, data.user.hideBuiltin);
+  data.user.gymSessions = data.user.gymSessions.filter(x => x !== k); if (ui.sesOpen === k) ui.sesOpen = null;
+  save(); render();
+  toast('Session deleted', { action: { label: 'Undo', fn: () => { if (my) my.deleted = false; else { data.user.hiddenKeys = data.user.hiddenKeys.filter(x => x !== k); setHiddenBuiltin(data.user.hiddenKeys); } syncCustomSessions(data.mySessions, data.user.hideBuiltin); if (wasPlanned) data.user.gymSessions = SESSION_KEYS.filter(x => x === k || data.user.gymSessions.includes(x)); save(); render(); } } });
+};
+ACTIONS['ses.restore'] = () => { data.user.hiddenKeys = []; setHiddenBuiltin([]); syncCustomSessions(data.mySessions, data.user.hideBuiltin); save(); render(); toast('Built-in sessions restored'); };
 
 /* ---------- Fuel tab: Today / Meals / Progress ---------- */
 const fuelIs = tab => !navNew() || (ui.fuelTab || 'today') === tab;

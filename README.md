@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.70.0 — Manage your sessions and your week
+Gym > Sessions now opens with Your week: a switch per session decides which ones are planned automatically, with the count shown and a one-tap Suggested number. Every session, including the built-in A-D, can be deleted (Undo in the toast) and the built-in ones restored; your own sessions can be edited from the same place. New session is a primary button.
+
 ## 2.69.1 — Last visual clean-ups
 Jump tab: one big Jump test button plus a quiet Type a result instead. Gym Sessions: plain rows instead of bordered cards. Fuel Progress: bodyweight is a plain block with a quiet button. Feed Leaderboard and Adjust targets are quiet pills.
 
