@@ -409,3 +409,5 @@ body.nav2 .crrow .crdots{display:none}
 body.nav2 .crrow .crtx b{font-size:19px!important}
 body.nav2 .crrow .crcheck{margin-right:0}
 body.nav2 .crrow .crcheck{color:rgba(255,255,255,.35)}body.nav2 .crrow.on .crcheck{color:#000}
+.tabav{width:26px;height:26px;border-radius:50%;object-fit:cover;display:block;margin:0 auto;box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.tabyou.active .tabav{box-shadow:0 0 0 2px #fff}
