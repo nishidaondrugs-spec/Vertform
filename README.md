@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.56.1 — BeReal caption and reactions
+- Captions are small white text at the bottom-left of the photo; reaction selfies are small overlapping circles at the bottom-right.
+
 ## 2.56.0 — BeReal-style post footer
 - Each post ends with a plain "Add a comment…" line (and "View all N comments"), with a round camera button for reactions on friends' posts. Reaction selfies sit on the photo. Header shows the session type with the time, and a ⋯ menu on your own posts.
 

@@ -76,10 +76,10 @@ async function postLoad() {
 /* ---------- page ---------- */
 /* 2.20: reactions. The keys are what the server stores; the emoji are only for display. */
 const P_REACTS = [['fire', '🔥', 'Fire'], ['laugh', '😂', 'Laugh'], ['vb', '🏐', 'Volleyball'], ['flex', '💪', 'Strong'], ['heart', '❤️', 'Heart'], ['eyes', '👀', 'Eyes']];
-function gymOverlay(m) {
+function gymOverlay(m, body) {
   const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null;
   const big = [n(m.min) && [n(m.min), 'min'], n(m.vol) && [Math.round(n(m.vol)).toLocaleString('en-GB'), 'kg'], n(m.pb) && [n(m.pb), n(m.pb) === 1 ? 'PB' : 'PBs', 1]].filter(Boolean);
-  return `<div class="bcap gcap"><span class="gh-pill">GYM</span><h3 class="gh-t">${esc(m.t)}</h3><div class="gh-stats">${big.map(([v, l, pb]) => `<span class="${pb ? 'gpb' : ''}"><b>${esc(String(v))}</b>${l}</span>`).join('')}<span><b>${Number(m.s) || 0}</b>sets</span></div></div>`;
+  return `<div class="bcap gcap"><span class="gh-pill">GYM</span><h3 class="gh-t">${esc(m.t)}</h3><div class="gh-stats">${big.map(([v, l, pb]) => `<span class="${pb ? 'gpb' : ''}"><b>${esc(String(v))}</b>${l}</span>`).join('')}<span><b>${Number(m.s) || 0}</b>sets</span></div>${body ? `<p class="bcap2">${esc(body)}</p>` : ''}</div>`;
 }
 const pKind = k => navNew() ? ({ gym: 'Gym · ', vb: 'Volleyball · ', jump: 'Jump test · ', food: 'Food · ' }[k] || '') : '';
 function postCard(r) {
@@ -94,14 +94,14 @@ function postCard(r) {
   const rx = photoN ? `<div class="rxbubbles ${(r.photo || r.video) && navNew() ? '' : 'rxrow'}" data-id="${esc(r.id)}" data-n="${photoN}" aria-label="Camera reactions, ${photoN}"></div>` : '';
   /* with a photo or video, the caption sits over the picture (BeReal style); text-only posts show it large */
   let media = hasMedia
-    ? `<div class="bmedia">${r.video ? `<video class="pvid" controls playsinline preload="metadata" src="${esc(pVideoUrl(r.video))}#t=0.1"></video>` : `<div class="pphoto" data-id="${esc(r.id)}" role="img" aria-label="Photo in post"></div>`}${navNew() && r.kind === 'gym' && r.meta && r.meta.t ? gymOverlay(r.meta) : r.body ? `<p class="bcap">${esc(r.body)}</p>` : ''}</div>`
+    ? `<div class="bmedia">${r.video ? `<video class="pvid" controls playsinline preload="metadata" src="${esc(pVideoUrl(r.video))}#t=0.1"></video>` : `<div class="pphoto" data-id="${esc(r.id)}" role="img" aria-label="Photo in post"></div>`}${navNew() && r.kind === 'gym' && r.meta && r.meta.t ? gymOverlay(r.meta, r.body) : r.body ? `<p class="bcap">${esc(r.body)}</p>` : ''}</div>`
     : `${r.body ? `<p class="pbody bbig">${esc(r.body)}</p>` : ''}`;
   if (hasMedia && navNew() && rx) media = media.replace(/<\/div>$/, rx + '</div>');
   /* a friend's post gets the quick camera reaction (BeReal style) */
   const cam = !mine && r.pid ? `<button type="button" class="rcam" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}<span>React</span></button>` : '';
   return `<li class="pcard bm ${mine ? 'mine' : ''}">
     <div class="phead">${who}${mine ? `<button type="button" class="iconbtn" data-act="post.del" data-id="${esc(r.id)}" aria-label="Post options"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>` : ''}</div>
-    ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? (r.body ? `<p class="pbody bbig">${esc(r.body)}</p>` : '') : pAttachHtml(r.kind, r.meta, hasMedia)}${hasMedia && navNew() ? '' : rx}
+    ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? '' : pAttachHtml(r.kind, r.meta, hasMedia)}${hasMedia && navNew() ? '' : rx}
     ${navNew() ? `<div class="bcline">${r.comments ? `<button type="button" class="bc-view" data-act="post.comments" data-id="${esc(r.id)}">View ${r.comments === 1 ? '1 comment' : `all ${r.comments} comments`}</button>` : ''}<div class="bc-row"><button type="button" class="bc-add" data-act="post.comments" data-id="${esc(r.id)}">Add a comment…</button>${!mine && r.pid ? `<button type="button" class="bc-react" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}</button>` : ''}</div></div>` : `    <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div>`}</li>`;
 }
 const P_KINDS = [
