@@ -823,3 +823,9 @@ body.nav2 .mealgroup .foodlist li.food .fdel{width:34px;height:34px;justify-self
 :root:not([data-theme="light"]) body.nav2 .smrow .smck:checked{background:#fff!important;border-color:#fff!important}
 :root:not([data-theme="light"]) body.nav2 .smrow .smck:checked::after{display:block!important;border-color:#000!important}
 :root:not([data-theme="light"]) body.nav2 .smrow .smtx strong{color:#f5f5f7!important}
+
+/* 2.72.1 — session list: no filled card, rows run on the page background */
+:root:not([data-theme="light"]) body.nav2 .seslist .sescard,
+:root:not([data-theme="light"]) body.nav2 .seslist .sescard.open{background:transparent!important;border-radius:0!important}
+:root:not([data-theme="light"]) body.nav2 .sescard .selist{border-top:0!important}
+:root:not([data-theme="light"]) body.nav2 .sescard .selist li{padding-left:2px;padding-right:2px}
