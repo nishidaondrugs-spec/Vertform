@@ -501,3 +501,22 @@ body.nav2 .food .kc small{font-size:11px;opacity:.5;margin-left:2px;display:inli
 body.nav2 .food .fdel{opacity:.3;width:34px;height:34px}
 body.nav2 .mealgroup{margin-bottom:8px}
 :root:not([data-theme="light"]) body.nav2 .food .fm i,:root:not([data-theme="light"]) body.nav2 .food .fm i u{color:inherit!important;background:transparent!important}
+
+/* ---- 2.63.1 Fuel spacing on an 8pt rhythm (20px gutter, 24-32px between sections, 12px inside) ---- */
+:root:not([data-theme="light"]) #view[data-view="fuel"]{padding-left:20px!important;padding-right:20px!important}
+#view[data-view="fuel"] .tgtnudge{margin:4px 0 16px!important;padding:12px 0!important}
+#view[data-view="fuel"] .seg{margin:0 0 24px!important}
+#view[data-view="fuel"] .fhero{padding:4px 0 0!important;margin:0 0 24px!important}
+#view[data-view="fuel"] .fuelcta{margin:0 0 32px!important}
+#view[data-view="fuel"] .meals{display:flex;flex-direction:column;gap:0}
+#view[data-view="fuel"] .mealgroup{margin:0 0 28px!important;padding:0!important}
+#view[data-view="fuel"] .mealhead{min-height:44px;margin:0 0 4px!important;padding:0!important}
+#view[data-view="fuel"] .mealtitle{display:flex;align-items:baseline;gap:10px}
+#view[data-view="fuel"] .mealgroup.empty .mealhead{margin:0!important}
+#view[data-view="fuel"] .mealgroup.empty{margin-bottom:12px!important;border-top:1px solid var(--hair,rgba(255,255,255,.07))}
+#view[data-view="fuel"] .mealgroup.empty .mname{opacity:.55!important}
+#view[data-view="fuel"] .foodlist .food:first-child{border-top:0!important}
+#view[data-view="fuel"] .food{min-height:60px;padding:12px 0!important}
+#view[data-view="fuel"] .crrow{margin:20px 0 110px!important}
+#view[data-view="fuel"] .mealgroup.empty{margin-bottom:20px!important}
+#view[data-view="fuel"] .crrow{margin:0 0 110px!important;border-top:1px solid var(--hair,rgba(255,255,255,.07))!important;padding:8px 0!important}

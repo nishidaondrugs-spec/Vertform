@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.63.1 — Fuel spacing
+- Fuel now follows one spacing rhythm: 20px sides, 24-32px between sections, 12px inside, 60px food rows.
+
 ## 2.63.0 — Fuel redesign, Gym and Fuel swapped
 - Bottom bar: Feed, Gym, camera, Fuel, You.
 - Fuel Today: a calorie ring with kcal left, three slim macro bars, quiet meal rows (tap a food to edit, no coloured chips or pencil icons).
