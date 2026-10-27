@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>VERTFORM player</title>
+<!-- Premium 3D showcase of a player's look: spotlit, standing on a glass turntable with a soft reflection.
+VERTFORM embeds this page and posts {type:'vf3d:look', look:{...}, kit:<index>} to it. Drag to swivel; it keeps turning with inertia.
+URL options: ?look=<base64 json> ?kit=<kit colour index> ?lite=1 (cheaper, for small spots) ?yaw=<radians> ?static=1 (no auto-turn, for screenshots) -->
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:transparent;touch-action:none;font-family:system-ui,sans-serif}
+html>:not(head):not(body),body>:not(canvas):not(script):not(#hint):not(#nogl){display:none!important}
+canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}
+#hint{position:fixed;left:0;right:0;top:10px;text-align:center;color:#cfd3d9;font:600 11px system-ui;letter-spacing:.02em;opacity:.85;pointer-events:none;transition:opacity .6s}
+#hint.off{opacity:0}
+</style>
+</head><body>
+<div id="hint">Drag to spin</div>
+<script src="player.js"></script>
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+/* Tell the player WHY there is no model instead of leaving an empty box (WebGL off, blocked, or engine file not loaded). */
+function fail(msg,sub){
+document.body.insertAdjacentHTML('beforeend','<div id="nogl" style="position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:18px;color:#cfd6e2;font:600 13px/1.5 system-ui,sans-serif"><div><div style="font:800 12px system-ui;letter-spacing:.18em;color:#ffb84f;margin-bottom:8px">3D PREVIEW UNAVAILABLE</div>'+msg+'<div style="margin-top:8px;font-weight:500;font-size:12px;color:#8a99b0">'+sub+'</div></div></div>');
+try{parent.postMessage({type:'vf3d:unavailable'},'*')}catch(_){}
+}
+if(!window.THREE||!window.VF3D_PLAYER){fail('The 3D engine did not load.','Refresh the page. If it keeps happening, your browser or network may be blocking the file.');return}
+const qs=new URLSearchParams(location.search);const PARTS=!!qs.get('parts');
+let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});}
+catch(err){fail('Your browser could not start 3D graphics (WebGL).','Turn on hardware acceleration in your browser settings, update your graphics driver, or try Chrome or Edge. The game still works without it.');return}
+renderer.setClearColor(0x000000,0);
+const lite=!!new URLSearchParams(location.search).get('lite');renderer.setPixelRatio(Math.min(lite?1.5:2,devicePixelRatio||1));renderer.shadowMap.enabled=!lite;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(30,1,.1,60);
+
+/* ---- lights: a hard spotlight from above, cool rim from behind, soft fill ---- */
+scene.add(new THREE.HemisphereLight(0xe6e6e6,0x1c1c20,1.0));
+const spot=new THREE.SpotLight(0xffffff,1.5,30,.34,.55,1);spot.position.set(.4,8,2.2);spot.target.position.set(0,1,0);
+spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0004;scene.add(spot,spot.target);
+const rim=new THREE.DirectionalLight(0xdde6ff,.5);rim.position.set(-4,3,-4);scene.add(rim);
+const warm=new THREE.DirectionalLight(0xffffff,.45);warm.position.set(4,2,3);scene.add(warm);
+
+/* ---- canvas textures ---- */
+function radial(inner,outer,size){const c=document.createElement('canvas');c.width=c.height=size||256;const x=c.getContext('2d');const g=x.createRadialGradient(c.width/2,c.height/2,0,c.width/2,c.height/2,c.width/2);g.addColorStop(0,inner);g.addColorStop(1,outer);x.fillStyle=g;x.fillRect(0,0,c.width,c.height);return new THREE.CanvasTexture(c)}
+function vgrad(){const c=document.createElement('canvas');c.width=4;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,'#000');g.addColorStop(1,'#fff');x.fillStyle=g;x.fillRect(0,0,4,256);return new THREE.CanvasTexture(c)}
+
+/* ---- stage floor: dark, fading into the page ---- */
+const floor=new THREE.Mesh(new THREE.CircleGeometry(2.3,64),new THREE.MeshBasicMaterial({map:radial('rgba(0,0,0,.55)','rgba(0,0,0,0)',512),transparent:true,depthWrite:false}));
+floor.rotation.x=-Math.PI/2;floor.position.y=-.02;scene.add(floor);
+// glow pool under the plate
+const glow=new THREE.Mesh(new THREE.CircleGeometry(1.8,48),new THREE.MeshBasicMaterial({map:radial('rgba(255,236,210,.16)','rgba(255,236,210,0)',256),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+glow.rotation.x=-Math.PI/2;glow.position.y=-.015;scene.add(glow);
+
+/* ---- glass turntable ---- */
+const TOP=.04;
+const turn=new THREE.Group();scene.add(turn); // everything that spins with the player
+const plate=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.2,.08,72),new THREE.MeshStandardMaterial({color:0xe9edf2,transparent:true,opacity:.2,roughness:.04,metalness:.55,emissive:0x20242b,emissiveIntensity:.5}));
+plate.position.y=0;scene.add(plate); // the glass itself stays still (a perfect disc looks the same turning)
+const edge=new THREE.Mesh(new THREE.TorusGeometry(1.185,.02,10,96),new THREE.MeshBasicMaterial({color:0xf2f4f7,transparent:true,opacity:.85}));edge.rotation.x=Math.PI/2;edge.position.y=TOP-.004;scene.add(edge);
+const edge2=new THREE.Mesh(new THREE.TorusGeometry(1.2,.012,8,96),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.3}));edge2.rotation.x=Math.PI/2;edge2.position.y=-.04;scene.add(edge2);
+const ringA=new THREE.Mesh(new THREE.RingGeometry(.93,.95,96),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.25,side:THREE.DoubleSide}));ringA.rotation.x=-Math.PI/2;ringA.position.y=TOP+.001;scene.add(ringA);
+// ticks and a bright marker rotate with the player so the swivel reads clearly
+const tickM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.4});
+for(let i=0;i<48;i++){const a=i/48*Math.PI*2,big=i%6===0;const t=new THREE.Mesh(new THREE.BoxGeometry(big?.05:.022,.004,big?.16:.09),tickM);t.position.set(Math.sin(a)*1.06,TOP+.002,Math.cos(a)*1.06);t.rotation.y=a;turn.add(t)}
+const marker=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,3),new THREE.MeshBasicMaterial({color:0xffd37a}));marker.rotation.x=Math.PI/2;marker.position.set(0,TOP+.004,1.0);turn.add(marker);
+// spotlight pool on the glass
+const pool=new THREE.Mesh(new THREE.CircleGeometry(1.1,48),new THREE.MeshBasicMaterial({map:radial('rgba(255,255,255,.22)','rgba(255,255,255,0)',256),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+pool.rotation.x=-Math.PI/2;pool.position.y=TOP+.003;scene.add(pool);
+// visible light shaft
+const shaft=new THREE.Mesh(new THREE.ConeGeometry(1.45,8,48,1,true),new THREE.MeshBasicMaterial({color:0xfff3e0,transparent:true,opacity:.07,alphaMap:vgrad(),side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}));
+shaft.position.set(.0,4.0,.0);scene.add(shaft);
+
+/* ---- the player and its reflection ---- */
+const KC=VF3D_PLAYER.KIT_COLOR,kitIdx=Math.max(0,Math.min(KC.length-1,parseInt(qs.get('kit')||'2',10)||0)),kitHex=KC[kitIdx];
+const you=VF3D_PLAYER.make(THREE,null,kitHex,'YOU');
+const refl=VF3D_PLAYER.make(THREE,null,kitHex,'YOU',{fade:.3});
+you.position.y=TOP;refl.position.y=TOP;refl.scale.y=-.3;
+you.userData.armL.rotation.x=you.userData.armR.rotation.x=-.25;refl.userData.armL.rotation.x=refl.userData.armR.rotation.x=-.25;
+// the shadow of the real player lands on the glass-level plane
+you.traverse(o=>{if(o.isMesh)o.castShadow=true});
+scene.add(you,refl);
+
+/* ---- sizing and camera ---- */
+function size(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();frameCam()}
+let frameCam=function(){
+const asp=cam.aspect,d=asp<.75?5.9:asp<1.1?5.1:4.6;
+cam.position.set(0,1.55*(asp<.75?1.08:1),d);cam.lookAt(0,.95,0);
+};
+addEventListener('resize',size);
+
+/* ---- swivel: drag with inertia; gentle auto-turn when idle ---- */
+let yaw=Number(qs.get('yaw')||.35),vel=0,drag=false,lastX=0,lastT=0,idleAt=0;
+const still=!!qs.get('static'),hint=document.getElementById('hint');
+const cv=renderer.domElement;
+cv.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastT=performance.now();vel=0;try{cv.setPointerCapture(e.pointerId)}catch(_){};hint.classList.add('off')});
+addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),dx=e.clientX-lastX,dt=Math.max(1,now-lastT)/1000;const dy=dx*.011;yaw+=dy;vel=.6*vel+.4*(dy/dt);lastX=e.clientX;lastT=now});
+function release(){if(!drag)return;drag=false;idleAt=performance.now()+2600}
+addEventListener('pointerup',release);addEventListener('pointercancel',release);
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){vel-=3}else if(e.key==='ArrowRight'){vel+=3}});
+let last=performance.now(),shown=false;
+function frame(t){
+const dt=Math.min(.05,(t-last)/1000);last=t;
+if(!drag){
+yaw+=vel*dt;vel*=Math.exp(-dt*2.4);
+if(view!=='full'&&t>idleAt&&Math.abs(vel)<.05){const tgt=Math.round((yaw-faceYaw)/(Math.PI*2))*Math.PI*2+faceYaw;yaw+=(tgt-yaw)*Math.min(1,dt*4)} // turn to face you while editing a part
+else if(Math.abs(vel)<.05&&!still&&!PARTS&&t>idleAt)yaw+=dt*.5; // idle turntable
+if(PARTS&&faceT!==null&&Math.abs(vel)<.05){const tg=Math.round((yaw-faceT)/(Math.PI*2))*Math.PI*2+faceT;yaw+=(tg-yaw)*Math.min(1,dt*5)}
+}
+if(editor){const v=VIEWS[view]||VIEWS.full,k=Math.min(1,dt*5);camY+=(v[0]-camY)*k;camD+=(v[1]-camD)*k;camL+=(v[2]-camL)*k;cam.position.set(0,camY,camD);cam.lookAt(0,camL,0)}
+you.rotation.y=yaw;refl.rotation.y=yaw;turn.rotation.y=yaw;
+shaft.material.opacity=.075+Math.sin(t/1400)*.01;
+if(!document.hidden){renderer.render(scene,cam);if(!shown){shown=true;try{parent.postMessage({type:'vf3d:shown'},location.origin)}catch(_){}}}requestAnimationFrame(frame);
+}
+addEventListener('message',e=>{if(e.origin!==location.origin)return;const m=e.data||{};
+if(m.type==='vf3d:look'&&Number.isInteger(m.kit)&&KC[m.kit]!=null){you.userData.kit.color.setHex(KC[m.kit]);refl.userData.kit.color.setHex(KC[m.kit])}});
+/* ?editor=1: bigger player, smaller turntable, and the camera glides to the part being edited (vf3d:view messages) */
+const editor=!!qs.get('editor'),faceYaw=.28,VIEWS={full:[1.15,4.1,.93],upper:[1.45,2.8,1.28],head:[1.7,1.35,1.66],legs:[.62,2.1,.42]};
+let view='full',camY=1.15,camD=4.1,camL=.93;
+if(editor){frameCam=function(){cam.position.set(0,camY,camD);cam.lookAt(0,camL,0)};hint.style.display='none';[plate,edge,edge2,ringA,turn,pool,glow].forEach(o=>o.scale.setScalar(.82))}
+addEventListener('message',e=>{if(e.origin!==location.origin)return;const m=e.data||{};if(m.type==='vf3d:view'&&VIEWS[m.view]){view=m.view;idleAt=0;vel=0}});
+/* ?soft=1: blends into a dark page (profiles, editor): no light shaft, dim glass, cool even light */
+if(qs.get('soft')){shaft.visible=false;marker.visible=false;spot.intensity=.95;
+plate.material.color.setHex(0x2a3854);plate.material.opacity=.32;plate.material.emissive.setHex(0x0b1424);
+edge.material.color.setHex(0x8fb6ff);edge.material.opacity=.32;edge2.material.opacity=.08;ringA.material.opacity=.1;tickM.opacity=.14;
+pool.material.opacity=.45;glow.material.color.setHex(0x6c9cff);glow.material.opacity=.6;refl.traverse(o=>{if(o.material)o.material.opacity=Math.min(o.material.opacity,.16)});
+const fill=new THREE.DirectionalLight(0xbcd2ff,.55);fill.position.set(-2.5,2.2,3);scene.add(fill);
+const back=new THREE.DirectionalLight(0x6f9bff,.7);back.position.set(0,2.6,-3.5);scene.add(back);
+hint.style.color='#7c889c';}
+/* ?bare=1: just the player, no turntable or light shaft (small spots such as the home crest) */
+if(qs.get('bare')){[plate,edge,edge2,ringA,turn,pool,shaft,glow,refl,floor].forEach(o=>{if(o)o.visible=false});hint.style.display='none';
+frameCam=function(){const t=Math.tan(cam.fov*Math.PI/360),d=Math.max(2.3/(2*t),1.1/(2*t*cam.aspect));cam.position.set(0,1.02,d);cam.lookAt(0,1.0,0)};}
+/* ?parts=1: tappable body regions. Tap a part and it tells the page; the page can tint regions (who leads) and turn the player front/back.
+Messages in: {type:'vf3d:regions', states:{legs:'you'|'them'|'lvl'|'none',...}, sel:'legs'|null} {type:'vf3d:face', face:'front'|'back'}
+Message out: {type:'vf3d:part', part:'legs'|'chest'|'back'|'core'|'shoulders'|'arms'|null} */
+const regMeshes={};let pState={},pSel=null,faceT=null,torsoTex=null;
+const RCOL={you:'#4aa8ff',them:'#ff7ab8',lvl:'#d4deef',none:'#26324a'};
+if(PARTS){
+you.traverse(o=>{const r=o.userData&&o.userData.region;if(o.isMesh&&r){(regMeshes[r]=regMeshes[r]||[]).push(o);o.userData.orig=o.material}});
+const body=you.userData.body,orig=body.material;
+const dimC=(hex,dim)=>{const c=new THREE.Color(hex);if(dim)c.lerp(new THREE.Color(0x0d121c),.72);return '#'+c.getHexString()};
+function paintTorso(){
+if(!['chest','core','back'].some(r=>pState[r])){body.material=orig;return}
+const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');
+const area=(r,rects)=>{const st=pState[r]||'none',dim=pSel&&pSel!==r;x.fillStyle=dimC(RCOL[st],dim);rects.forEach(a=>x.fillRect(a[0],a[1],a[2],a[3]));
+if(pSel===r){x.strokeStyle='#f5c451';x.lineWidth=5;rects.forEach(a=>x.strokeRect(a[0]+2.5,a[1]+2.5,a[2]-5,a[3]-5))}};
+area('back',[[64,0,128,128]]);area('chest',[[0,0,64,64],[192,0,64,64]]);area('core',[[0,64,64,64],[192,64,64,64]]);
+if(torsoTex)torsoTex.dispose();torsoTex=new THREE.CanvasTexture(c);torsoTex.anisotropy=4;
+if(!body.userData.tm)body.userData.tm=orig.clone();body.userData.tm.map=torsoTex;body.userData.tm.color.set(0xffffff);body.userData.tm.emissive.set(0x1a2a44);body.userData.tm.emissiveIntensity=.35;body.userData.tm.needsUpdate=true;body.material=body.userData.tm;
+}
+function applyRegions(){
+Object.keys(regMeshes).forEach(r=>{if(r==='torso')return;const st=pState[r],dim=pSel&&pSel!==r;
+regMeshes[r].forEach(m=>{
+if(!st){m.material=m.userData.orig;return}
+if(!m.userData.tm)m.userData.tm=m.userData.orig.clone();const tm=m.userData.tm;
+tm.color.set(dimC(RCOL[st],dim));tm.emissive.set(dimC(RCOL[st],dim));tm.emissiveIntensity=pSel===r?.22:(dim?.03:.1);m.material=tm});});
+paintTorso();
+}
+const RC=new THREE.Raycaster(),ptr=new THREE.Vector2();let down=null;
+function pick(e){
+const r=cv.getBoundingClientRect();ptr.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);RC.setFromCamera(ptr,cam);
+const hit=RC.intersectObject(you,true).find(h=>{let o=h.object;while(o){if(o.userData&&o.userData.region)return true;o=o.parent}return false});
+let part=null;
+if(hit){let o=hit.object;while(o&&!(o.userData&&o.userData.region))o=o.parent;part=o.userData.region;
+if(part==='torso'){const p=you.userData.rig.worldToLocal(hit.point.clone());part=p.z<0?'back':(p.y>1.15?'chest':'core')}}
+if(part===pSel)part=null;
+pSel=part;applyRegions();try{parent.postMessage({type:'vf3d:part',part},location.origin)}catch(_){}
+}
+cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
+addEventListener('pointerup',e=>{if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y),dt=performance.now()-down.t;down=null;if(d<8&&dt<500)pick(e)});
+addEventListener('message',e=>{if(e.origin!==location.origin)return;const m=e.data||{};
+if(m.type==='vf3d:regions'){pState=m.states&&typeof m.states==='object'?m.states:{};pSel=typeof m.sel==='string'?m.sel:null;applyRegions()}
+else if(m.type==='vf3d:face'){faceT=m.face==='back'?faceYaw+Math.PI:faceYaw;vel=0;idleAt=0}});
+hint.style.display='none';
+}
+size();requestAnimationFrame(frame);
+window.__you=you;
+})();
+</script>
+</body></html>

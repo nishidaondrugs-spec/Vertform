@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="color-scheme" content="dark"><title>VERTFORM avatar maker</title>
+<!-- Hidden helper: VERTFORM posts {type:'vf3d:snap', id, look, kit} and gets back {type:'vf3d:snapped', id, img}
+(a small head-and-shoulders portrait as a data URL). One WebGL context makes every avatar in turn. -->
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}html>:not(head):not(body),body>:not(canvas):not(script):not(#hint):not(#nogl){display:none!important}</style>
+</head><body>
+<script src="player.js"></script>
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+const S = 160;
+const tell = m => { try { parent.postMessage(m, location.origin); } catch (_) {} };
+if (!window.THREE || !window.VF3D_PLAYER) { tell({ type: 'vf3d:unavailable' }); return; }
+let r;
+try { r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); } catch (_) { tell({ type: 'vf3d:unavailable' }); return; }
+r.setPixelRatio(1); r.setSize(S, S, false); r.setClearColor(0x000000, 0); document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xf2f4f8, 0x23262e, 1.05));
+const key = new THREE.DirectionalLight(0xffffff, .95); key.position.set(1.2, 2.4, 2.4); scene.add(key);
+const rim = new THREE.DirectionalLight(0x9fc4ff, .55); rim.position.set(-2, 2, -2); scene.add(rim);
+const KC = VF3D_PLAYER.KIT_COLOR, p = VF3D_PLAYER.make(THREE, scene, KC[2], 'YOU');
+p.userData.armL.rotation.x = p.userData.armR.rotation.x = -.15; p.rotation.y = .38;
+const cam = new THREE.PerspectiveCamera(24, 1, .1, 20);
+addEventListener('message', e => {
+if (e.origin !== location.origin) return; const m = e.data || {}; if (m.type !== 'vf3d:snap') return;
+VF3D_PLAYER.setMyLook(m.look || {});
+const k = Number.isInteger(m.kit) && KC[m.kit] != null ? KC[m.kit] : KC[2]; p.userData.kit.color.setHex(k);
+const h = [.96, 1, 1.05][VF3D_PLAYER.clean(m.look).height] || 1, y = 1.56 * h; // aim at the shoulders whatever the height
+cam.position.set(0, y + .1, 2.15); cam.lookAt(0, y, 0);
+r.render(scene, cam);
+let img = ''; try { img = r.domElement.toDataURL('image/webp', .86); if (!img.startsWith('data:image/webp')) img = r.domElement.toDataURL('image/png'); } catch (_) {}
+tell({ type: 'vf3d:snapped', id: m.id, img });
+});
+tell({ type: 'vf3d:ready' });
+})();
+</script>
+</body></html>
