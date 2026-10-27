@@ -103,7 +103,7 @@ function gymToday() {
     ${todayItems()}
     ${gymFocusBanner()}
     ${readinessBlock()}
-    ${sectionHead('THIS WEEK', `${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}`, `<button type="button" class="linkbtn" data-act="gym.tab" data-arg="plan">Plan ${icon('chev')}</button>`)}
+    ${sectionHead('THIS WEEK', `${esc(pretty(mon))} – ${esc(pretty(addDays(mon, 6)))}`)}
     ${weekStrip(mon)}
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercises</button><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button><button type="button" class="btn ghost" data-act="gym.tab" data-arg="jump">${icon('bolt')}Jump tracker</button></div>`;
 }
@@ -181,3 +181,22 @@ function fuelSegs() {
   return `<div class="seg" role="tablist" aria-label="Fuel sections">${[['today', 'Today'], ['meals', 'Meals'], ['progress', 'Progress']].map(([k, n]) => `<button type="button" role="tab" aria-selected="${cur === k}" class="${cur === k ? 'on' : ''}" data-act="fuel.tab" data-arg="${k}">${n}</button>`).join('')}</div>`;
 }
 ACTIONS['fuel.tab'] = el => { ui.fuelTab = el.dataset.arg; render(); window.scrollTo(0, 0); };
+
+
+/* ---------- optional creatine tracker ---------- */
+const creatineOn = () => !!data.settings.creatine?.on;
+function creatineRow(date) {
+  if (!creatineOn()) return '';
+  const dose = data.settings.creatine.dose, taken = !!data.creatine[date];
+  const days = Array.from({ length: 7 }, (_, i) => addDays(date, i - 6)), n = days.filter(d => data.creatine[d]).length;
+  return `<div class="crrow ${taken ? 'on' : ''}"><div class="crtx"><b>Creatine</b><small>${dose} g · ${n} of the last 7 days</small><span class="crdots" aria-hidden="true">${days.map(d => `<i class="${data.creatine[d] ? 'on' : ''}"></i>`).join('')}</span></div><button type="button" class="btn ${taken ? 'primary' : 'ghost'}" data-act="cr.toggle" data-id="${date}" aria-pressed="${taken}">${taken ? icon('check') + 'Taken' : 'Mark taken'}</button></div>`;
+}
+ACTIONS['cr.toggle'] = el => { const d = el.dataset.id; if (data.creatine[d]) delete data.creatine[d]; else data.creatine[d] = data.settings.creatine.dose; save(); render(); };
+ACTIONS['cr.on'] = () => { data.settings.creatine.on = !data.settings.creatine.on; save(); render(); toast(data.settings.creatine.on ? 'Creatine tracker added to Fuel → Today' : 'Creatine tracker hidden. Your history is kept.'); };
+INPUTS.crdose = el => { const v = Number(el.value); if (v >= 1 && v <= 20) { data.settings.creatine.dose = Math.round(v * 10) / 10; saveSoon(); } };
+function creatineSettings() {
+  const c = data.settings.creatine;
+  return `<p class="tiny">For people who take creatine. Off by default. When on, a one-tap "Mark taken" row appears in Fuel → Today.</p>
+    <label class="switch"><span>Track creatine</span><input type="checkbox" data-act="cr.on" ${c.on ? 'checked' : ''}></label>
+    ${c.on ? `<div class="field inline-field"><label for="crdose">Daily dose (grams)</label><input id="crdose" data-in="crdose" type="number" inputmode="decimal" step="0.5" min="1" max="20" value="${esc(c.dose)}"></div>` : ''}`;
+}

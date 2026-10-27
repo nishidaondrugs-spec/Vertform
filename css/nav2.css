@@ -154,3 +154,10 @@ body.nav2 #topback:not([hidden]){margin-right:auto}
 .dayinline .dih{margin:2px 0 8px;font-size:20px}
 .dayinline .dayitem{padding:12px 0;border-top:1px solid #1f2b45}
 .dayinline .dayitem:first-of-type{border-top:0}
+
+/* ---- creatine ---- */
+.crrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:10px 0;border-radius:16px;background:#0e1627;border:1px solid #1f2b45}
+.crrow.on{border-color:#2563eb}
+.crtx{display:flex;flex-direction:column;gap:2px;min-width:0}.crtx b{font-size:15px}.crtx small{font-size:12px;color:#a9b5cc}
+.crdots{display:flex;gap:5px;margin-top:4px}.crdots i{width:8px;height:8px;border-radius:50%;background:#2a3856}.crdots i.on{background:#6ea8ff}
+.crrow .btn{min-height:44px;flex-shrink:0}

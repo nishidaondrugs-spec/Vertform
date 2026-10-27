@@ -38,10 +38,11 @@ function baseData() {
     mySessions: [],
     catalogue: [],
     hiddenEx: {},
+    creatine: {},
     settings: {
       rest: { auto: true, sound: true, vibrate: true, wakeLock: true, perExercise: {} },
       backup: { lastExportAt: null, lastExportCounts: null, reminderDays: 14, snoozedUntil: null },
-      theme: 'dark', nav: 'feed', logo: '', weighSnooze: null, lb: null
+      theme: 'dark', nav: 'feed', creatine: { on: false, dose: 5 }, logo: '', weighSnooze: null, lb: null
     },
     meta: { createdAt: now, appVersion: APP_VERSION, migratedAt: null, migratedFrom: null }
   };
@@ -63,6 +64,12 @@ function cleanMySessions(arr) {
   return out;
 }
 /* 2.39: your exercise library (any exercise you add by hand) and built-in exercises you removed from a session for good. */
+/* optional creatine tracker: { 'YYYY-MM-DD': grams } for the days it was taken */
+function cleanCreatine(o) {
+  const out = {}; if (!isObj(o)) return out;
+  Object.keys(o).filter(isISO).sort().slice(-800).forEach(d => { const g = Number(o[d]); if (g > 0 && g <= 50) out[d] = Math.round(g * 10) / 10; });
+  return out;
+}
 function cleanCatalogue(arr) {
   const out = [];
   for (const e of (Array.isArray(arr) ? arr : []).slice(0, 500)) {
@@ -93,7 +100,7 @@ function normaliseData(o) {
   out.user = { ...b.user, ...(isObj(o.user) ? o.user : {}) };
   if (!isObj(o.user) || typeof o.user.onboarded !== 'boolean') out.user.onboarded = true; // anything saved before 2.8 already has its own setup
   out.mySessions = cleanMySessions(o.mySessions); syncCustomSessions(out.mySessions, !!(o.user && o.user.hideBuiltin));
-  out.catalogue = cleanCatalogue(o.catalogue); out.hiddenEx = cleanHiddenEx(o.hiddenEx);
+  out.catalogue = cleanCatalogue(o.catalogue); out.hiddenEx = cleanHiddenEx(o.hiddenEx); out.creatine = cleanCreatine(o.creatine);
   out.user.gymSessions = Array.isArray(out.user.gymSessions) ? SESSION_KEYS.filter(k => out.user.gymSessions.includes(k)) : SESSION_KEYS.slice();
   if (!out.user.gymSessions.length) out.user.gymSessions = SESSION_KEYS.slice();
   if (!isISO(out.user.startDate)) { out.user.startDate = b.user.startDate; warnings.push('Programme start date was invalid and has been reset to today.'); }
@@ -150,6 +157,7 @@ function normaliseData(o) {
   };
   out.settings.theme = ['dark', 'light', 'auto'].includes(s.theme) ? s.theme : 'dark';
   out.settings.nav = s.nav === 'hub' ? 'hub' : 'feed';
+  out.settings.creatine = { on: !!(isObj(s.creatine) && s.creatine.on), dose: clamp(Number(isObj(s.creatine) ? s.creatine.dose : 5) || 5, 1, 20) };
   out.settings.logo = typeof s.logo === 'string' && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(s.logo) && s.logo.length < 200000 ? s.logo : '';
   out.settings.weighSnooze = isISO(s.weighSnooze) ? s.weighSnooze : null;
   /* 2.20: the player look was dropped on every load. Keep only small whole numbers; the editor cleans it fully when used. */

@@ -373,3 +373,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.48.0 — Plan day panel, tidier leaderboard
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
+
+## 2.49.0 — Optional creatine tracker
+- Settings → **Creatine** switches an optional tracker on (off by default) and sets your daily dose. When on, Fuel → Today shows a one-tap "Mark taken" row with the last 7 days as dots. Included in backups.
+- Gym → Today: removed the redundant "Plan" link beside This week (Plan is one tap away in the tabs).
