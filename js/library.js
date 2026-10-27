@@ -7,6 +7,9 @@ let lib = { mode: 'browse', q: '', scope: 'today', shown: [] };
 let lf = null;
 
 const libLine = e => `${e.sets} × ${esc(e.reps)}${e.unit !== 'reps' ? ' ' + esc(e.unit) : ''} · ${e.load ? 'weighted' : 'no weight'}`;
+/* which exercises already sit in the place being added to (the session being edited, today's workout, or a saved session) */
+const libTargetList = () => lib.mode === 'workout' ? (data.draft?.exercises || []) : lib.mode === 'session' ? (typeof se !== 'undefined' && se ? se.exercises : []) : lib.mode === 'target' ? allExercises(lib.target) : [];
+const libHas = name => libTargetList().some(e => nameMatch(e.name, name));
 const LIB_SRC = { yours: 'Yours', 'built-in': 'Built-in', session: 'In a session', logged: 'Logged before', friend: 'Friend' };
 
 /* exercises friends shared in the posts already loaded on this phone (names only; their notes and weights are not shared) */
@@ -51,8 +54,9 @@ function libResults() {
   return lib.shown.map((x, i) => {
     const act = lib.mode === 'browse'
       ? (x.src === 'yours' ? `<button type="button" class="btn sm ghost" data-act="lib.edit" data-id="${i}">Edit</button>` : `<button type="button" class="btn sm ghost" data-act="lib.save" data-id="${i}">${icon('plus')}Save</button>`)
-      : `<button type="button" class="btn sm primary" data-act="lib.pick" data-id="${i}">${icon('plus')}Add</button>`;
-    return `<div class="between history-entry"><div class="min0"><strong>${esc(x.name)}</strong> ${tag(LIB_SRC[x.src], x.src === 'yours' ? 'sage' : '')}<div class="tiny">${libLine(x)}</div></div>${act}</div>`;
+      : libHas(x.name) ? `<button type="button" class="btn sm ghost" data-act="lib.pick" data-id="${i}">Add again</button>` : `<button type="button" class="btn sm primary" data-act="lib.pick" data-id="${i}">${icon('plus')}Add</button>`;
+    const added = lib.mode !== 'browse' && libHas(x.name) ? ' <span class="tag sage">Already added</span>' : '';
+    return `<div class="between history-entry"><div class="min0"><strong>${esc(x.name)}</strong> ${tag(LIB_SRC[x.src], x.src === 'yours' ? 'sage' : '')}${added}<div class="tiny">${libLine(x)}</div></div>${act}</div>`;
   }).join('');
 }
 const hiddenCount = () => Object.values(data.hiddenEx || {}).reduce((n, a) => n + a.length, 0);
@@ -70,8 +74,8 @@ function renderLibrary() {
     footer: `<button type="button" class="btn ghost" data-act="lib.new">${icon('plus')}New exercise</button><button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` };
 }
 function openLibrary(opts = {}) {
-  lib = { mode: opts.mode || 'browse', q: '', scope: 'today', shown: [] };
-  openSheet({ title: lib.mode === 'browse' ? 'Exercise library' : 'Pick an exercise', eyebrow: lib.mode === 'workout' ? 'ADD TO WORKOUT' : lib.mode === 'session' ? 'ADD TO SESSION' : 'YOUR EXERCISES', size: 'tall', autofocus: '#libq', render: renderLibrary });
+  lib = { mode: opts.mode || 'browse', q: '', scope: 'today', shown: [], target: opts.target || null };
+  openSheet({ title: lib.mode === 'browse' ? 'Exercise library' : 'Pick an exercise', eyebrow: lib.mode === 'workout' ? 'ADD TO WORKOUT' : lib.mode === 'session' ? 'ADD TO SESSION' : lib.mode === 'target' ? `ADD TO ${esc(sName(lib.target)).toUpperCase()}` : 'YOUR EXERCISES', size: 'tall', autofocus: '#libq', render: renderLibrary });
 }
 INPUTS.libq = el => { lib.q = el.value; const b = $('#libres'); if (b) b.innerHTML = libResults(); };
 ACTIONS['lib.open'] = () => openLibrary({ mode: 'browse' });
@@ -102,7 +106,7 @@ function openLibForm(x, after) {
   openSheet({ title: lf.id ? 'Edit exercise' : 'New exercise', eyebrow: 'EXERCISE LIBRARY', size: 'tall', autofocus: lf.name ? null : '#lfn', render: renderLibForm });
 }
 function renderLibForm() {
-  const label = lf.after === 'workout' ? 'Save & add to workout' : lf.after === 'session' ? 'Save & add to session' : 'Save exercise';
+  const label = lf.after === 'workout' ? 'Save & add to workout' : lf.after === 'session' || lf.after === 'target' ? 'Save & add to session' : 'Save exercise';
   return { body: `<div class="field first"><label for="lfn">Name</label><input id="lfn" data-in="lf" maxlength="80" autocomplete="off" placeholder="e.g. Bayesian curl" value="${esc(lf.name)}"></div>
     <div class="form-row"><div class="field"><label for="lfs">Sets</label><input id="lfs" data-in="lf" type="number" inputmode="numeric" min="1" max="12" value="${esc(String(lf.sets))}"></div><div class="field"><label for="lfr">Reps or time</label><input id="lfr" data-in="lf" maxlength="30" value="${esc(lf.reps)}"></div></div>
     <div class="form-row"><div class="field"><label for="lfu">Counted in</label><select id="lfu" data-in="lf">${['reps', 'seconds', 'metres'].map(u => `<option value="${u}" ${lf.unit === u ? 'selected' : ''}>${u}</option>`).join('')}</select></div><div class="field"><label for="lfrest">Rest (seconds)</label><input id="lfrest" data-in="lf" type="number" inputmode="numeric" min="0" max="600" placeholder="auto" value="${esc(String(lf.rest))}"></div></div>
@@ -119,7 +123,7 @@ ACTIONS['lf.save'] = () => {
   const entry = libSaveEntry({ id: lf.id, name, sets, reps, unit: lf.unit, load: !!lf.load, hint: lf.hint.trim(), rest: clamp(parseInt(lf.rest) || 0, 0, 600) });
   if (!entry) return;
   save(); closeSheet();
-  if (lf.after === 'workout' || lf.after === 'session') libAdd(entry); else toast(`${name} saved`);
+  if (lf.after === 'workout' || lf.after === 'session' || lf.after === 'target') libAdd(entry); else toast(`${name} saved`);
 };
 ACTIONS['lf.delete'] = async () => {
   if (!await askConfirm({ title: 'Delete from library?', message: '<p>It leaves your own list. Sessions and workouts that already use it are not changed.</p>', confirmLabel: 'Delete', danger: true })) return;
@@ -128,14 +132,37 @@ ACTIONS['lf.delete'] = async () => {
 
 /* ---------- adding to a session being edited, or to the workout in progress ---------- */
 ACTIONS['lib.pick'] = el => { const x = lib.shown[Number(el.dataset.id)]; if (x) libAdd(x); };
-function libAdd(x) {
+async function libAdd(x) {
+  if (lib.mode !== 'browse' && libHas(x.name)) {
+    const where = lib.mode === 'workout' ? 'this workout' : lib.mode === 'target' ? sName(lib.target) : 'this session';
+    if (!await askConfirm({ title: `${x.name} is already in ${where}`, message: '<p>Adding it again gives you two of the same exercise. Most people do not need that.</p>', confirmLabel: 'Add it again', cancelLabel: 'Leave it' })) return;
+  }
   if (lib.mode === 'session') {
     if (typeof se === 'undefined' || !se) return;
     if (se.exercises.length >= 25) { toast('A session holds up to 25 exercises'); return; }
     se.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', rest: x.rest || 0 });
-    se.err = ''; toast(`${x.name} added · ${plural(se.exercises.length, 'exercise')} so far`); return;
+    se.err = ''; refreshSheet(); toast(`${x.name} added · ${plural(se.exercises.length, 'exercise')} so far`); return;
   }
+  if (lib.mode === 'target') { if (sessAdd(lib.target, x)) { refreshSheet(); render(); toast(`${x.name} added to ${sName(lib.target)}`); } return; }
   if (lib.mode === 'workout') addToWorkout(x, lib.scope);
+}
+/* saved sessions: add or take out an exercise for good (used by the Sessions tab) */
+function sessAdd(k, x) {
+  const my = data.mySessions.find(s => s.key === k && !s.deleted);
+  if (allExercises(k).length >= 25) { toast('A session holds up to 25 exercises'); return false; }
+  if (BUILTIN_KEYS.includes(k)) (data.custom[k] ||= []).push(ex('custom-' + uid(), x.name, x.sets, x.reps, x.unit, x.load, x.hint || 'Custom exercise'));
+  else if (my) { my.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0 }); data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin); }
+  else return false;
+  save(); return true;
+}
+function sessRemove(k, id) {
+  const my = data.mySessions.find(s => s.key === k && !s.deleted);
+  if (allExercises(k).length < 2) { toast('A session needs at least one exercise'); return false; }
+  if ((data.custom[k] || []).some(x => x.id === id)) data.custom[k] = data.custom[k].filter(x => x.id !== id);
+  else if (my && my.exercises.some(x => x.id === id)) { my.exercises = my.exercises.filter(x => x.id !== id); data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin); }
+  else if (BUILTIN_KEYS.includes(k)) { data.hiddenEx = data.hiddenEx || {}; (data.hiddenEx[k] ||= []).push(id); }
+  else return false;
+  save(); return true;
 }
 function addToWorkout(x, scope) {
   const w = data.draft; if (!w) return;

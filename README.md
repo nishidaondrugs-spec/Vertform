@@ -353,3 +353,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.43.0 — Feed cards
 - Feed top strip now reads "You posted today" with the time and camera-reaction count and a Post again button (or "Post today" before you have posted).
 - Friend posts are rounded cards: header, photo with caption over it (or a short caption for text posts), a session card with a GYM / VB tag, then React and comment buttons.
+
+## 2.44.0 — Sessions tab and no doubled exercises
+- Gym now has **Today / Plan / Sessions / History**. Sessions lists every session; open one to see its exercises, remove one (bin), or **Add exercise** from the library. Plan links to it.
+- The library marks exercises **Already added** for the session or workout you are adding to. Adding one again asks you to confirm first (in a saved session, a session being edited, or a workout in progress).

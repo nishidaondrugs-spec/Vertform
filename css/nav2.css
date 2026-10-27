@@ -99,3 +99,19 @@ body.nav2 .pcard.bm .rbar{margin:8px 10px 4px}
 body.nav2 .wk-head .wk-t{margin:0}
 body.nav2 .pcard.bm > .wkcard > *,body.nav2 .pcard.bm > .pattach > *{margin-left:0;margin-right:0}
 body.nav2 .pcard.bm .wk-head{margin:0 0 8px}
+
+/* ---- Sessions tab ---- */
+.seslist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sescard{border-radius:16px;background:#0e1627;border:1px solid #1f2b45;overflow:hidden}
+.seshead{width:100%;display:flex;align-items:center;gap:12px;padding:12px;border:0;background:none;color:inherit;font-family:inherit;text-align:left;min-height:64px}
+.seshead .min0{flex-grow:1;display:flex;flex-direction:column}.seshead b{font-size:15px}.seshead small{font-size:12px;color:#a9b5cc}
+.seshead .chevd .ico{width:20px;height:20px;color:#a9b5cc;transition:transform .15s}
+.sescard.open .chevd .ico{transform:rotate(180deg)}
+.selist{list-style:none;margin:0;padding:0;border-top:1px solid #1f2b45}
+.serow{display:flex;align-items:center;gap:8px;padding:6px 12px;min-height:56px}
+.serow+.serow{border-top:1px solid #1f2b45}
+.serow .min0{flex-grow:1;display:flex;flex-direction:column}.serow b{font-size:14px}.serow small{font-size:12px;color:#a9b5cc}
+.sesbtns{display:grid;grid-template-columns:2fr 1fr;gap:8px;padding:10px 12px 12px;border-top:1px solid #1f2b45}
+.gymlink{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:14px;border-radius:16px;background:#0e1627;border:1px solid #1f2b45;color:inherit;font-family:inherit;text-align:left;min-height:56px}
+.gymlink span{display:flex;flex-direction:column}.gymlink b{font-size:15px}.gymlink small{font-size:12px;color:#a9b5cc}
+body.nav2 [role=tablist].seg button{padding-left:4px;padding-right:4px;font-size:13px}

@@ -110,17 +110,36 @@ function gymToday() {
 function gymPlan() {
   ui.trainDate = todayISO();
   return `${calendarBody(ui.planWeek)}
-    ${sectionHead('', 'Your programme', `<button type="button" class="linkbtn" data-act="ys.new">${icon('plus')}New session</button>`)}
-    <p class="tiny">Tap a session to start it. Inside a workout, use the bin to remove an exercise, or the menu to add one for today or for good.</p>
-    <ul class="sessionlist">${SESSION_KEYS.map(sessionRow).join('')}</ul>
-    <button type="button" class="btn ghost block mt" data-act="lib.open">${icon('list')}Open exercise library</button>`;
+    <button type="button" class="gymlink" data-act="gym.tab" data-arg="sessions"><span><b>Training sessions</b><small>See, add and remove the exercises in each session</small></span>${icon('chev')}</button>`;
 }
 function viewGym() {
-  const w = getWeek(), t = ui.trainTab, tab = ['plan', 'history', 'vb', 'jump'].includes(t) ? t : 'today';
+  const w = getWeek(), t = ui.trainTab, tab = ['plan', 'sessions', 'history', 'vb', 'jump'].includes(t) ? t : 'today';
   ui.trainDate = ui.trainDate && isISO(ui.trainDate) ? ui.trainDate : todayISO();
-  const segs = [['today', 'Today'], ['plan', 'Plan'], ['history', 'History']];
-  const body = tab === 'plan' ? gymPlan() : tab === 'history' ? trainHistory() : tab === 'vb' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainVb()}` : tab === 'jump' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainJump()}` : gymToday();
+  const segs = [['today', 'Today'], ['plan', 'Plan'], ['sessions', 'Sessions'], ['history', 'History']];
+  const body = tab === 'plan' ? gymPlan() : tab === 'sessions' ? gymSessions() : tab === 'history' ? trainHistory() : tab === 'vb' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainVb()}` : tab === 'jump' ? `<button type="button" class="linkbtn back" data-act="gym.tab" data-arg="today">${icon('back')}Gym</button>${trainJump()}` : gymToday();
   return `${pageHead('', 'Gym', `<span class="tag ${isDeload(w) ? 'ochre' : ''}">Week ${w} of 12${isDeload(w) ? ' · easy' : ''}</span>`)}${banners()}
     <div class="seg" role="tablist" aria-label="Gym sections">${segs.map(([k, n]) => `<button type="button" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-act="gym.tab" data-arg="${k}">${n}</button>`).join('')}</div>
     ${body}`;
+}
+
+
+/* ---------- Sessions tab: every session and its exercises, easy to add to and remove from ---------- */
+ACTIONS['ses.open'] = el => { ui.sesOpen = ui.sesOpen === el.dataset.arg ? null : el.dataset.arg; render(); };
+ACTIONS['ses.add'] = el => openLibrary({ mode: 'target', target: el.dataset.arg });
+ACTIONS['ses.rm'] = async el => {
+  const k = el.dataset.arg, id = el.dataset.id, e = allExercises(k).find(x => x.id === id); if (!e) return;
+  if (allExercises(k).length < 2) { toast('A session needs at least one exercise'); return; }
+  if (!await askConfirm({ title: `Remove ${e.name}?`, message: `<p>It comes out of your future ${esc(sName(k))} workouts. Workouts you already logged are not changed.</p>`, confirmLabel: 'Remove', danger: true })) return;
+  if (sessRemove(k, id)) { render(); toast(`${e.name} removed from ${sName(k)}`); }
+};
+function sesCard(k) {
+  const t = templates[k], list = allExercises(k), open = ui.sesOpen === k;
+  const rows = list.map(e => `<li class="serow"><div class="min0"><b>${esc(e.name)}</b><small>${libLine(e)}</small></div><button type="button" class="iconbtn" data-act="ses.rm" data-arg="${k}" data-id="${esc(e.id)}" aria-label="Remove ${esc(e.name)}">${icon('trash')}</button></li>`).join('');
+  return `<li class="sescard ${open ? 'open' : ''}"><button type="button" class="seshead" data-act="ses.open" data-arg="${k}" aria-expanded="${open}"><span class="code">${sBadge(k)}</span><span class="min0"><b>${esc(t.title)}</b><small>${esc(String(t.duration || '').replace(/^~\s*/, ''))} · ${plural(list.length, 'exercise')}</small></span><span class="chevd">${icon('down')}</span></button>
+    ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.add" data-arg="${k}">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div>` : ''}</li>`;
+}
+function gymSessions() {
+  return `<p class="tiny">Open a session to see its exercises. Add from the library or take one out. An exercise already in a session is marked <b>Already added</b> so you do not get doubles.</p>
+    <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
+    <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercise library</button></div>`;
 }
