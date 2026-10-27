@@ -110,13 +110,13 @@ function openRecipeEditor(id, preset) {
 function renderRecipeEditor() {
   const t = recipeTotals(rd), s = Number(rd.servings) || 1, per = { kcal: t.kcal / s, protein: t.protein / s, carbs: t.carbs / s, fat: t.fat / s }, isMeal = Number(rd.servings) === 1;
   return {
-    body: `<div class="field"><label for="rdname">Name</label><input id="rdname" data-in="rd" maxlength="60" placeholder="e.g. Turkey chilli" value="${esc(rd.name)}"></div>
+    body: `<div class="rdform"><div class="field"><label for="rdname">Name</label><input id="rdname" data-in="rd" maxlength="60" placeholder="e.g. Turkey chilli" value="${esc(rd.name)}"></div>
       <div class="field"><label for="rdservings">Servings it makes</label><input id="rdservings" data-in="rd" type="number" inputmode="decimal" min="0.25" max="200" step="any" value="${esc(isMeal ? 1 : rd.servings)}"><div class="hint">Use 1 for a single meal. Calories and macros are shown per serving.</div></div>
       <div class="eyebrow rdh">Ingredients${rd.ingredients.length ? ` · ${rd.ingredients.length}` : ''}</div>
       <ul class="ing-list">${rd.ingredients.length ? rd.ingredients.map((i, ix) => { const n = ingNutr(i); return `<li><div class="grow min0"><strong>${esc(i.name)}</strong><small>${esc(ingLabel(i))} · ${Math.round(n.kcal)} kcal</small></div><button type="button" class="iconbtn" data-act="rd.editing" data-id="${ix}" aria-label="Edit quantity of ${esc(i.name)}">${icon('edit')}</button><button type="button" class="iconbtn" data-act="rd.deling" data-id="${ix}" aria-label="Remove ${esc(i.name)}">${icon('close')}</button></li>`; }).join('') : `<li class="empty-li">Nothing added yet</li>`}</ul>
       <button type="button" class="btn ghost full" data-act="rd.adding">${icon('plus')}Add ingredient</button>
       <div class="sumbox" id="rdsum" aria-live="polite">${recipeSummary(t, per, s, isMeal)}</div>
-      <div class="field"><label for="rdnotes">Notes (optional)</label><textarea id="rdnotes" data-in="rd" rows="2" maxlength="400" placeholder="Method, tips…">${esc(rd.notes || '')}</textarea></div>`,
+      <div class="field"><label for="rdnotes">Notes (optional)</label><textarea id="rdnotes" data-in="rd" rows="2" maxlength="400" placeholder="Method, tips…">${esc(rd.notes || '')}</textarea></div></div>`,
     footer: `${rd.id ? `<button type="button" class="btn critical" data-act="rd.delete" aria-label="Delete this ${isMeal ? 'meal' : 'recipe'}">${icon('trash')}</button>` : ''}<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="rd.save">Save ${isMeal ? 'meal' : 'recipe'}</button>`
   };
 }

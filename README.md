@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.70.2 — Spacing in meals
+Fuel meal rows: names clamp to two lines and never crowd the calories; calories sit in their own column; every meal group has the same height and gap. Saved meals and the recipe editor have even spacing and a clearer info line.
+
 ## 2.70.1 — Logged sessions show everywhere on the calendar
 The week plan now includes anything you logged that wasn't planned (social games, unplanned matches, extra gym days), so the week strips, week view, Today list and day sheet all show it. Unplanned gym days don't inflate the 'planned' count.
 
