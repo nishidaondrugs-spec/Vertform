@@ -596,3 +596,18 @@ body.nav2 .mealgroup{margin-bottom:8px}
 :root:not([data-theme="light"]) body.nav2 .tabbar>button.active,:root:not([data-theme="light"]) body.nav2 .tabbar .tabyou.active{background:rgba(255,255,255,.16)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)!important}
 body.nav2 #view::after{height:84px;background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0))}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root:not([data-theme="light"]) body.nav2 .tabbar{background:rgba(24,24,27,.96)!important}}
+
+/* ===== Meal headers: a colour per meal ===== */
+body.nav2 .mealtitle{--mc:#8e8e93;flex-wrap:wrap}
+body.nav2 .mealtitle[data-meal="Breakfast"]{--mc:#f5a524}
+body.nav2 .mealtitle[data-meal="Lunch"]{--mc:#34c759}
+body.nav2 .mealtitle[data-meal="Dinner"]{--mc:#7c8cff}
+body.nav2 .mealtitle[data-meal="Snack"]{--mc:#ff6fa8}
+body.nav2 .mealtitle .mdot{display:none!important}
+body.nav2 .mealtitle .mname{position:relative;display:inline-block;padding-bottom:7px}
+body.nav2 .mealtitle .mname::after{content:"";position:absolute;left:0;bottom:0;width:100%;max-width:34px;height:3px;border-radius:2px;background:var(--mc);transition:max-width .3s cubic-bezier(.2,.8,.2,1)}
+body.nav2 .mealgroup:not(.empty) .mealtitle .mname::after{max-width:100%}
+body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:.6}
+@media (prefers-reduced-motion:reduce){body.nav2 .mealtitle .mname::after{transition:none}}
+#view[data-view="fuel"] .mealgroup.empty .mname{opacity:1!important;color:#a1a1a6!important}
+body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:1}
