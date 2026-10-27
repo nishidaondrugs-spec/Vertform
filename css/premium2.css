@@ -289,3 +289,6 @@ body.nav2 .gbtns .gbtn{background:rgba(0,0,0,.55)!important;color:#fff!important
 .bmedia .rxbubbles{right:12px!important;bottom:12px!important}
 .bmedia .rxbubbles .rxb{width:36px!important;height:36px!important;border:2px solid #fff!important;margin-left:-10px!important;box-shadow:0 1px 6px rgba(0,0,0,.4)}
 .bmedia .rxbubbles .rxb:first-child{margin-left:0!important}
+
+.bnshuf{background:linear-gradient(135deg,#1c1c1f,#2c2c30)!important}
+.bnshuf::before{content:"\21C4";position:absolute;right:14px;top:10px;font-size:26px;color:#f5f5f7;opacity:.85}
