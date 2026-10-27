@@ -194,10 +194,10 @@ function vbRow(l) {
 }
 function trainVb() {
   const mon = monday(todayISO()), s = weekSummary(mon), logs = [...data.vb.logs].sort((a, b) => (b.date + (b.createdAt || '')).localeCompare(a.date + (a.createdAt || ''))).slice(0, 15);
-  return `<div class="quick"><button type="button" class="btn primary" data-act="vb.log" data-arg="training">${icon('ball')}Log training</button><button type="button" class="btn ghost" data-act="vb.log" data-arg="match">Log match</button></div>
-    <dl class="tally"><div><dt>This week</dt><dd class="mono">${s.vbN}<small> ${s.vbN === 1 ? 'session' : 'sessions'}</small></dd></div><div><dt>Time</dt><dd class="mono">${s.minutes ? fmtMins(s.minutes) : '—'}</dd></div><div><dt>Load</dt><dd class="mono">${s.loggedLoadN ? s.load : '—'}<small> AU</small></dd></div></dl>
+  return `<div class="quick vbcta"><button type="button" class="btn primary" data-act="vb.log" data-arg="training">${icon('plus')}Log volleyball</button></div>
+    <dl class="tally vbtally"><div><dt>This week</dt><dd class="mono">${s.vbN}<small> ${s.vbN === 1 ? 'session' : 'sessions'}</small></dd></div><div><dt>Time</dt><dd class="mono">${s.minutes ? fmtMins(s.minutes) : '—'}</dd></div><div><dt>Load</dt><dd class="mono">${s.loggedLoadN ? s.load : '—'}<small> AU</small></dd></div></dl>
     <details class="explain"><summary>What is session load?</summary><p class="note">Session load is <b>duration (minutes) × session RPE (1–10)</b>, in arbitrary units (AU). It is a simple way to compare how big sessions and weeks felt. It is not an injury prediction and not a medical score, and it only counts sessions where you entered both a duration and an RPE.</p></details>
-    ${sectionHead('LOGBOOK', 'Volleyball sessions', `<span class="tag">${data.vb.logs.length} saved</span>`)}
+    <div class="eyebrow vbrec">Recent sessions</div>
     ${logs.length ? `<ul class="loglist">${logs.map(vbRow).join('')}</ul>` : emptyBox('No volleyball sessions logged yet. Log a club training or match to see it here, separate from your gym sessions.')}`;
 }
 function historyItems() {

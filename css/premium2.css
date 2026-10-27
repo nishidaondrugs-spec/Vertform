@@ -682,3 +682,32 @@ body.nav2 .mealgroup.empty .mealtitle .mname::after{opacity:1}
 .obsignin{display:flex!important;width:100%;justify-content:center;align-items:center;padding:0!important;margin-left:0!important}
 .obprog i.f{box-shadow:none!important}
 .obnum{background:#1c1c1e!important;border:0!important;color:#fff!important}
+
+/* ===== Finish workout ===== */
+.fin-sum{display:flex;align-items:baseline;gap:12px;margin:6px 0 24px}
+.fin-sum b{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}.fin-sum b small{font-size:20px;color:#6c6c70;font-weight:600}
+.fin-sum span{color:#8e8e93;font-size:15px}
+.fin-l{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}.fin-l span{font-size:15px;font-weight:600}.fin-l em{font-style:normal;font-size:14px;color:#8e8e93}
+.fin-rpe{margin:0 0 22px}
+.fin-rpe .rpe-grid{display:grid!important;grid-template-columns:repeat(10,1fr)!important;gap:4px!important}
+.fin-rpe .rpe{min-height:0!important;aspect-ratio:1;border:0!important;border-radius:50%!important;background:#1c1c1e!important;color:#8e8e93!important;font:600 13px -apple-system,Inter,sans-serif!important;padding:0}
+.fin-rpe .rpe.on{background:#fff!important;color:#000!important}
+.fin-more{margin:4px 0 12px;border:0!important;background:none!important}
+.fin-more>summary{padding:12px 0;font-size:15px;color:#8e8e93;cursor:pointer;list-style:none}.fin-more>summary::-webkit-details-marker{display:none}
+.fin-more>summary::after{content:" +"}.fin-more[open]>summary::after{content:" −"}
+
+/* ===== Exercise picker ===== */
+.libplus{width:40px;height:40px;border-radius:50%;border:0;background:#e5383b;color:#fff;display:grid;place-items:center;flex:none;cursor:pointer;padding:0}
+.libplus svg{width:18px;height:18px}.libplus.done{background:#1c1c1e;color:#8e8e93}
+.sheet .history-entry{padding:12px 0;border:0!important;border-top:1px solid #1c1c1e!important;background:none!important;border-radius:0!important}
+
+/* ===== Volleyball tab ===== */
+.vbcta{margin:0 0 16px}.vbcta .btn{width:100%;height:52px;border-radius:26px}
+.vbtally{display:grid!important;grid-template-columns:repeat(3,1fr);gap:0!important;margin:0 0 8px!important}
+.vbtally>div{background:none!important;border:0!important;padding:14px 0!important;text-align:left}
+.vbtally dt{font-size:12px;color:#8e8e93}.vbtally dd{font-size:24px;font-weight:800;margin:2px 0 0}
+.vbrec{margin:22px 0 6px!important}
+
+/* ===== Sheet footers: red only for the main action ===== */
+.sheet-foot .btn.ghost:not(.primary),.sheet-foot .btn.ghost:not(.primary) *{color:#a1a1a6!important}
+.sheet-foot .btn.ghost:not(.primary){background:#1c1c1e!important;border:0!important}

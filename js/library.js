@@ -54,8 +54,8 @@ function libResults() {
   return lib.shown.map((x, i) => {
     const act = lib.mode === 'browse'
       ? (x.src === 'yours' ? `<button type="button" class="btn sm ghost" data-act="lib.edit" data-id="${i}">Edit</button>` : `<button type="button" class="btn sm ghost" data-act="lib.save" data-id="${i}">${icon('plus')}Save</button>`)
-      : libHas(x.name) ? `<button type="button" class="btn sm ghost" data-act="lib.pick" data-id="${i}">Add again</button>` : `<button type="button" class="btn sm primary" data-act="lib.pick" data-id="${i}">${icon('plus')}Add</button>`;
-    const added = lib.mode !== 'browse' && libHas(x.name) ? ' <span class="tag sage">Already added</span>' : '';
+      : libHas(x.name) ? `<button type="button" class="libplus done" data-act="lib.pick" data-id="${i}" aria-label="Add ${esc(x.name)} again">${icon('check')}</button>` : `<button type="button" class="libplus" data-act="lib.pick" data-id="${i}" aria-label="Add ${esc(x.name)}">${icon('plus')}</button>`;
+    const added = lib.mode !== 'browse' && libHas(x.name) ? '' : '';
     return `<div class="between history-entry"><div class="min0"><strong>${esc(x.name)}</strong> ${tag(LIB_SRC[x.src], x.src === 'yours' ? 'sage' : '')}${added}<div class="tiny">${libLine(x)}</div></div>${act}</div>`;
   }).join('');
 }
