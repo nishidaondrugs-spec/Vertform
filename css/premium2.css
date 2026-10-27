@@ -587,3 +587,5 @@ body.nav2 .mealgroup{margin-bottom:8px}
 :root:not([data-theme="light"]) .sheet .list-actions{display:flex;flex-direction:column;gap:0;margin:8px 0 14px}
 :root:not([data-theme="light"]) .sheet .list-actions .btn:not(.critical){justify-content:flex-start!important;gap:14px;height:52px;padding:0 4px!important;background:none!important;border:0!important;border-top:1px solid #1c1c1e!important;border-radius:0!important;color:#fff!important;font-size:16px;font-weight:500}
 :root:not([data-theme="light"]) .sheet .list-actions .btn:not(.critical) svg{color:#8e8e93;width:20px;height:20px}
+.wk-layer .sets.noload .cell.na,.wk-layer .sets.noload .set-head span:nth-child(3){display:none!important}
+.wk-layer .sets.noload .set-head span:nth-child(4){text-align:center}
