@@ -2,7 +2,7 @@
 const PUSHPREF_KEY = 'vertform.push';
 function pushPrefs() {
   let p = {}; try { p = JSON.parse(localStorage.getItem(PUSHPREF_KEY) || '{}'); } catch (_) { /* none */ }
-  return { posts: p.posts !== false, mentions: p.mentions !== false, remind: !!p.remind, remind_time: /^([01]\d|2[0-3]):[0-5]\d$/.test(p.remind_time || '') ? p.remind_time : '08:00', on: !!p.on, plan: p.plan || '' };
+  return { posts: p.posts !== false, mentions: p.mentions !== false, remind: !!p.remind, fuel: p.fuel !== false, remind_time: /^([01]\d|2[0-3]):[0-5]\d$/.test(p.remind_time || '') ? p.remind_time : '08:00', on: !!p.on, plan: p.plan || '' };
 }
 function pushSavePrefs(p) { try { localStorage.setItem(PUSHPREF_KEY, JSON.stringify(p)); } catch (_) { /* ignore */ } }
 const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -21,6 +21,7 @@ function pushPlan() {
     if (s === 'RECOVERY' || !s) continue;
     out[d] = s === 'MATCH' ? 'Match day' : s === 'TEAM' ? 'Volleyball training' : (templates[s]?.title || sName(s));
   }
+  if (pushPrefs().fuel && typeof matchFuelPlan === 'function') { const f = matchFuelPlan(); if (f.length) out._fuel = f; }
   return out;
 }
 async function pushPlanSync(force) {
@@ -51,7 +52,7 @@ ACTIONS['push.off'] = async () => {
 };
 ACTIONS['push.pref'] = async el => {
   const p = pushPrefs(); p[el.dataset.arg] = !!el.checked; pushSavePrefs(p);
-  const c = lbCfg(); if (c && p.on) { try { await lbCall('vf_push_prefs_set', { p_id: c.id, p_secret: c.secret, p_prefs: pushPayload(p) }); if (el.dataset.arg === 'remind') pushPlanSync(true); } catch (_) { toast('Could not save that. Check your signal'); } }
+  const c = lbCfg(); if (c && p.on) { try { await lbCall('vf_push_prefs_set', { p_id: c.id, p_secret: c.secret, p_prefs: pushPayload(p) }); if (el.dataset.arg === 'remind' || el.dataset.arg === 'fuel') pushPlanSync(true); } catch (_) { toast('Could not save that. Check your signal'); } }
   render();
 };
 INPUTS.pushtime = el => { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)) return; const p = pushPrefs(); p.remind_time = el.value; pushSavePrefs(p); clearTimeout(ntfTimer); ntfTimer = setTimeout(() => { const c = lbCfg(); if (c && p.on) lbCall('vf_push_prefs_set', { p_id: c.id, p_secret: c.secret, p_prefs: pushPayload(p) }).catch(() => {}); }, 600); };
@@ -66,7 +67,7 @@ function pushSettings() {
   else if (perm === 'denied') head = `<p class="tiny">Notifications are blocked for VERTFORM. Allow them in your phone settings, then come back.</p>`;
   else head = live ? '' : `<p class="tiny">Get pinged when a friend posts or tags you. Nothing else. Nothing is shown from the post itself.</p><button type="button" class="btn primary" data-act="push.enable">Turn on notifications</button>`;
   const sw = (k, label) => `<label class="switch"><span>${label}</span><input type="checkbox" data-act="push.pref" data-arg="${k}" ${p[k] ? 'checked' : ''}></label>`;
-  const body = live ? `${sw('posts', 'A friend posts')}${sw('mentions', 'Someone @mentions you')}${sw('remind', 'Remind me on session days (optional)')}
+  const body = live ? `${sw('posts', 'A friend posts')}${sw('mentions', 'Someone @mentions you')}${sw('remind', 'Remind me on session days (optional)')}${sw('fuel', 'Match-day fuel reminders (carbs, honey)')}
     ${p.remind ? `<div class="field inline-field"><label for="pushtime">Remind me at</label><input id="pushtime" type="time" data-in="pushtime" value="${esc(p.remind_time)}"></div>` : ''}
     <button type="button" class="btn ghost" data-act="push.off">Turn off on this phone</button>` : '';
   return head + body;
