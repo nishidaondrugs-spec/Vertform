@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.66.0 — Calmer workout screen
+Black background, one thin progress line, a single meta line, clean set rows (Last time / kg / Reps / tick), a rest card that slides up after each set (+15s, Skip) and one red Next exercise button. Plates, fill from last time, progress, remove set, readiness and add/remove exercise moved into the ••• menu.
+
 ## 2.65.0 — New banner set
 - Seven new illustrated banners (Spike, Set, Captain, Smile, Read, Focus, Serve) replace the old three. Gallery, daily shuffle and post banners all use them.
 

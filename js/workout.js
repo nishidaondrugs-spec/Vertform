@@ -107,15 +107,11 @@ async function requestWakeLock() { try { if (data.settings.rest.wakeLock !== fal
 function releaseWakeLock() { try { wakeLock && wakeLock.release(); } catch (_) { /* ignore */ } wakeLock = null; }
 
 /* Timer markup (used in the workout dock and as a floating pill elsewhere) */
-function timerBarHTML(compact) {
-  const act = currentExercise();
-  const rest = act ? restFor(act) : 90;
-  if (timer.state === 'idle') return `<div class="timerbar idle"><button type="button" class="tb-start" data-act="timer.startdefault">${icon('timer')}<span>Rest ${fmtClock(rest * 1000)}</span></button><button type="button" class="iconbtn" data-act="timer.open" aria-label="Rest timer settings">${icon('gear')}</button></div>`;
-  const rem = timerRemaining(), pct = timer.total ? clamp(100 - rem / timer.total * 100, 0, 100) : 0;
-  if (timer.state === 'done') return `<div class="timerbar done"><button type="button" class="tb-time" data-act="timer.open"><span class="tb-clock" data-tbtext>Rest over</span><small>${timer.lateMs > 3000 ? `ended ${fmtClock(timer.lateMs)} ago · ` : ''}${esc(timer.label)}</small></button><div class="tb-ctrl"><button type="button" class="btn sm ghost" data-act="timer.add" data-arg="30">+30 s</button><button type="button" class="btn sm primary" data-act="timer.skip">Dismiss</button></div></div>`;
-  return `<div class="timerbar ${timer.state}"><button type="button" class="tb-time" data-act="timer.open" aria-label="Rest timer, ${fmtClock(rem)} remaining. Open settings"><span class="tb-clock mono" data-tbtext>${fmtClock(rem)}</span><small>${timer.state === 'paused' ? 'Paused · ' : ''}${esc(timer.label)}</small></button>
-    <div class="tb-ctrl"><button type="button" class="tbb" data-act="timer.add" data-arg="-15" aria-label="Subtract 15 seconds">−15</button><button type="button" class="tbb strong" data-act="timer.toggle" aria-label="${timer.state === 'paused' ? 'Resume' : 'Pause'} timer">${icon(timer.state === 'paused' ? 'play' : 'pause')}</button><button type="button" class="tbb" data-act="timer.add" data-arg="15" aria-label="Add 15 seconds">+15</button><button type="button" class="tbb" data-act="timer.skip" aria-label="Skip rest">${icon('skip')}</button></div>
-    <div class="tb-bar" aria-hidden="true"><span data-tbbar style="width:${pct}%"></span></div></div>`;
+function timerBarHTML() {
+  if (timer.state === 'idle') return '';
+  const rem = timerRemaining();
+  if (timer.state === 'done') return `<div class="restcard done"><button type="button" class="rc-time" data-act="timer.open"><span class="rc-l">Rest over</span><b class="rc-c" data-tbtext>Go</b></button><div class="rc-ctrl"><button type="button" class="rc-pill" data-act="timer.add" data-arg="30">+30s</button><button type="button" class="rc-pill" data-act="timer.skip">Dismiss</button></div></div>`;
+  return `<div class="restcard ${timer.state}"><button type="button" class="rc-time" data-act="timer.toggle" aria-label="Rest ${fmtClock(rem)}. Tap to ${timer.state === 'paused' ? 'resume' : 'pause'}"><span class="rc-l">${timer.state === 'paused' ? 'Paused' : 'Rest'}</span><b class="rc-c" data-tbtext>${fmtClock(rem)}</b></button><div class="rc-ctrl"><button type="button" class="rc-pill" data-act="timer.add" data-arg="15">+15s</button><button type="button" class="rc-pill" data-act="timer.skip">Skip</button></div></div>`;
 }
 function paintTimerText() {
   const rem = timerRemaining();
@@ -215,10 +211,10 @@ function paintWorkout() {
   const t = templates[w.session], wkNo = weekFor(w.date);
   const root = $('#wk-root'); const prevScroll = $('.wk-body', root)?.scrollTop || 0;
   root.innerHTML = `<div class="overlay wk-layer"><section class="wk" role="dialog" aria-modal="true" aria-label="Workout: ${esc(sName(w.session))}">
-    <header class="wk-head"><button type="button" class="iconbtn" data-act="wk.close" aria-label="Close workout and keep draft">${icon('back')}</button>
-      <div class="wk-title min0"><span class="wk-code" aria-hidden="true">${esc(w.session)}</span><div class="min0"><strong>${esc(t.title)}</strong><small>${esc(weekdayShort(w.date))} ${esc(pretty(w.date))}</small></div></div>
-      <button type="button" class="iconbtn" data-act="wk.menu" aria-label="Workout options">${icon('more')}</button></header>
-    <div class="wk-progress" id="wk-progress" role="group" aria-label="Exercise progress">${progressSegs()}</div>
+    <header class="wk-head"><button type="button" class="wk-ic" data-act="wk.close" aria-label="Close workout and keep draft">${icon('back')}</button>
+      <div class="wk-mid"><small>${esc(weekdayShort(w.date))} ${esc(pretty(w.date))}</small><strong>${esc(t.title)}</strong></div>
+      <button type="button" class="wk-ic" data-act="wk.menu" aria-label="Workout options">${icon('more')}</button></header>
+    <div class="wk-progress" id="wk-progress" role="progressbar" aria-label="Workout progress">${progressSegs()}</div>
     <main class="wk-body" id="wk-body" tabindex="-1">${exercisePanel()}</main>
     <footer class="wk-dock"><div id="wk-timer">${timerBarHTML()}</div><div class="wk-nav">${navButtons()}</div></footer></section></div>`;
   $('#wk-body').scrollTop = prevScroll; updateScrollLock(); paintPill();
@@ -229,13 +225,13 @@ function paintWorkoutBody(keepScroll = true) {
   $('#wk-progress').innerHTML = progressSegs(); $('.wk-nav').innerHTML = navButtons(); paintTimer();
 }
 function progressSegs() {
-  return data.draft.exercises.map((e, i) => { const d = exDone(e), n = e.sets.length; return `<button type="button" class="seg-dot ${i === wkIndex ? 'cur' : ''} ${d === n && n ? 'full' : d ? 'part' : ''}" data-act="wk.goto" data-arg="${i}" aria-label="Exercise ${i + 1} of ${data.draft.exercises.length}: ${esc(e.name)}, ${d} of ${n} sets done" ${i === wkIndex ? 'aria-current="step"' : ''}><span></span></button>`; }).join('');
+  const all = data.draft.exercises.flatMap(e => e.sets), d = all.filter(x => x.done).length;
+  return `<i style="width:${all.length ? Math.round(d / all.length * 100) : 0}%"></i>`;
 }
 function navButtons() {
   const last = wkIndex >= data.draft.exercises.length - 1, first = wkIndex === 0;
-  return `<button type="button" class="btn ghost" data-act="wk.prev" ${first ? 'disabled' : ''} aria-label="Previous exercise">${icon('back')}</button>
-    <button type="button" class="btn ghost grow" data-act="wk.list">${icon('list')}<span>${wkIndex + 1} / ${data.draft.exercises.length}</span></button>
-    ${last ? `<button type="button" class="btn primary grow2" data-act="wk.finish">${icon('check')}Finish</button>` : `<button type="button" class="btn primary grow2" data-act="wk.next">Next${icon('chev')}</button>`}`;
+  return `${first ? '' : `<button type="button" class="wk-prevbtn" data-act="wk.prev" aria-label="Previous exercise">${icon('back')}</button>`}
+    ${last ? `<button type="button" class="wk-cta" data-act="wk.finish">Finish workout</button>` : `<button type="button" class="wk-cta" data-act="wk.next">Next exercise</button>`}`;
 }
 function lastTimeBlock(e) {
   const hist = exerciseHistory(e, { before: data.draft.date, excludeId: data.draft.id }), last = hist[0];
@@ -257,16 +253,14 @@ function exercisePanel() {
       ${e.load ? `<label class="cell"><span class="vh">Load in kilograms, set ${j + 1}</span><input class="num" type="number" inputmode="decimal" enterkeyhint="next" min="0" step="0.5" data-in="setload" data-i="${wkIndex}" data-j="${j}" value="${esc(s.load)}"><span class="u" aria-hidden="true">kg</span></label>` : `<span class="cell na" aria-hidden="true">—</span>`}
       <label class="cell"><span class="vh">${unitName} for set ${j + 1}</span><input class="num" type="text" inputmode="decimal" enterkeyhint="done" data-in="setreps" data-i="${wkIndex}" data-j="${j}" value="${esc(s.reps)}"><span class="u" aria-hidden="true">${unitName === 'reps' ? '' : unitName}</span></label>
       <button type="button" class="set-done ${s.done ? 'done' : ''}" data-act="set.done" data-i="${wkIndex}" data-j="${j}" aria-pressed="${!!s.done}" aria-label="${s.done ? 'Undo' : 'Complete'} set ${j + 1}">${icon('check')}</button>
-      ${e.sets.length > 1 ? `<button type="button" class="set-del" data-act="set.del" data-i="${wkIndex}" data-j="${j}" aria-label="Remove set ${j + 1}">${icon('close')}</button>` : '<span></span>'}</div>`; }).join('');
+      </div>`; }).join('');
+  const firstUndone = e.sets.findIndex(x => !x.done);
+  const metaLoad = e.load ? ' · load in kg' : '';
   return `<div class="ex-head"><div class="eyebrow">Exercise ${wkIndex + 1} of ${n}${e.optional ? ' · optional' : ''}</div><h2>${esc(e.name)}</h2>
-    <p class="hint">${esc(e.hint)}</p><p class="target">Target <b>${e.sets.length} × ${esc(e.reps)}</b> ${esc(e.unit === 'reps' ? 'reps' : e.unit)}</p></div>
-    ${lastTimeBlock(e)}
-    <div class="sets ${e.load ? '' : 'noload'}" role="group" aria-label="Sets"><div class="set-head" aria-hidden="true"><span>Set</span><span>Previous</span><span>${e.load ? 'kg' : ''}</span><span>${unitName === 'reps' ? 'Reps' : unitName}</span><span></span><span></span></div>${rows}</div>
-    <div class="pbline" id="pbline" aria-live="polite">${pbSummary(e, best)}</div>
-    ${e.sets.some(s => s.done) ? '' : `<p class="tiny wuhint">Tap a set number to mark a warm-up. Tap a previous value to copy it.</p>`}
-    <button type="button" class="btn ghost full" data-act="set.add" data-i="${wkIndex}">${icon('plus')}Add a set</button>
-    <div class="wkx"><button type="button" class="btn ghost" data-act="wk.addex">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.rmex" data-arg="${wkIndex}">${icon('trash')}Remove</button></div>
-    ${wkIndex === 0 && data.draft ? `${focusNote(w)}${data.readiness[w.date]?.level ? '' : `<div class="wkready" role="group" aria-label="How do you feel today"><span>How do you feel?</span>${READY_OPTS.map(([k, n]) => `<button type="button" data-act="wk.ready" data-arg="${k}">${n}</button>`).join('')}</div>`}<p class="note">${readinessNote(w)}</p>` : ''}`;
+    <p class="wk-meta"><b>${e.sets.length} × ${esc(e.reps)}</b> ${esc(e.unit === 'reps' ? 'reps' : e.unit)}${metaLoad}</p></div>
+    <div class="sets ${e.load ? '' : 'noload'}" data-cur="${firstUndone}" role="group" aria-label="Sets"><div class="set-head" aria-hidden="true"><span></span><span>Last time</span><span>${e.load ? 'kg' : ''}</span><span>${unitName === 'reps' ? 'Reps' : unitName}</span><span></span></div>${rows.replace(new RegExp(`(<div class="set-row )([^"]*" data-row="${firstUndone}")`), '$1cur $2')}
+    <button type="button" class="wk-addset" data-act="set.add" data-i="${wkIndex}">${icon('plus')}<span>Add set</span></button></div>
+    <div class="pbline" id="pbline" aria-live="polite">${pbSummary(e, best)}</div>`;
 }
 function pbSummary(e, best) {
   const hits = e.sets.map(s => setPB(e, s, best)).filter(Boolean); if (!hits.length) return '';
@@ -308,7 +302,9 @@ ACTIONS['set.done'] = el => {
     const lastSet = data.draft.exercises.every(x => x.sets.every(q => q.done));
     if (!lastSet) timerStart(restFor(e), `Rest · ${e.name}`, e.id);
   }
+  paintWorkoutBody();
 };
+ACTIONS['wk.delset'] = () => { const x = currentExercise(); if (x && x.sets.length > 1) { x.sets.pop(); save(); closeSheet(); paintWorkoutBody(); } else toast('An exercise needs at least one set'); };
 ACTIONS['set.wu'] = el => { const s = data.draft.exercises[el.dataset.i]?.sets[el.dataset.j]; if (!s) return; s.wu = !s.wu; save(); paintWorkoutBody(); };
 ACTIONS['set.prev'] = el => {
   const e = data.draft.exercises[el.dataset.i], j = Number(el.dataset.j), s = e?.sets[j]; if (!s || s.done) return;
@@ -356,7 +352,8 @@ function openExerciseHistory(e) {
 /* workout options */
 ACTIONS['wk.menu'] = () => openSheet({ title: 'Workout options', eyebrow: `${sName(data.draft.session).toUpperCase()}`, render: () => {
   const w = data.draft; return { body: `<div class="field first"><label for="wkdate">Session date</label><input id="wkdate" type="date" data-in="wkdate" value="${esc(w.date)}"><div class="hint">Last-time comparisons use sessions on or before this date.</div></div>
-    <div class="list-actions"><button type="button" class="btn ghost full" data-act="timer.open">${icon('timer')}Rest timer settings</button><button type="button" class="btn ghost full" data-act="wk.list">${icon('list')}Jump to an exercise</button><button type="button" class="btn ghost full" data-act="wk.addex">${icon('plus')}Add an exercise</button><button type="button" class="btn ghost full" data-act="wk.rmex" data-arg="${wkIndex}">${icon('trash')}Remove this exercise</button><button type="button" class="btn critical full" data-act="wk.discard">${icon('trash')}Discard this draft</button></div>
+    <div class="list-actions">${data.draft.exercises[wkIndex]?.load ? `<button type="button" class="btn ghost full" data-act="plates.open">${icon('plus')}Plate calculator</button>` : ''}<button type="button" class="btn ghost full" data-act="wk.uselast">${icon('check')}Fill sets from last time</button><button type="button" class="btn ghost full" data-act="wk.history">${icon('list')}This exercise's progress</button><button type="button" class="btn ghost full" data-act="wk.delset">${icon('trash')}Remove last set</button><button type="button" class="btn ghost full" data-act="timer.open">${icon('timer')}Rest timer settings</button><button type="button" class="btn ghost full" data-act="wk.list">${icon('list')}Jump to an exercise</button><button type="button" class="btn ghost full" data-act="wk.addex">${icon('plus')}Add an exercise</button><button type="button" class="btn ghost full" data-act="wk.rmex" data-arg="${wkIndex}">${icon('trash')}Remove this exercise</button><button type="button" class="btn critical full" data-act="wk.discard">${icon('trash')}Discard this draft</button></div>
+    ${data.readiness[w.date]?.level ? '' : `<div class="field"><label>How do you feel today?</label><div class="wkready" role="group">${READY_OPTS.map(([k, n]) => `<button type="button" data-act="wk.ready" data-arg="${k}">${n}</button>`).join('')}</div></div>`}
     ${withRow(w)}<p class="note">Your draft saves automatically and stays here if you leave, switch apps or close VERTFORM.</p>`, footer: `<button type="button" class="btn primary grow" data-act="wk.menuok">Done</button>` };
 } });
 /* adding and removing exercises mid-workout lives in library.js */
