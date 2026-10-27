@@ -365,3 +365,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.46.0 — Plan month view, easier library
 - Gym → Plan now opens on a **month calendar** (done, planned, missed, volleyball, today). Tap a day to open it; arrows change month. The week view with moving sessions, matches and extras is below it.
 - Gym → Sessions starts with a **Find exercises** bar so the exercise library is easy to spot.
+
+## 2.47.0 — Usability pass
+- Workout screen: **Add exercise** and **Remove** buttons now sit under "Add a set" on every exercise (they were only in the ⋯ menu).
+- New layout: removed the duplicate "V" icons from the top bar (the You tab covers your profile).

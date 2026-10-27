@@ -265,6 +265,7 @@ function exercisePanel() {
     <div class="pbline" id="pbline" aria-live="polite">${pbSummary(e, best)}</div>
     ${e.sets.some(s => s.done) ? '' : `<p class="tiny wuhint">Tap a set number to mark a warm-up. Tap a previous value to copy it.</p>`}
     <button type="button" class="btn ghost full" data-act="set.add" data-i="${wkIndex}">${icon('plus')}Add a set</button>
+    <div class="wkx"><button type="button" class="btn ghost" data-act="wk.addex">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.rmex" data-arg="${wkIndex}">${icon('trash')}Remove</button></div>
     ${wkIndex === 0 && data.draft ? `${focusNote(w)}${data.readiness[w.date]?.level ? '' : `<div class="wkready" role="group" aria-label="How do you feel today"><span>How do you feel?</span>${READY_OPTS.map(([k, n]) => `<button type="button" data-act="wk.ready" data-arg="${k}">${n}</button>`).join('')}</div>`}<p class="note">${readinessNote(w)}</p>` : ''}`;
 }
 function pbSummary(e, best) {

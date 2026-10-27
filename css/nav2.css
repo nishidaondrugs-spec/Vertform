@@ -139,3 +139,10 @@ body.nav2 [role=tablist].seg button{padding-left:4px;padding-right:4px;font-size
 .libbar>span{flex-grow:1;display:flex;flex-direction:column}.libbar b{font-size:15px}.libbar small{font-size:12px;color:#a9b5cc}
 .libbar .ico{width:22px;height:22px;color:#6ea8ff;flex-shrink:0}
 .mkey .k-missed::before{color:#f3a5b0}
+
+/* ---- audit fixes ---- */
+body.nav2 .topbar .brand,body.nav2 #topme{display:none!important}
+body.nav2 .topbar{justify-content:flex-end;gap:8px}
+body.nav2 #topback:not([hidden]){margin-right:auto}
+.wkx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.wkx .btn{min-height:48px;justify-content:center}
