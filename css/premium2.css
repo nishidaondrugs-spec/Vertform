@@ -393,3 +393,10 @@ body.nav2 .setgroup[open]>summary>svg:last-child{transform:rotate(90deg)}
 .fempty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:70px 28px 30px;gap:8px}
 :root:not([data-theme="light"]) body .fempty{padding:28px 28px 120px!important}
 :root:not([data-theme="light"]) body .fempty .fe-pic{width:140px!important;height:190px!important;margin-bottom:10px}
+/* creatine: a quiet supplement row under the meals */
+:root:not([data-theme="light"]) body .crrow{display:flex;align-items:center;gap:12px;margin:14px 0 0!important;padding:14px 2px 6px!important;background:transparent!important;border:0!important;border-top:1px solid var(--hair,rgba(255,255,255,.1))!important;border-radius:0!important}
+.crrow .crtx{flex:1;min-width:0}.crrow .crtx b{font-size:17px}.crrow .crtx small{display:block;opacity:.55;font-size:13px;margin:2px 0 6px}
+.crrow .crdots{display:flex;gap:5px}.crrow .crdots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}.crrow .crdots i.on{background:#fff}
+.crcheck{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.09);color:transparent;display:grid;place-items:center;cursor:pointer;flex:none}
+.crcheck svg{width:22px;height:22px}.crrow.on .crcheck{background:#fff;color:#000}
+:root:not([data-theme="light"]) body.nav2 .crrow,:root:not([data-theme="light"]) body.nav2 .crrow.on{background:transparent!important;box-shadow:none!important;margin-bottom:90px!important}

@@ -255,8 +255,8 @@ function viewFuel() {
     ${fuelIs('today') ? readout(date) : ''}
     ${fuelIs('today') ? `<div class="fuelcta"><button type="button" class="btn primary" data-act="food.open2">${icon('plus')}Add food</button><button type="button" class="fscan" data-act="food.scan" aria-label="Scan a barcode">${icon('scan')}</button></div>` : ''}
     ${fuelIs('progress') ? calTrendHtml(date) : ''}
-    ${fuelIs('today') && typeof creatineRow === 'function' ? creatineRow(date) : ''}
     ${fuelIs('today') ? `<div class="meals">${groups}</div>` : ''}
+    ${fuelIs('today') && typeof creatineRow === 'function' ? creatineRow(date) : ''}
     ${fuelIs('progress') ? weightCard() : ''}
     ${fuelIs('meals') ? `<section class="mealshead"><div class="mh-t"><h2>Saved meals</h2><small>${plural(recs.length, 'meal or recipe', 'meals and recipes')}</small></div><div class="mh-b"><button type="button" class="pill" data-act="recipe.new" data-arg="meal">${icon('plus')}Meal</button><button type="button" class="pill on" data-act="recipe.new" data-arg="recipe">${icon('plus')}Recipe</button></div></section><div class="mealsbody">
     ${recs.length ? `<ul class="recipes">${recs.map(recipeCard).join('')}</ul>` : emptyState('fuel', 'No saved meals', 'Save a meal from your diary with the bookmark, or build a recipe once and log it in one tap.')}</div>` : ''}

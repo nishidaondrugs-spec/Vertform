@@ -194,7 +194,7 @@ function creatineRow(date) {
   if (!creatineOn()) return '';
   const dose = data.settings.creatine.dose, taken = !!data.creatine[date];
   const days = Array.from({ length: 7 }, (_, i) => addDays(date, i - 6)), n = days.filter(d => data.creatine[d]).length;
-  return `<div class="crrow ${taken ? 'on' : ''}"><div class="crtx"><b>Creatine</b><small>${dose} g · ${n} of the last 7 days</small><span class="crdots" aria-hidden="true">${days.map(d => `<i class="${data.creatine[d] ? 'on' : ''}"></i>`).join('')}</span></div><button type="button" class="btn ${taken ? 'primary' : 'ghost'}" data-act="cr.toggle" data-id="${date}" aria-pressed="${taken}">${taken ? icon('check') + 'Taken' : 'Mark taken'}</button></div>`;
+  return `<div class="crrow ${taken ? 'on' : ''}"><div class="crtx"><b>Creatine</b><small>${dose} g · ${n} of the last 7 days</small><span class="crdots" aria-hidden="true">${days.map(d => `<i class="${data.creatine[d] ? 'on' : ''}"></i>`).join('')}</span></div><button type="button" class="crcheck" data-act="cr.toggle" data-id="${date}" aria-pressed="${taken}" aria-label="${taken ? 'Creatine taken, tap to undo' : 'Mark creatine taken'}">${icon('check')}</button></div>`;
 }
 ACTIONS['cr.toggle'] = el => { const d = el.dataset.id; if (data.creatine[d]) delete data.creatine[d]; else data.creatine[d] = data.settings.creatine.dose; save(); render(); };
 ACTIONS['cr.on'] = () => { data.settings.creatine.on = !data.settings.creatine.on; save(); render(); toast(data.settings.creatine.on ? 'Creatine tracker added to Fuel → Today' : 'Creatine tracker hidden. Your history is kept.'); };
