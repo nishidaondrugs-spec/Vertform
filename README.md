@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.72.0 — Updates can't hide behind old files
+The service worker now loads app files network-first (revalidating past the browser's own cache) and only falls back to saved copies offline, so a new version shows on the next open.
+
 ## 2.71.3 — Save foods as a meal
 The save-from-diary sheet (bookmark on a meal) has round ticks, clamped names and a calorie column. Delete in sheet footers is a small round button.
 
