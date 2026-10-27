@@ -22,7 +22,7 @@ function profileFromStore() {
 /* A typical week of training from what is actually planned, not a fixed assumption. */
 function trainingWeek() {
   let gymN = 0;
-  try { gymN = weekPlan(monday(todayISO())).days.flatMap(d => d.items).filter(i => i.kind === 'gym').length; } catch (e) { gymN = 0; }
+  try { gymN = weekPlan(monday(todayISO())).days.flatMap(d => d.items).filter(i => i.kind === 'gym' && !i.unplanned).length; } catch (e) { gymN = 0; }
   const vbN = vbDaysFor(todayISO()).length, vbMin = (() => { const m = Object.values(data.vb.trainInfo || {}).map(t => t.min).filter(Boolean); return m.length ? Math.round(m.reduce((a, b) => a + b, 0) / m.length) : 90; })();
   return { gymN: gymN || 4, vbN, vbMin };
 }

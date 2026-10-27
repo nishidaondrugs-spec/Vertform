@@ -164,6 +164,7 @@ const statusTag = s => tag(STATUS_LABEL[s] || s, s === 'done' ? 'sage' : s === '
 function renderDaySheet(date) {
   const day = dayPlan(date), d = date, past = d < todayISO(); const parts = [];
   for (const it of day.items) {
+    if (it.logged) continue;
     if (it.kind === 'gym') {
       const t = templates[it.session], draftHere = data.draft && data.draft.session === it.session && data.draft.date === d;
       parts.push(`<section class="dayitem"><div class="dayhd"><span class="dcode">${sBadge(it.session)}</span><div class="min0"><h3>${esc(t.title)}</h3><p class="dim">${esc(t.duration)} · ${esc(t.subtitle)}${it.pinned ? ' · Moved by you' : ''}</p></div>${statusTag(it.status)}</div>
@@ -183,12 +184,12 @@ function renderDaySheet(date) {
         ${x ? `<button type="button" class="btn ghost" data-act="extra.edit" data-id="${esc(x.id)}">${icon('edit')}Edit</button>` : `<button type="button" class="btn ghost" data-act="train.skip" data-id="${d}">Cancel this one</button>`}</div></section>`);
     }
   }
-  const shown = new Set(day.items.map(i => i.log && i.log.id).filter(Boolean));
+  const shown = new Set(day.items.filter(i => !i.logged).map(i => i.log && i.log.id).filter(Boolean));
   const extraG = data.logs.filter(l => l.date === d && l.completed !== false && !shown.has(l.id)), extraV = data.vb.logs.filter(l => l.date === d && !shown.has(l.id));
   extraG.forEach(l => { const t = templates[l.session]; parts.push(`<section class="dayitem"><div class="dayhd"><span class="dcode">${sBadge(l.session)}</span><div class="min0"><h3>${esc(t ? t.title : sName(l.session))}</h3><p class="dim">Gym · logged</p></div>${statusTag('done')}</div><div class="actions"><button type="button" class="btn ghost" data-act="log.view" data-id="${esc(l.id)}">View workout</button></div></section>`); });
   extraV.forEach(l => { const kind = l.kind === 'match' ? 'MATCH' : l.kind === 'social' ? 'SOCIAL' : 'TRAINING'; const bits = [l.durationMin ? l.durationMin + ' min' : '', l.opponent ? 'vs ' + l.opponent : '', jumpsText(l)].filter(Boolean).map(esc).join(' · ');
     parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">VOLLEYBALL · ${kind}</div>${statusTag('done')}</div><h3>${l.kind === 'match' ? 'Match played' : l.kind === 'social' ? 'Social volleyball' : 'Volleyball session'}</h3><p class="dim">${bits || 'Logged'}</p><div class="actions"><button type="button" class="btn ghost" data-act="vb.edit" data-id="${esc(l.id)}">View / edit log</button></div></section>`); });
-  if (!day.items.length && !parts.length) parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">REST</div>${tag(past ? 'No plan' : 'Rest day')}</div><h3>Nothing planned</h3><p class="dim">Rest or light mobility. An unscheduled day is not missed progress.</p></section>`);
+  if (!parts.length) parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">REST</div>${tag(past ? 'No plan' : 'Rest day')}</div><h3>Nothing planned</h3><p class="dim">Rest or light mobility. An unscheduled day is not missed progress.</p></section>`);
   const hasGym = day.items.some(i => i.kind === 'gym') || extraG.length > 0;
   return { body: `${day.conflicts.length ? `<div class="flags">${day.conflicts.map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}<p class="tiny">Flagged, not changed: your plan stays exactly as you set it.</p></div>` : ''}${parts.join('')}
     <ul class="prow dayadd"><li><button type="button" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}<span>Log volleyball</span></button></li><li><button type="button" data-act="match.add" data-id="${d}">${icon('plus')}<span>Add a match</span></button></li><li><button type="button" data-act="extra.add" data-id="${d}">${icon('plus')}<span>Extra session</span></button></li></ul>

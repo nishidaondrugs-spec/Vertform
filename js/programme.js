@@ -238,6 +238,15 @@ function weekPlan(mon) {
   days.forEach(d => d.items.filter(x => x.kind === 'gym').forEach(g => { (letters[g.session] ||= []).push(d.date); }));
   for (const [k, ds] of Object.entries(letters)) if (ds.length > 1) days.find(d => d.date === ds[1]).conflicts.push({ level: 'warn', text: `${sName(k)} appears twice this week (${ds.map(pretty).join(', ')})` });
 
+  // anything you actually logged that the plan did not account for (social games, extra gym days, unplanned matches)
+  for (const d of days) {
+    const used = new Set(d.items.map(i => i.log && i.log.id).filter(Boolean));
+    for (const l of data.logs) if (l.date === d.date && l.completed !== false && !used.has(l.id)) { d.items.push({ kind: 'gym', session: l.session, log: l, status: 'done', unplanned: true, logged: true, weekMon: mon }); used.add(l.id); }
+    for (const l of data.vb.logs) if (l.date === d.date && !used.has(l.id)) {
+      const label = l.kind === 'match' ? 'Match' : l.kind === 'social' ? 'Social volleyball' : 'Volleyball session';
+      d.items.push({ kind: l.kind === 'match' ? 'match' : 'training', source: 'logged', logged: true, logKind: l.kind, log: l, info: { name: label, opponent: l.opponent || '' }, status: 'done' }); used.add(l.id);
+    }
+  }
   return { mon, days, notPlaced: rec.notPlaced.filter(n => !pinnedSessions.has(n.session)), movedAway, conflicts: days.flatMap(d => d.conflicts.map(c => ({ ...c, date: d.date }))) };
 }
 const dayPlan = date => weekPlan(monday(date)).days.find(d => d.date === date);
@@ -269,7 +278,7 @@ function weekSummary(mon) {
   const vb = data.vb.logs.filter(l => l.date >= mon && l.date <= end);
   const training = vb.filter(l => l.kind === 'training'), matches = vb.filter(l => l.kind === 'match');
   const load = sum(vb, l => sessionLoad(l) || 0);
-  const planned = weekPlan(mon).days.flatMap(d => d.items).filter(i => i.kind === 'gym').length;
+  const planned = weekPlan(mon).days.flatMap(d => d.items).filter(i => i.kind === 'gym' && !i.unplanned).length;
   return { mon, gymDone: gym.length, gymPlanned: planned, trainingN: training.length, matchN: matches.length, vbN: vb.length, minutes: sum(vb, l => l.durationMin), load, loggedLoadN: vb.filter(l => sessionLoad(l)).length };
 }
 /* Session load = duration (minutes) × session RPE. A simple, comparable record of how big a session felt.
