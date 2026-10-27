@@ -361,3 +361,7 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 ## 2.45.0 — Fuel tab sections and new app icon
 - Fuel now has **Today / Meals / Progress**. Today: calories and macros, Add food / Scan / Manual, and the day's meals. Meals: saved meals and recipes. Progress: calorie trend, bodyweight, and targets with the last 7 days.
 - New home-screen icon.
+
+## 2.46.0 — Plan month view, easier library
+- Gym → Plan now opens on a **month calendar** (done, planned, missed, volleyball, today). Tap a day to open it; arrows change month. The week view with moving sessions, matches and extras is below it.
+- Gym → Sessions starts with a **Find exercises** bar so the exercise library is easy to spot.

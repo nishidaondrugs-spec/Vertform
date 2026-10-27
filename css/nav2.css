@@ -115,3 +115,27 @@ body.nav2 .pcard.bm .wk-head{margin:0 0 8px}
 .gymlink{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:14px;border-radius:16px;background:#0e1627;border:1px solid #1f2b45;color:inherit;font-family:inherit;text-align:left;min-height:56px}
 .gymlink span{display:flex;flex-direction:column}.gymlink b{font-size:15px}.gymlink small{font-size:12px;color:#a9b5cc}
 body.nav2 [role=tablist].seg button{padding-left:4px;padding-right:4px;font-size:13px}
+
+/* ---- Plan month grid ---- */
+.mcard{padding:12px;border-radius:20px;background:#0e1627;border:1px solid #1f2b45}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.mnav b{font-size:16px}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.mh{height:20px;font-size:11px;font-weight:600;color:#a9b5cc;text-align:center}
+.mcell{position:relative;height:46px;border-radius:10px;border:0;background:transparent;color:#a9b5cc;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0}
+.mcell i{font-style:normal;font-size:10px;line-height:1;opacity:.75}
+.mcell b{font-size:13px;line-height:1.3;font-weight:800}
+.mcell.pad{pointer-events:none}
+.mcell.g{background:#1a2742;color:#f2f5fb}
+.mcell.g.st-done{background:#14532d;color:#bbf7d0}
+.mcell.g.st-missed{background:#3a1a22;color:#f3a5b0}
+.mcell.vb{background:#3b2a12;color:#fcd9a0}
+.mcell.today{box-shadow:inset 0 0 0 2px #2563eb;background:#16223a}
+.mcell u{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:3px;background:#fcd9a0}
+.mkey{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:#a9b5cc}
+.mkey span::before{content:"■ ";}
+.mkey .k-done::before{color:#4ade80}.mkey .k-plan::before{color:#6b7da3}.mkey .k-vb::before{color:#fcd9a0}.mkey .k-today::before{color:#2563eb}
+.libbar{width:100%;display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:12px;border-radius:16px;background:#16223a;border:1px solid #2563eb;color:#f2f5fb;font-family:inherit;text-align:left;min-height:60px}
+.libbar>span{flex-grow:1;display:flex;flex-direction:column}.libbar b{font-size:15px}.libbar small{font-size:12px;color:#a9b5cc}
+.libbar .ico{width:22px;height:22px;color:#6ea8ff;flex-shrink:0}
+.mkey .k-missed::before{color:#f3a5b0}

@@ -107,10 +107,31 @@ function gymToday() {
     ${weekStrip(mon)}
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercises</button><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="vb.log" data-arg="training">${icon('ball')}Log volleyball</button><button type="button" class="btn ghost" data-act="gym.tab" data-arg="jump">${icon('bolt')}Jump tracker</button></div>`;
 }
+function monthGrid() {
+  const today = todayISO(); ui.planMonth = ui.planMonth || today.slice(0, 7) + '-01';
+  const first = ui.planMonth, ym = first.slice(0, 7), lastDay = addDays(addDays(first, 32).slice(0, 7) + '-01', -1);
+  const label = parseDate(first).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const cells = [];
+  for (let mon = monday(first); mon <= lastDay; mon = addDays(mon, 7)) {
+    weekPlan(mon).days.forEach(d => {
+      if (d.date.slice(0, 7) !== ym) { cells.push('<span class="mcell pad"></span>'); return; }
+      const gym = d.items.find(i => i.kind === 'gym'), mt = d.items.find(i => i.kind === 'match'), tr = d.items.find(i => i.kind === 'training' && !i.cancelled);
+      const main = gym || mt || tr, st = main ? main.status : 'rest', both = (gym && (mt || tr));
+      const txt = gym ? sBadge(gym.session) : (mt || tr) ? 'VB' : '·';
+      const cls = `${gym ? 'g' : (mt || tr) ? 'vb' : 'r'} st-${st} ${d.isToday ? 'today' : ''}`;
+      cells.push(`<button type="button" class="mcell ${cls}" data-act="day.open" data-id="${d.date}" aria-label="${esc(DOW_LONG[d.idx])} ${Number(d.date.slice(8))}${main ? ', ' + (gym ? esc(sName(gym.session)) : 'volleyball') + ', ' + st : ', rest'}"><i>${Number(d.date.slice(8))}</i><b>${txt}</b>${both ? '<u></u>' : ''}</button>`);
+    });
+  }
+  return `<div class="mcard"><div class="mnav"><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="-1" aria-label="Previous month">${icon('back')}</button><b>${esc(label)}</b><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="1" aria-label="Next month"><span style="display:inline-flex;transform:rotate(180deg)">${icon('back')}</span></button></div>
+    <div class="mgrid" role="grid">${DOW.map(n => `<span class="mh">${n[0]}</span>`).join('')}${cells.join('')}</div>
+    <div class="mkey"><span class="k-done">Done</span><span class="k-plan">Planned</span><span class="k-vb">Volleyball</span><span class="k-missed">Missed</span><span class="k-today">Today</span></div></div>`;
+}
+ACTIONS['plan.mshift'] = el => { const f = ui.planMonth || todayISO().slice(0, 7) + '-01'; ui.planMonth = addDays(f, Number(el.dataset.arg) > 0 ? 32 : -1).slice(0, 7) + '-01'; render(); };
 function gymPlan() {
   ui.trainDate = todayISO();
-  return `${calendarBody(ui.planWeek)}
-    <button type="button" class="gymlink" data-act="gym.tab" data-arg="sessions"><span><b>Training sessions</b><small>See, add and remove the exercises in each session</small></span>${icon('chev')}</button>`;
+  return `${monthGrid()}
+    <button type="button" class="gymlink" data-act="gym.tab" data-arg="sessions"><span><b>Training sessions</b><small>See, add and remove the exercises in each session</small></span>${icon('chev')}</button>
+    ${calendarBody(ui.planWeek)}`;
 }
 function viewGym() {
   const w = getWeek(), t = ui.trainTab, tab = ['plan', 'sessions', 'history', 'vb', 'jump'].includes(t) ? t : 'today';
@@ -139,7 +160,8 @@ function sesCard(k) {
     ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.add" data-arg="${k}">${icon('plus')}Add exercise</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div>` : ''}</li>`;
 }
 function gymSessions() {
-  return `<p class="tiny">Open a session to see its exercises. Add from the library or take one out. An exercise already in a session is marked <b>Already added</b> so you do not get doubles.</p>
+  return `<button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>
+    <p class="tiny">Open a session to see its exercises. Add from the library or take one out. An exercise already in a session is marked <b>Already added</b> so you do not get doubles.</p>
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
     <div class="gymbtns"><button type="button" class="btn ghost" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="lib.open">${icon('list')}Exercise library</button></div>`;
 }
