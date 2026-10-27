@@ -76,6 +76,11 @@ async function postLoad() {
 /* ---------- page ---------- */
 /* 2.20: reactions. The keys are what the server stores; the emoji are only for display. */
 const P_REACTS = [['fire', '🔥', 'Fire'], ['laugh', '😂', 'Laugh'], ['vb', '🏐', 'Volleyball'], ['flex', '💪', 'Strong'], ['heart', '❤️', 'Heart'], ['eyes', '👀', 'Eyes']];
+function gymOverlay(m) {
+  const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null;
+  const big = [n(m.min) && [n(m.min), 'min'], n(m.vol) && [Math.round(n(m.vol)).toLocaleString('en-GB'), 'kg'], n(m.pb) && [n(m.pb), n(m.pb) === 1 ? 'PB' : 'PBs', 1]].filter(Boolean);
+  return `<div class="bcap gcap"><span class="gh-pill">GYM</span><h3 class="gh-t">${esc(m.t)}</h3><div class="gh-stats">${big.map(([v, l, pb]) => `<span class="${pb ? 'gpb' : ''}"><b>${esc(String(v))}</b>${l}</span>`).join('')}<span><b>${Number(m.s) || 0}</b>sets</span></div></div>`;
+}
 function postCard(r) {
   const mine = !!r.mine, reacts = r.reacts || {};
   const who = mine || !r.pid
@@ -88,13 +93,13 @@ function postCard(r) {
   const rx = photoN ? `<div class="rxbubbles rxrow" data-id="${esc(r.id)}" data-n="${photoN}" aria-label="Camera reactions, ${photoN}"></div>` : '';
   /* with a photo or video, the caption sits over the picture (BeReal style); text-only posts show it large */
   const media = hasMedia
-    ? `<div class="bmedia">${r.video ? `<video class="pvid" controls playsinline preload="metadata" src="${esc(pVideoUrl(r.video))}#t=0.1"></video>` : `<div class="pphoto" data-id="${esc(r.id)}" role="img" aria-label="Photo in post"></div>`}${r.body ? `<p class="bcap">${esc(r.body)}</p>` : ''}</div>`
+    ? `<div class="bmedia">${r.video ? `<video class="pvid" controls playsinline preload="metadata" src="${esc(pVideoUrl(r.video))}#t=0.1"></video>` : `<div class="pphoto" data-id="${esc(r.id)}" role="img" aria-label="Photo in post"></div>`}${navNew() && r.kind === 'gym' && r.meta && r.meta.t ? gymOverlay(r.meta) : r.body ? `<p class="bcap">${esc(r.body)}</p>` : ''}</div>`
     : `${r.body ? `<p class="pbody bbig">${esc(r.body)}</p>` : ''}`;
   /* a friend's post gets the quick camera reaction (BeReal style) */
   const cam = !mine && r.pid ? `<button type="button" class="rcam" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}<span>React</span></button>` : '';
   return `<li class="pcard bm ${mine ? 'mine' : ''}">
     <div class="phead">${who}${mine ? `<button type="button" class="iconbtn" data-act="post.del" data-id="${esc(r.id)}" aria-label="Delete this post">${icon('trash')}</button>` : ''}</div>
-    ${media}${pAttachHtml(r.kind, r.meta, hasMedia)}${rx}
+    ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? (r.body ? `<p class="pbody bbig">${esc(r.body)}</p>` : '') : pAttachHtml(r.kind, r.meta, hasMedia)}${rx}
     <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div></li>`;
 }
 const P_KINDS = [
@@ -254,7 +259,8 @@ function viewPost() {
   if (navNew()) {
     const feed = rows.filter(r => !r.mine).sort((x, y) => String(y.created).localeCompare(String(x.created)));
     const loadingNow = pUi.rows === null;
-    const empty = loadingNow ? '<p class="fempty-load">Loading your feed…</p>' : `<div class="fempty"><div class="fe-pic" aria-hidden="true">${icon('camera')}</div><h3>Quiet today</h3><p>${nothingYet || rows.every(r => r.mine) ? 'Add a friend with their code, then post your session. Their posts show up here.' : 'Post your session and your friends see it here.'}</p><button type="button" class="btn primary" data-act="post.compose">Post now</button>${nothingYet || rows.every(r => r.mine) ? '<button type="button" class="ylink" data-act="lb.open">Add a friend</button>' : ''}</div>`;
+    const skel = '<div class="skel" aria-hidden="true"><div class="sk-h"><i></i><span></span></div><div class="sk-m"></div></div>';
+    const empty = loadingNow ? `<div role="status" aria-label="Loading your feed">${skel}</div>` : `<div class="fempty"><div class="fe-pic" aria-hidden="true">${icon('camera')}</div><h3>Quiet today</h3><p>${nothingYet || rows.every(r => r.mine) ? 'Add a friend with their code, then post your session. Their posts show up here.' : 'Post your session and your friends see it here.'}</p><button type="button" class="btn primary" data-act="post.compose">Post now</button>${nothingYet || rows.every(r => r.mine) ? '<button type="button" class="ylink" data-act="lb.open">Add a friend</button>' : ''}</div>`;
     return `${pagerDots(0)}${banners()}
     ${pUi.compose ? postComposer() : pHero(todayAll)}
     ${pUi.err ? `<div class="status warn" role="alert">${esc(pUi.err)}</div>` : ''}

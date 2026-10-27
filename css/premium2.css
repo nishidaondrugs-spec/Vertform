@@ -195,3 +195,52 @@ body.nav2,html{overflow-x:clip}
 :root:not([data-theme="light"]) body.nav2 .dayitem{background:transparent!important;border:0!important;border-top:1px solid var(--pm-line)!important;border-radius:0!important;padding:14px 2px!important}
 :root:not([data-theme="light"]) body.nav2 .tag,:root:not([data-theme="light"]) body.nav2 .tag.clay{background:#1f1f23!important;color:#d1d1d6!important;border:0!important}
 :root:not([data-theme="light"]) body.nav2 .dim{color:#a1a1a6}
+
+/* original volleyball-player artwork (drawn for VERTFORM) */
+:root{--vbart:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 320 200%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22 cx=%2262%25%22 cy=%2230%25%22 r=%2270%25%22%3E%3Cstop offset=%220%22 stop-color=%22%23e5383b%22 stop-opacity=%22.55%22/%3E%3Cstop offset=%221%22 stop-color=%22%23e5383b%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=%22320%22 height=%22200%22 fill=%22url(%23g)%22/%3E%3Cg stroke=%22%23fff%22 stroke-opacity=%22.16%22 stroke-width=%223%22%3E%3Cpath d=%22M20 70h60M10 100h70M30 130h50%22/%3E%3C/g%3E%3Cpath d=%22M140 114 118 142 92 130%22 stroke=%22%23d9a98c%22 stroke-width=%2212%22/%3E%3Cpath d=%22M140 114 152 148 136 176%22 stroke=%22%23d9a98c%22 stroke-width=%2212%22/%3E%3Cpath d=%22M87 128l-10-6M133 180l-12 4%22 stroke=%22%23f5f5f7%22 stroke-width=%229%22/%3E%3Cpath d=%22M140 112 138 124%22 stroke=%22%23151517%22 stroke-width=%2226%22/%3E%3Cpath d=%22M150 60 140 108%22 stroke=%22%23e5383b%22 stroke-width=%2228%22/%3E%3Ctext x=%22136%22 y=%2295%22 font-family=%22Arial Black,Arial,sans-serif%22 font-weight=%22900%22 font-size=%2217%22 fill=%22%23fff%22 transform=%22rotate(-8 140 90)%22%3E10%3C/text%3E%3Cpath d=%22M144 66 116 52 94 68%22 stroke=%22%23d9a98c%22 stroke-width=%2211%22/%3E%3Cpath d=%22M156 64 184 38 220 30%22 stroke=%22%23d9a98c%22 stroke-width=%2211%22/%3E%3Ccircle cx=%22152%22 cy=%2242%22 r=%2214%22 fill=%22%23d9a98c%22 stroke=%22none%22/%3E%3Cpath d=%22M139 38c4-14 24-14 28-2-8-4-18-4-28 2z%22 fill=%22%2314110f%22 stroke=%22none%22/%3E%3Cg transform=%22translate(246 24)%22%3E%3Ccircle r=%2221%22 fill=%22%23f5f5f7%22 stroke=%22none%22/%3E%3Cpath d=%22M-21 0c8 6 14 6 21 0s13-6 21 0M0-21c-6 8-6 14 0 21s6 13 0 21%22 stroke=%22%23e5383b%22 stroke-width=%223%22/%3E%3Ccircle r=%2221%22 stroke=%22%230b0b0c%22 stroke-opacity=%22.25%22 stroke-width=%221.5%22/%3E%3C/g%3E%3Cg stroke=%22%23fff%22 stroke-opacity=%22.5%22 stroke-width=%223%22%3E%3Cpath d=%22M270 40l22 8M274 26l26-2M268 12l22-12%22/%3E%3C/g%3E%3C/svg%3E")}
+.gymhero::after,.gbanner::after{content:"";position:absolute;right:0;top:0;bottom:0;width:62%;background:var(--vbart) right center/cover no-repeat;opacity:.95;pointer-events:none;mask-image:linear-gradient(90deg,transparent 0,#000 38%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 38%)}
+.gymhero>*{position:relative;z-index:1}
+.gymhero{overflow:hidden;min-height:190px}
+.gymhero.compact{min-height:0}
+.gymhero.compact::after{display:none}
+.gbanner{position:relative;height:128px;margin:0 -16px 6px;background:#151517;overflow:hidden}
+.gbanner::after{width:100%;mask-image:none;-webkit-mask-image:none;background-position:right 30%}
+.gbanner::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,#0b0b0c 0,rgba(11,11,12,.2) 60%),linear-gradient(0deg,#0b0b0c 0,transparent 40%)}
+.gbanner b{position:absolute;left:18px;bottom:14px;z-index:2;font-size:13px;font-weight:700;letter-spacing:.06em;color:#fff}
+/* photo post with the gym numbers laid over the picture */
+.gcap{left:0!important;right:0!important;bottom:0!important;position:absolute;padding:56px 20px 20px!important;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,0))!important;border-radius:0!important;margin:0}
+.gcap .gh-t{font-size:28px;margin:10px 0 10px}
+.gcap .gh-stats b{font-size:22px}
+.gcap .gh-pill{background:rgba(255,255,255,.2);backdrop-filter:blur(8px)}
+
+/* finish screen photo */
+.finishphoto{margin:0 0 14px}
+.fp-add{width:100%;height:132px;border:1.5px dashed rgba(255,255,255,.25);border-radius:22px;background:transparent;color:#f5f5f7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:inherit;font-weight:600}
+.fp-add svg{width:30px;height:30px;color:#e5383b}
+.fp-pic{position:relative;border-radius:22px;overflow:hidden;height:220px}.fp-pic img{width:100%;height:100%;object-fit:cover}
+/* skeleton + motion */
+.skel{padding:6px 0 20px}.sk-h{display:flex;align-items:center;gap:10px;padding:0 2px 12px}.sk-h i{width:38px;height:38px;border-radius:50%;background:#1c1c1f}.sk-h span{width:120px;height:14px;border-radius:7px;background:#1c1c1f}
+.sk-m{height:380px;margin:0 -16px;background:linear-gradient(100deg,#151517 30%,#1f1f23 50%,#151517 70%) 0 0/300% 100%;animation:skl 1.3s linear infinite}
+@keyframes skl{from{background-position:100% 0}to{background-position:-100% 0}}
+.pphoto img,.vav,.fphoto{animation:blurin .45s ease-out both}
+@keyframes blurin{from{opacity:0;filter:blur(14px)}to{opacity:1;filter:blur(0)}}
+body.nav2 :is(button,.btn,.stb,.mcell,.strip>*){transition:transform .14s cubic-bezier(.3,1.6,.5,1),opacity .14s}
+body.nav2 :is(button,.btn,.stb,.mcell,.strip>*):active{transform:scale(.95);opacity:.85}
+body.nav2 .postfab:active{transform:scale(.9)}
+body.nav2 #view>*{animation:vin .22s ease-out both}
+@keyframes vin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pphoto img,.vav,.fphoto,body.nav2 #view>*,.sk-m{animation:none!important}body.nav2 :is(button,.btn):active{transform:none}}
+/* two radii only: 24 for media and cards, pill for buttons; 14 for inputs and small controls */
+body.nav2 :is(.btn,.seg,.seg button){border-radius:999px}
+body.nav2 :is(.field input,input,select,textarea,.chip,.tag){border-radius:14px}
+body.nav2 .gymhero.compact{border-radius:0}
+.gbanner{height:176px}
+.gbanner::after{background-size:auto 100%!important;background-position:right center!important}
+.gymhero::after{background-size:auto 115%;background-position:right center}
+.gymhero{min-height:236px}
+.gymhero::after{background-size:auto 100%!important;width:72%;background-position:right center!important}
+.gymhero:not(.compact){display:flex;flex-direction:column;justify-content:flex-end;min-height:310px}
+.gymhero:not(.compact)::after{left:0;right:0;top:0;bottom:auto;width:auto;height:62%;background-size:auto 100%!important;background-position:right top!important;mask-image:linear-gradient(180deg,#000 60%,transparent);-webkit-mask-image:linear-gradient(180deg,#000 60%,transparent)}
+.gymhero:not(.compact) .gh-pill{position:absolute;left:20px;top:20px;align-self:flex-start}
+.gymhero:not(.compact) .gh-t{margin-top:0}
+.gymhero:not(.compact)::after{height:54%!important}.gymhero:not(.compact){min-height:330px}

@@ -369,11 +369,21 @@ ACTIONS['wk.discard'] = async () => {
 
 /* finishing */
 let finishRPE = '';
+let finishPhoto = '', finishBusy = false;
+INPUTS.wkphoto = async el => {
+  const f = el.files && el.files[0]; if (!f || !/^image\//.test(f.type)) return;
+  finishBusy = true; refreshSheet();
+  try { finishPhoto = await pShrink(f); } catch (_) { toast('Could not read that photo'); }
+  finishBusy = false; refreshSheet();
+};
+ACTIONS['wk.photo'] = () => $('#wkphotofile')?.click();
+ACTIONS['wk.photo.clear'] = () => { finishPhoto = ''; refreshSheet(); };
 ACTIONS['wk.finish'] = () => {
   const w = data.draft; finishRPE = w.rpe || '';
   openSheet({ title: 'Finish workout', eyebrow: `${sName(w.session).toUpperCase()} · ${pretty(w.date).toUpperCase()}`, render: () => {
     const total = sum(w.exercises, e => e.sets.length), done = sum(w.exercises, e => exDone(e));
-    return { body: `<div class="finish-sum"><div class="big mono">${done}<small> / ${total}</small></div><div>sets ticked${done < total ? `<br><span class="tiny">${total - done} un-ticked ${total - done === 1 ? 'set stays' : 'sets stay'} in the record as not completed, and ${total - done === 1 ? 'is' : 'are'} not counted as achievements.</span>` : ''}</div></div>
+    const photoRow = typeof lbCfg === 'function' && lbCfg() ? `<div class="finishphoto"><input type="file" id="wkphotofile" data-in="wkphoto" accept="image/*" capture="user" hidden>${finishPhoto ? `<div class="fp-pic"><img src="${finishPhoto}" alt="Your photo"><button type="button" class="pthumbx" data-act="wk.photo.clear" aria-label="Remove photo">${icon('close')}</button></div>` : `<button type="button" class="fp-add" data-act="wk.photo" ${finishBusy ? 'disabled' : ''}>${icon('camera')}<span>${finishBusy ? 'Preparing…' : 'Add a photo to your post'}</span></button>`}</div>` : '';
+    return { body: `${photoRow}<div class="finish-sum"><div class="big mono">${done}<small> / ${total}</small></div><div>sets ticked${done < total ? `<br><span class="tiny">${total - done} un-ticked ${total - done === 1 ? 'set stays' : 'sets stay'} in the record as not completed, and ${total - done === 1 ? 'is' : 'are'} not counted as achievements.</span>` : ''}</div></div>
       <div class="field"><label>Overall effort (RPE 1–10)</label><div class="rpe-grid" role="radiogroup" aria-label="Session RPE">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<button type="button" role="radio" aria-checked="${Number(finishRPE) === n}" class="rpe ${Number(finishRPE) === n ? 'on' : ''}" data-act="wk.rpe" data-arg="${n}">${n}</button>`).join('')}</div>
       <div class="hint">1 = very easy · 5 = hard but steady · 10 = maximal. Optional.</div></div>
       ${withRow(w)}<div class="field"><label for="wknotes">Notes</label><textarea id="wknotes" data-in="wknotes" rows="3" placeholder="Jump quality, energy, technique, recovery…">${esc(w.notes)}</textarea></div>
@@ -389,7 +399,8 @@ ACTIONS['wk.save'] = () => {
   const prior = data.logs.findIndex(x => x.id === w.id); if (prior >= 0) data.logs[prior] = w; else data.logs.push(w);
   const summary = share ? wkSummary(w) : null;
   data.draft = null; timerClear(); save(); closeAllSheets();
-  if (summary) shareWorkout(summary);
+  const fph = finishPhoto; finishPhoto = '';
+  if (summary) shareWorkout(summary, fph);
   const id = w.id; closeWorkout(); toast(`${sName(w.session)} saved`, { action: { label: 'View', fn: () => openLogView(id) } });
 };
 
@@ -444,11 +455,12 @@ function wkSummary(w) {
   while (JSON.stringify(m).length > 580 && m.l.length) m.l.pop();
   return m;
 }
-async function shareWorkout(meta) {
+async function shareWorkout(meta, photo) {
   const c = typeof lbCfg === 'function' && lbCfg(); if (!c) return;
   try {
-    const r = await lbCall('vf_post_create', { p_id: c.id, p_secret: c.secret, p_body: '', p_kind: 'gym', p_meta: meta, p_photo: null, p_video: null, p_day: todayISO() });
+    const r = await lbCall('vf_post_create', { p_id: c.id, p_secret: c.secret, p_body: '', p_kind: 'gym', p_meta: meta, p_photo: photo || null, p_video: null, p_day: todayISO() });
     (r?.purged || []).forEach(f => fetch(`${LB_URL}/storage/v1/object/vf-media/${f}`, { method: 'DELETE', headers: { apikey: LB_KEY } }).catch(() => {}));
+    if (photo && r?.id && typeof pPhotos !== 'undefined') pPhotos[r.id] = photo;
     if (typeof pUi !== 'undefined') pUi.at = 0;
   } catch (e) { toast(`Saved, but not shared: ${typeof pErr === 'function' ? pErr(e.message) : e.message}`); }
 }
