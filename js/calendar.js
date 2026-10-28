@@ -167,10 +167,10 @@ function renderDaySheet(date) {
     if (it.logged) continue;
     if (it.kind === 'gym') {
       const t = templates[it.session], draftHere = data.draft && data.draft.session === it.session && data.draft.date === d;
-      parts.push(`<section class="dayitem"><div class="dayhd"><span class="dcode">${sBadge(it.session)}</span><div class="min0"><h3>${esc(t.title)}</h3><p class="dim">${esc(t.duration)} · ${esc(t.subtitle)}${it.pinned ? ' · Moved by you' : ''}</p></div>${statusTag(it.status)}</div>
+      parts.push(`<section class="dayitem"><div class="dayhd"><span class="dcode">${sBadge(it.session)}</span><div class="min0"><span class="dst st-${it.status}">${esc(STATUS_LABEL[it.status] || it.status)}</span><h3>${esc(t.title)}</h3><p class="dim">${esc(t.duration)} · ${esc(t.subtitle)}</p></div></div>
         ${it.log ? `<p class="tiny">Logged ${it.log.date === d ? 'on this day' : 'on ' + esc(pretty(it.log.date))}.</p>` : ''}
-        <div class="actions">${it.log ? `<button type="button" class="btn ghost" data-act="log.view" data-id="${esc(it.log.id)}">View workout</button>` : `<button type="button" class="btn primary" data-act="wk.start" data-id="${it.session}" data-arg="${d}">${icon('play')}${draftHere ? 'Resume' : 'Start'} ${sName(it.session)}</button>`}
-        ${it.log ? '' : `<button type="button" class="btn ghost" data-act="move.open" data-id="${it.session}" data-arg="${it.weekMon}">${icon('move')}Move</button>`}${it.pinned ? `<button type="button" class="btn ghost" data-act="move.reset" data-id="${it.session}" data-arg="${it.weekMon}">Reset to recommended</button>` : ''}</div></section>`);
+        <div class="actions">${it.log ? `<button type="button" class="btn ghost" data-act="log.view" data-id="${esc(it.log.id)}">View workout</button>` : `<button type="button" class="btn primary" data-act="wk.start" data-id="${it.session}" data-arg="${d}">${icon('play')}${draftHere ? 'Resume' : 'Start'} ${sName(it.session)}</button>`}</div>
+        ${it.log ? '' : `<div class="dayminor"><button type="button" data-act="move.open" data-id="${it.session}" data-arg="${it.weekMon}">${icon('move')}Move to another day</button>${it.pinned ? `<button type="button" data-act="move.reset" data-id="${it.session}" data-arg="${it.weekMon}">Back to recommended day</button>` : ''}</div>`}</section>`);
     } else if (it.kind === 'match') {
       const inf = it.info || {};
       parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">VOLLEYBALL · MATCH</div>${statusTag(it.status)}</div><h3>${esc(inf.opponent ? 'vs ' + inf.opponent : 'Match day')}</h3><p class="dim">${[inf.time, inf.venue].filter(Boolean).map(esc).join(' · ') || 'No gym today'}</p>${inf.notes ? `<p class="tiny">${esc(inf.notes)}</p>` : ''}
@@ -192,7 +192,7 @@ function renderDaySheet(date) {
   if (!parts.length) parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">REST</div>${tag(past ? 'No plan' : 'Rest day')}</div><h3>Nothing planned</h3><p class="dim">Rest or light mobility. An unscheduled day is not missed progress.</p></section>`);
   const hasGym = day.items.some(i => i.kind === 'gym') || extraG.length > 0;
   return { body: `${day.conflicts.length ? `<div class="flags">${day.conflicts.map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}<p class="tiny">Flagged, not changed: your plan stays exactly as you set it.</p></div>` : ''}${parts.join('')}
-    <ul class="prow dayadd"><li><button type="button" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}<span>Log volleyball</span></button></li><li><button type="button" data-act="match.add" data-id="${d}">${icon('plus')}<span>Add a match</span></button></li><li><button type="button" data-act="extra.add" data-id="${d}">${icon('plus')}<span>Extra session</span></button></li></ul>
+    <div class="dayadd2"><div class="eyebrow">ADD TO THIS DAY</div><div class="chip-row"><button type="button" class="chip" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}Volleyball</button><button type="button" class="chip" data-act="match.add" data-id="${d}">${icon('plus')}Match</button><button type="button" class="chip" data-act="extra.add" data-id="${d}">${icon('plus')}Extra session</button></div></div>
     ${hasGym ? '' : `<div class="eyebrow mt">Log a gym session on this day</div><div class="chip-row">${SESSION_KEYS.map(k => `<button type="button" class="chip" data-act="wk.start" data-id="${k}" data-arg="${d}">${esc(sChip(k))}</button>`).join('')}</div>`}`,
     footer: '' };
 }

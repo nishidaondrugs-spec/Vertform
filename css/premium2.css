@@ -992,3 +992,26 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 :root[data-theme="light"] .lh-end{stroke:#fff}
 .lh-t{font:700 11px system-ui;fill:currentColor}.lh-d{font:600 10.5px system-ui;fill:#8e8e93}
 .lh-empty{margin:6px 2px 0;color:var(--pm-mut,#a1a1a6);font-size:14px}
+
+/* 2.81.1 — Plan tab: the selected day without the box, cut-off edges or cramped buttons */
+:root body.nav2 #view section.dayinline{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:22px!important;border-radius:0!important}
+body.nav2 .dayinline .eyebrow{font-size:12px;letter-spacing:.08em;color:#8e8e93}
+body.nav2 .dayinline .dih{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:2px 0 14px!important}
+.dayhd .min0{display:flex;flex-direction:column;gap:2px}
+.dst{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8e8e93}
+.dst.st-done{color:#34c759}.dst.st-missed{color:#ff453a}.dst.st-planned{color:#f2b84b}
+.dayhd .dim{line-height:1.35}
+.dayitem .actions{margin-top:18px!important}
+.dayitem .actions .btn.primary{width:100%;flex:1}
+.dayminor{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px;margin-top:10px}
+.dayminor button{appearance:none;background:none!important;border:0!important;color:#a1a1a6;font:600 14px/1 inherit;font-family:inherit;display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0}
+.dayminor button .ico{width:16px;height:16px}
+.dayminor button:first-child{color:inherit}
+.dayadd2{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.07)}
+.dayadd2 .chip-row{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.dayadd2 .chip{display:inline-flex;align-items:center;gap:7px}
+.dayadd2 .chip .ico{width:16px;height:16px}
+body.nav2 .dayinline+details.explain,body.nav2 .dayinline ~ details.explain{margin-top:22px}
+body.nav2 #view .dayinline .dayitem{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+body.nav2 #view .dayinline ~ details.explain{background:transparent!important;border:0!important;border-top:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;padding:0!important;margin-top:26px}
+body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;font-weight:600}

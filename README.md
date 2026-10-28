@@ -584,3 +584,6 @@ Moving a session to another day now shows three weeks as a calendar: tap the day
 
 ## 2.81.0 — Lifts on the You page, Vertical plan removed
 The lift you have improved most now sits above the leaderboard on the You page: its name, best estimated 1 rep max, how much it has gone up and a graph over time. Tap it for that lift's history, or "See all" for every lift. If nothing has improved yet it shows your most trained lift. The Vertical plan is gone from the You menu (the in-season / off-season plan will come back later).
+
+## 2.81.1 — Plan tab: the selected day, tidied
+The day below the calendar no longer sits in a box that clipped at the edges. The status (Planned / Completed / Missed) sits above the session name, Start is full width, Move to another day and Back to recommended day are quiet links underneath, "Add to this day" is a row of chips, and Plan settings lines up with everything else.
