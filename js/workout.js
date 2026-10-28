@@ -228,7 +228,7 @@ function paintWorkoutBody(keepScroll = true) {
 }
 /* One tab per exercise: tap to go straight to it. Ticks once every set is done. */
 function wkTabs() {
-  return data.draft.exercises.map((e, i) => { const done = e.sets.length > 0 && exDone(e) === e.sets.length; return `<button type="button" class="wk-tab ${i === wkIndex ? 'cur' : ''} ${done ? 'done' : ''}" data-act="wk.goto" data-arg="${i}" aria-label="${esc(e.name)}${done ? ', done' : ''}" ${i === wkIndex ? 'aria-current="step"' : ''}><b>${done ? icon('check') : i + 1}</b><span>${esc(e.name)}</span></button>`; }).join('');
+  return data.draft.exercises.map((e, i) => { const done = e.sets.length > 0 && exDone(e) === e.sets.length; return `<button type="button" class="wk-tab ${i === wkIndex ? 'cur' : ''} ${done ? 'done' : ''}" data-act="wk.goto" data-arg="${i}" aria-label="${esc(e.name)}${done ? ', done' : ''}" ${i === wkIndex ? 'aria-current="step"' : ''}><b>${done ? icon('check') : i + 1}</b></button>`; }).join('');
 }
 function wkTabsScroll() { const c = $('#wk-tabs .cur'); if (c && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' }); } catch (_) { /* ignore */ } } }
 function progressSegs() {

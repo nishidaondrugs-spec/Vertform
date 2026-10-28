@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.77.1 — Number tabs
+The workout's exercise tabs are now plain numbers (1 2 3 4…), a tick once all sets are done.
+
 ## 2.77.0 — Reorder exercises + exercise tabs
 Session editor: drag the handle to reorder exercises (up/down arrows still work), tap an exercise to edit it. Workout: a tab for every exercise under the progress bar; tap one to jump straight to it. Done exercises show a tick.
 

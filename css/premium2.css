@@ -889,3 +889,9 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 :root:not([data-theme="light"]) body.nav2 .xlist .xrow{background:transparent!important;border:0!important;border-top:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;box-shadow:none!important}
 :root:not([data-theme="light"]) body.nav2 .xlist .xrow:first-child{border-top:0!important}
 :root:not([data-theme="light"]) body.nav2 .xlist .xrow.dragging{background:#1c1c1e!important;border-radius:14px!important;box-shadow:0 10px 30px rgba(0,0,0,.6)!important;border-top-color:transparent!important}
+/* 2.77.1 — workout tabs are just numbers */
+.wk-tabs{gap:10px;justify-content:center}
+.wk-tab{width:42px;height:42px;padding:0;max-width:none;border-radius:50%;justify-content:center;gap:0;font-size:16px}
+.wk-tab b{width:100%;height:100%;background:none!important;font-size:16px;font-weight:700;color:inherit!important}
+.wk-tab b .ico{width:18px;height:18px}
+.wk-tab.cur{background:#fff;color:#000}.wk-tab.done:not(.cur){background:#2a2a2d;color:#fff}
