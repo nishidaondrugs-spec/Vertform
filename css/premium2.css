@@ -917,3 +917,19 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 .hvt{list-style:none;margin:8px 0 14px;padding:0}.hvt li{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.hvt li:first-child{border-top:0}.hvt small{color:#a1a1a6}
 .obhevy{width:100%;margin:22px 0 8px}.obnote.ok{color:#fff;font-weight:600}
 :root:not([data-theme="light"]) .onb .obhevy{color:#fff!important;background:#1c1c1e!important;border:0!important;height:52px;border-radius:26px}
+
+/* 2.80 muscle map */
+:root{--mm-base:#2a2a30;--mm-head:#3a3a42;--mm-line:#0c0c0e;--mm-hot:#ff3b30;--mm-help:#ff9a94}
+:root[data-theme="light"]{--mm-base:#d9dadf;--mm-head:#c9cad0;--mm-line:#fff;--mm-help:#ffb3ad}
+.mmap{display:flex;align-items:center;gap:18px;margin:6px 0 18px}
+.mm-figs{display:flex;gap:6px;flex:none}
+.mm-figs svg{width:58px;height:116px;display:block}
+.mm-figs polygon{stroke:var(--mm-line);stroke-width:.5}
+.mm-b polygon{fill:var(--mm-base)}.mm-h polygon{fill:var(--mm-head)}
+.mm-p polygon{fill:var(--mm-hot)}.mm-s polygon{fill:var(--mm-help)}
+.mm-txt{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mm-txt div{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:baseline}
+.mm-txt b{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2,#9a9aa2);grid-column:2}
+.mm-txt span{font-size:14px;font-weight:600;grid-column:2;line-height:1.3}
+.mm-dot{width:8px;height:8px;border-radius:50%;grid-row:1/3;align-self:center}
+.mm-dot.p{background:var(--mm-hot)}.mm-dot.s{background:var(--mm-help)}

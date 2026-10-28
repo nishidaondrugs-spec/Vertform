@@ -569,3 +569,6 @@ Black background, one thin progress line, a single meta line, clean set rows (La
 ## 2.49.0 — Optional creatine tracker
 - Settings → **Creatine** switches an optional tracker on (off by default) and sets your daily dose. When on, Fuel → Today shows a one-tap "Mark taken" row with the last 7 days as dots. Included in backups.
 - Gym → Today: removed the redundant "Plan" link beside This week (Plan is one tap away in the tabs).
+
+## 2.80.0 — Muscle map
+Every exercise now shows a front and back body with the muscles it works lit up: red for the main ones, pink for the ones helping. It is worked out from the exercise name, so your own and imported exercises get one too (jumps, landings, isometrics, calves, adductors and grip work included). Figure outlines are from react-body-highlighter (MIT).
