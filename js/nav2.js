@@ -80,7 +80,7 @@ function youBoard() {
     : `<div class="yrow"><span class="yn ys">${lbUi.rows === null ? 'Loading…' : 'No one on the board yet'}</span></div>`;
   return `<div class="ysec"><div class="yhead"><div class="yeye">LEADERBOARD · THIS WEEK</div><button type="button" class="ylink" data-act="board.open">See all</button></div><div class="yrows">${body}</div></div>`;
 }
-const YOU_MORE = [['trophy', 'Jump progress', 'you.prog'], ['bolt', 'Vertical plan', 'vert.open'], ['train', 'Lifts', 'you.lifts'], ['trophy', 'Weekly recap', 'recap.open']];
+const YOU_MORE = [['trophy', 'Jump progress', 'you.prog'], ['trophy', 'Weekly recap', 'recap.open']];
 ACTIONS['you.prog'] = () => { ui.trainTab = 'jump'; go('train'); };
 ACTIONS['you.plan'] = () => go('plan');
 
@@ -94,6 +94,7 @@ function viewYou() {
       <p class="ymeta">${fireIcon}<span>${w.streak > 0 ? `${w.streak} week streak` : 'No streak yet'}</span><i></i><span>Week ${getWeek()} of 12</span></p>
       <button type="button" class="yedit" data-act="prof.menu">Edit profile</button></div>
     ${youTiles()}
+    ${liftHero()}
     ${youBoard()}
     ${partnersCard()}
     <div class="ysec"><div class="yeye">MORE</div><div class="ymore">${YOU_MORE.map(([i, n, a]) => `<button type="button" data-act="${a}">${icon(i)}<span>${n}</span></button>`).join('')}</div></div>

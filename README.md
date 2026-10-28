@@ -581,3 +581,6 @@ Each exercise in a session you are building is now a number, its full name and a
 
 ## 2.80.3 — Move a session picks from a calendar
 Moving a session to another day now shows three weeks as a calendar: tap the day, see what is already on it, and move. Days with something planned have a dot, the session's current day is outlined, and "Another date" is there for anything further out.
+
+## 2.81.0 — Lifts on the You page, Vertical plan removed
+The lift you have improved most now sits above the leaderboard on the You page: its name, best estimated 1 rep max, how much it has gone up and a graph over time. Tap it for that lift's history, or "See all" for every lift. If nothing has improved yet it shows your most trained lift. The Vertical plan is gone from the You menu (the in-season / off-season plan will come back later).
