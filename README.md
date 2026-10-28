@@ -590,3 +590,6 @@ The day below the calendar no longer sits in a box that clipped at the edges. Th
 
 ## 2.81.2 — Plan tab: Move is a button
 "Move to another day" is now a proper button under Start. If you have moved a session, a line below says so and offers to put it back on its recommended day.
+
+## 2.81.3 — Tapping a notification always opens this app
+A notification now opens VERTFORM itself, whatever web address the message carried.
