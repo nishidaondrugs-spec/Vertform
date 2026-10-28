@@ -575,3 +575,6 @@ Every exercise now shows a front and back body with the muscles it works lit up:
 
 ## 2.80.1 — Tap the exercise to show its muscles
 The muscle map is now tucked away. Tap the exercise name in the workout to open or close it; the app remembers which you prefer.
+
+## 2.80.2 — Calmer session exercise list
+Each exercise in a session you are building is now a number, its full name and a grip on the right: drag the grip to reorder. The small stacked arrows and the cross are gone; tap an exercise to edit it, and Remove is at the bottom of that edit form. On a keyboard, the up and down arrow keys on the grip still move it.

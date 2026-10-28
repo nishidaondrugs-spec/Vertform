@@ -941,3 +941,14 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 .mmap{animation:mmIn .22s ease-out}
 @keyframes mmIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .mm-last{white-space:nowrap}
+
+/* 2.80.2 — calmer exercise rows: number, name, grip. Remove lives in the edit form. */
+.xrow{gap:14px!important;padding:6px 0!important}
+.xn{flex:none;width:22px;text-align:center;font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace;color:#6e6e73}
+.xtext{padding:10px 0!important}
+.xtext strong{font-size:16px!important}
+.xtext .tiny{font-size:13px!important}
+.xhandle{width:48px!important;height:56px!important;margin-right:-8px;color:#6e6e73!important}
+.xhandle .ico{width:22px!important;height:22px!important}
+.xrow.dragging .xhandle{color:#fff!important}
+.xremove{display:block;margin:14px auto 0;font-size:14px;color:#e5383b}
