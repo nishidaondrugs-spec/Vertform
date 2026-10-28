@@ -172,7 +172,7 @@ function sesCard(k) {
   const t = templates[k], list = allExercises(k), open = ui.sesOpen === k;
   const rows = list.map(e => `<li class="serow"><div class="min0"><b>${esc(e.name)}</b><small>${libLine(e)}</small></div><button type="button" class="iconbtn" data-act="ses.rm" data-arg="${k}" data-id="${esc(e.id)}" aria-label="Remove ${esc(e.name)}">${icon('trash')}</button></li>`).join('');
   return `<li class="sescard ${open ? 'open' : ''}"><button type="button" class="seshead" data-act="ses.open" data-arg="${k}" aria-expanded="${open}"><span class="code">${sBadge(k)}</span><span class="min0"><b>${esc(t.title)}</b><small>${esc(String(t.duration || '').replace(/^~\s*/, ''))} · ${plural(list.length, 'exercise')}</small></span><span class="chevd">${icon('down')}</span></button>
-    ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.edit" data-arg="${k}">${icon('edit')}Edit session</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div><div class="sesmore"><button type="button" class="linkbtn sesdel" data-act="ses.delete" data-arg="${k}">Delete session</button></div>` : ''}</li>`;
+    ${open ? `<ul class="selist">${rows}</ul><div class="sesbtns"><button type="button" class="btn primary" data-act="ses.edit" data-arg="${k}">${icon('edit')}Edit session</button><button type="button" class="btn ghost" data-act="wk.start" data-id="${k}" data-arg="${todayISO()}">${icon('play')}Start</button></div><div class="sesmore"><button type="button" class="linkbtn sesshare" data-act="ses.share" data-arg="${k}">Share session</button><button type="button" class="linkbtn sesdel" data-act="ses.delete" data-arg="${k}">Delete session</button></div>` : ''}</li>`;
 }
 function weekPlanBlock() {
   const act = activeSessions(), n = act.length, rec = typeof recommendedGymCount === 'function' ? recommendedGymCount() : 3;
@@ -184,7 +184,7 @@ function gymSessions() {
   return `${weekPlanBlock()}
     <div class="eyebrow sesh">Your sessions</div>
     <ul class="seslist">${SESSION_KEYS.map(sesCard).join('')}</ul>
-    <div class="gymbtns"><button type="button" class="btn primary" data-act="ys.new">${icon('plus')}New session</button>${hiddenBuiltin.length ? `<button type="button" class="btn ghost" data-act="ses.restore">Restore built-in sessions (${hiddenBuiltin.length})</button>` : ''}</div>
+    <div class="gymbtns"><button type="button" class="btn primary" data-act="ys.new">${icon('plus')}New session</button><button type="button" class="btn ghost" data-act="ses.import">Add a shared session</button>${hiddenBuiltin.length ? `<button type="button" class="btn ghost" data-act="ses.restore">Restore built-in sessions (${hiddenBuiltin.length})</button>` : ''}</div>
     <button type="button" class="libbar" data-act="lib.open">${icon('search')}<span><b>Find exercises</b><small>Search the whole library, save your own, take friends' ones</small></span>${icon('chev')}</button>`;
 }
 ACTIONS['gw.suggest'] = () => { const rec = recommendedGymCount(); const cur = activeSessions(); data.user.gymSessions = SESSION_KEYS.filter(k => cur.includes(k)).slice(0, rec); if (data.user.gymSessions.length < rec) SESSION_KEYS.forEach(k => { if (data.user.gymSessions.length < rec && !data.user.gymSessions.includes(k)) data.user.gymSessions.push(k); }); data.user.gymSessions = SESSION_KEYS.filter(k => data.user.gymSessions.includes(k)); save(); render(); toast(`${data.user.gymSessions.length} a week`); };

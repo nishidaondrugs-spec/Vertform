@@ -29,7 +29,7 @@ function libraryItems() {
   const items = [];
   const add = (e, src) => {
     const name = String(e.name || '').trim(), unit = e.unit || 'reps'; if (!name) return;
-    if (items.some(x => nameMatch(x.name, name) && x.load === !!e.load && x.unit === unit)) return;
+    if (items.some(x => nameMatch(x.name, name))) return;   /* one entry per exercise, whichever way it was saved */
     items.push({ name: name.slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10'), unit, load: !!e.load, hint: e.hint || '', rest: e.rest || 0, src, id: src === 'yours' ? e.id : null });
   };
   data.catalogue.forEach(e => add(e, 'yours'));

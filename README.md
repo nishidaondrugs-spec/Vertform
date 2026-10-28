@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.78.0 — Share sessions, one entry per exercise
+Sessions → open a session → Share session sends a code and link; the other person uses Add a shared session, previews it and adds it to their own. Only the session is shared, never weights, notes or logs. The exercise library now shows one entry per exercise even if it was saved weighted and unweighted.
+
 ## 2.77.1 — Number tabs
 The workout's exercise tabs are now plain numbers (1 2 3 4…), a tick once all sets are done.
 
