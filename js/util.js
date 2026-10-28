@@ -2,7 +2,7 @@
 /* VERTFORM 2.0 — shared helpers (classic script; globals are shared across files) */
 
 const APP_NAME = 'VERTFORM';
-const APP_VERSION = '2.76.0';
+const APP_VERSION = '2.77.0';
 const APP_RELEASE = 'Courtside Notebook';
 const SCHEMA_VERSION = 2;     // record layout inside the stored data
 const BACKUP_FORMAT = 2;      // layout of exported backup files
@@ -88,6 +88,7 @@ const ICONS = {
   bolt: '<path d="m13 2-9 12h7l-1 8 10-12h-7z"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.500v.01"/>',
   repeat: '<path d="M17 2l3 3-3 3M20 5H8a4 4 0 0 0-4 4v1M7 22l-3-3 3-3M4 19h12a4 4 0 0 0 4-4v-1"/>',
+  grip: '<path d="M5 8h14M5 12h14M5 16h14"/>',
   bell: '<path d="M6 17V11a6 6 0 1 1 12 0v6l2 2H4zM10 21h4"/>'
 };
 function icon(id, cls = '') {

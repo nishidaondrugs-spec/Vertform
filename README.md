@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.77.0 — Reorder exercises + exercise tabs
+Session editor: drag the handle to reorder exercises (up/down arrows still work), tap an exercise to edit it. Workout: a tab for every exercise under the progress bar; tap one to jump straight to it. Done exercises show a tick.
+
 ## 2.76.0 — Popeyes UK menu
 155 Popeyes UK items (tenders, wings, boneless, sandwiches, wraps, sides, breakfast, dips, shakes, Whipz) in the food library, searchable by "popeyes". Values come from UK nutrition tables on a Popeyes menu site, not Popeyes' own guide, and serving weights are estimates, so log them by serving.
 

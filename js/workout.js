@@ -215,15 +215,22 @@ function paintWorkout() {
       <div class="wk-mid"><small>${esc(weekdayShort(w.date))} ${esc(pretty(w.date))}</small><strong>${esc(t.title)}</strong></div>
       <button type="button" class="wk-ic" data-act="wk.menu" aria-label="Workout options">${icon('more')}</button></header>
     <div class="wk-progress" id="wk-progress" role="progressbar" aria-label="Workout progress">${progressSegs()}</div>
+    <nav class="wk-tabs" id="wk-tabs" aria-label="Exercises">${wkTabs()}</nav>
     <main class="wk-body" id="wk-body" tabindex="-1">${exercisePanel()}</main>
     <footer class="wk-dock"><div id="wk-timer">${timerBarHTML()}</div><div class="wk-nav">${navButtons()}</div></footer></section></div>`;
-  $('#wk-body').scrollTop = prevScroll; updateScrollLock(); paintPill();
+  $('#wk-body').scrollTop = prevScroll; updateScrollLock(); paintPill(); wkTabsScroll();
 }
 function paintWorkoutBody(keepScroll = true) {
   const b = $('#wk-body'); if (!b) return paintWorkout(); const s = b.scrollTop;
   b.innerHTML = exercisePanel(); if (keepScroll) b.scrollTop = s; else b.scrollTop = 0;
   $('#wk-progress').innerHTML = progressSegs(); $('.wk-nav').innerHTML = navButtons(); paintTimer();
+  const tb = $('#wk-tabs'); if (tb) { tb.innerHTML = wkTabs(); wkTabsScroll(); }
 }
+/* One tab per exercise: tap to go straight to it. Ticks once every set is done. */
+function wkTabs() {
+  return data.draft.exercises.map((e, i) => { const done = e.sets.length > 0 && exDone(e) === e.sets.length; return `<button type="button" class="wk-tab ${i === wkIndex ? 'cur' : ''} ${done ? 'done' : ''}" data-act="wk.goto" data-arg="${i}" aria-label="${esc(e.name)}${done ? ', done' : ''}" ${i === wkIndex ? 'aria-current="step"' : ''}><b>${done ? icon('check') : i + 1}</b><span>${esc(e.name)}</span></button>`; }).join('');
+}
+function wkTabsScroll() { const c = $('#wk-tabs .cur'); if (c && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' }); } catch (_) { /* ignore */ } } }
 function progressSegs() {
   const all = data.draft.exercises.flatMap(e => e.sets), d = all.filter(x => x.done).length;
   return `<i style="width:${all.length ? Math.round(d / all.length * 100) : 0}%"></i>`;

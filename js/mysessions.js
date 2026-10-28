@@ -26,8 +26,7 @@ ACTIONS['ys.edit'] = el => openSessionEditor(el.dataset.id);
 const exLine = e => `${e.sets} × ${esc(e.reps)}${e.unit !== 'reps' ? ' ' + esc(e.unit) : ''} · ${e.load ? 'weighted' : 'no weight'}${e.rest ? ` · rest ${e.rest}s` : ''}`;
 function renderSessionEditor() {
   const x = se.ex;
-  const rows = se.exercises.map((e, i) => `<li class="history-entry between ${se.idx === i ? 'editing' : ''}"><div class="min0"><strong>${esc(e.name)}</strong><div class="tiny">${exLine(e)}</div></div>
-    <div class="quick tight"><button type="button" class="iconbtn" data-act="ys.up" data-id="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>↑</button><button type="button" class="iconbtn" data-act="ys.down" data-id="${i}" aria-label="Move down" ${i === se.exercises.length - 1 ? 'disabled' : ''}>↓</button><button type="button" class="iconbtn" data-act="ys.pick" data-id="${i}" aria-label="Edit ${esc(e.name)}">✎</button><button type="button" class="iconbtn" data-act="ys.del" data-id="${i}" aria-label="Remove ${esc(e.name)}">${icon('close')}</button></div></li>`).join('');
+  const rows = se.exercises.map((e, i) => `<li class="xrow ${se.idx === i ? 'editing' : ''}" data-i="${i}"><span class="xhandle" role="button" tabindex="0" aria-label="Drag to reorder ${esc(e.name)}" data-handle="${i}">${icon('grip')}</span><button type="button" class="xtext" data-act="ys.pick" data-id="${i}" aria-label="Edit ${esc(e.name)}"><strong>${esc(e.name)}</strong><span class="tiny">${exLine(e)}</span></button><span class="xmv"><button type="button" data-act="ys.up" data-id="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${icon('down')}</button><button type="button" data-act="ys.down" data-id="${i}" aria-label="Move down" ${i === se.exercises.length - 1 ? 'disabled' : ''}>${icon('down')}</button></span><button type="button" class="xdel" data-act="ys.del" data-id="${i}" aria-label="Remove ${esc(e.name)}">${icon('close')}</button></li>`).join('');
   const copy = se.isNew && !se.exercises.length ? `<div class="sxstart"><div class="sxlab">Start from</div><div class="sxscroll"><span class="chip on" aria-hidden="true">Blank</span>${Object.entries(YS_TEMPLATES).map(([id, t]) => `<button type="button" class="chip tpl" data-act="ys.tpl" data-id="${id}">${esc(t.title)}</button>`).join('')}${BUILTIN_KEYS.map(k => `<button type="button" class="chip" data-act="ys.copy" data-id="${k}">Copy of ${k}</button>`).join('')}</div></div>` : '';
   const xo = se.idx >= 0 || x.unit !== 'reps' || x.rest || x.hint || !x.load;
   const lastN = se.exercises.length;
@@ -36,7 +35,7 @@ function renderSessionEditor() {
     <input id="setitle" class="sename" data-in="setitle" maxlength="40" autocomplete="off" aria-label="Session name" placeholder="Name your session" value="${esc(se.title)}">
     ${copy}
     <div class="sxhead"><b>${lastN ? plural(lastN, 'exercise') : 'Exercises'}</b></div>
-    ${rows ? `<ul class="mlist">${rows}</ul>` : `<p class="sxempty">Nothing here yet. Search the library, or type your own below.</p>`}
+    ${rows ? `<ul class="mlist xlist">${rows}</ul>` : `<p class="sxempty">Nothing here yet. Search the library, or type your own below.</p>`}
     <button type="button" class="sxlib" data-act="lib.session">${icon('search')}<span>Search the exercise library</span>${icon('chev')}</button>
     <div class="exform sxform"><div class="sxlab">${se.idx >= 0 ? 'Edit exercise' : 'Or type your own'}</div>
       <input id="exn" data-in="exn" maxlength="80" autocomplete="off" aria-label="Exercise name" placeholder="Exercise name, e.g. Overhead press" value="${esc(x.name)}">
@@ -126,3 +125,35 @@ ACTIONS['ys.delete'] = async () => {
   data.user.gymSessions = data.user.gymSessions.filter(k => k !== s.key); if (!data.user.gymSessions.length) data.user.gymSessions = BUILTIN_KEYS.slice();
   save(); closeAllSheets(); render(); toast('Session deleted');
 };
+
+/* Drag to reorder: grab the handle, move the row, let go. The order is read back from the page when you let go. */
+(function () {
+  let d = null;
+  const scroller = el => { for (let n = el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) return n; } return null; };
+  document.addEventListener('pointerdown', e => {
+    const h = e.target.closest && e.target.closest('.xhandle'); if (!h || e.button > 0) return;
+    const li = h.closest('li'), list = li.parentElement; e.preventDefault();
+    try { h.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+    d = { h, li, list, y0: e.clientY, from: Number(li.dataset.i), sc: scroller(li), id: e.pointerId };
+    li.classList.add('dragging'); list.classList.add('is-dragging');
+  });
+  document.addEventListener('pointermove', e => {
+    if (!d || e.pointerId !== d.id) return;
+    const { li, list } = d;
+    if (d.sc) { const r = d.sc.getBoundingClientRect(); if (e.clientY < r.top + 60) d.sc.scrollTop -= 10; else if (e.clientY > r.bottom - 60) d.sc.scrollTop += 10; }
+    li.style.transform = `translateY(${e.clientY - d.y0}px)`;
+    const r = li.getBoundingClientRect(), c = r.top + r.height / 2, prev = li.previousElementSibling, next = li.nextElementSibling;
+    if (prev) { const p = prev.getBoundingClientRect(); if (c < p.top + p.height / 2) { list.insertBefore(li, prev); d.y0 -= p.height; } }
+    if (next) { const n = next.getBoundingClientRect(); if (c > n.top + n.height / 2) { list.insertBefore(li, next.nextSibling); d.y0 += n.height; } }
+    li.style.transform = `translateY(${e.clientY - d.y0}px)`;
+  });
+  const end = e => {
+    if (!d || (e && e.pointerId !== d.id)) return;
+    const { li, list } = d; d = null; li.classList.remove('dragging'); list.classList.remove('is-dragging'); li.style.transform = '';
+    const order = [...list.children].map(n => Number(n.dataset.i));
+    if (order.some((v, i) => v !== i)) { const old = se.exercises; se.exercises = order.map(i => old[i]); se.idx = -1; if (navigator.vibrate) try { navigator.vibrate(8); } catch (_) { /* ignore */ } }
+    refreshSheet();
+  };
+  document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
+  document.addEventListener('keydown', e => { const h = e.target.closest && e.target.closest('.xhandle'); if (!h || !['ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault(); const i = Number(h.dataset.handle); msMove(i, e.key === 'ArrowUp' ? -1 : 1); setTimeout(() => document.querySelector(`.xhandle[data-handle="${i + (e.key === 'ArrowUp' ? -1 : 1)}"]`)?.focus(), 30); });
+})();

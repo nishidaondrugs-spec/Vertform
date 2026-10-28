@@ -860,3 +860,32 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 .ndot{margin-left:auto;flex:none;width:10px;height:10px;border-radius:50%;background:#e5383b}
 .nempty{text-align:center;padding:40px 10px}.nempty b{display:block;font-size:17px;margin-bottom:6px}
 .nfoot{text-align:center;margin-top:18px}.nenable{width:100%;margin-top:18px}
+
+/* 2.77.0 — reorder exercises in the session editor, exercise tabs in the workout */
+.xlist{list-style:none;margin:0;padding:0}
+.xrow{display:flex;align-items:center;gap:6px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07);background:transparent;position:relative}
+.xlist .xrow:first-child{border-top:0}
+.xhandle{flex:none;width:34px;height:44px;display:grid;place-items:center;color:#8e8e93;touch-action:none;cursor:grab;border-radius:10px}
+.xhandle .ico{width:20px;height:20px}
+.xtext{flex:1;min-width:0;text-align:left;background:none!important;border:0!important;color:inherit;font-family:inherit;padding:2px 0;display:flex;flex-direction:column;gap:2px}
+.xtext strong{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xtext .tiny{color:#a1a1a6;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xmv{flex:none;display:flex;flex-direction:column}
+.xmv button{width:36px;height:24px;display:grid;place-items:center;background:none!important;border:0!important;color:#a1a1a6;padding:0}
+.xmv button:first-child .ico{transform:rotate(180deg)}.xmv button:disabled{opacity:.25}
+.xmv .ico{width:16px;height:16px}
+.xdel{flex:none;width:36px;height:44px;display:grid;place-items:center;background:none!important;border:0!important;color:#a1a1a6;padding:0}.xdel .ico{width:18px;height:18px}
+.xrow.editing .xtext strong{color:#e5383b}
+.xrow.dragging{z-index:5;background:#1c1c1e;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.6);transition:none;border-top-color:transparent}
+.xlist.is-dragging .xrow:not(.dragging){transition:none}
+.wk-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.wk-tabs::-webkit-scrollbar{display:none}
+.wk-tab{flex:none;display:flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 6px;border-radius:18px;border:0;background:#1c1c1e;color:#a1a1a6;font:600 13px inherit;font-family:inherit;max-width:190px;scroll-snap-align:center}
+.wk-tab b{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);font-size:12px;color:#d1d1d6}
+.wk-tab b .ico{width:14px;height:14px}
+.wk-tab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-tab.done{color:#d1d1d6}.wk-tab.done b{background:#fff;color:#000}
+.wk-tab.cur{background:#fff;color:#000}.wk-tab.cur b{background:#000;color:#fff}
+:root:not([data-theme="light"]) body.nav2 .xlist .xrow{background:transparent!important;border:0!important;border-top:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;box-shadow:none!important}
+:root:not([data-theme="light"]) body.nav2 .xlist .xrow:first-child{border-top:0!important}
+:root:not([data-theme="light"]) body.nav2 .xlist .xrow.dragging{background:#1c1c1e!important;border-radius:14px!important;box-shadow:0 10px 30px rgba(0,0,0,.6)!important;border-top-color:transparent!important}
