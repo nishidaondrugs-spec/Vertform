@@ -572,3 +572,6 @@ Black background, one thin progress line, a single meta line, clean set rows (La
 
 ## 2.80.0 — Muscle map
 Every exercise now shows a front and back body with the muscles it works lit up: red for the main ones, pink for the ones helping. It is worked out from the exercise name, so your own and imported exercises get one too (jumps, landings, isometrics, calves, adductors and grip work included). Figure outlines are from react-body-highlighter (MIT).
+
+## 2.80.1 — Tap the exercise to show its muscles
+The muscle map is now tucked away. Tap the exercise name in the workout to open or close it; the app remembers which you prefer.

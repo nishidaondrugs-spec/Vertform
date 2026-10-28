@@ -49,3 +49,8 @@ function muscleBlock(name) {
   return `<div class="mmap" role="img" aria-label="${esc(label)}"><div class="mm-figs">${mmSvg('front', m.p, m.s)}${mmSvg('back', m.p, m.s)}</div>
     <div class="mm-txt"><div><i class="mm-dot p"></i><b>Main</b><span>${esc(names(m.p))}</span></div>${m.s.length ? `<div><i class="mm-dot s"></i><b>Helping</b><span>${esc(names(m.s))}</span></div>` : ''}</div></div>`;
 }
+/* tap the exercise title to open or close the map; the choice is remembered */
+let mmOpen = false; try { mmOpen = localStorage.getItem('vf.mm') === '1'; } catch (_) { /* ignore */ }
+ACTIONS['mm.toggle'] = () => { mmOpen = !mmOpen; try { localStorage.setItem('vf.mm', mmOpen ? '1' : '0'); } catch (_) { /* ignore */ } paintWorkoutBody(true); };
+/* title with the chevron glued to its last word so it never drops onto a line of its own */
+function mmTitle(name) { const n = String(name), i = n.lastIndexOf(' '); return `${esc(n.slice(0, i + 1))}<span class="mm-last">${esc(n.slice(i + 1))}${icon('chev')}</span>`; }

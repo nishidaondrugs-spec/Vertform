@@ -266,9 +266,9 @@ function exercisePanel() {
       </div>`; }).join('');
   const firstUndone = e.sets.findIndex(x => !x.done);
   const metaLoad = e.load ? ' · load in kg' : '';
-  return `<div class="ex-head"><div class="eyebrow">Exercise ${wkIndex + 1} of ${n}${e.optional ? ' · optional' : ''}</div><h2>${esc(e.name)}</h2>
+  return `<div class="ex-head"><div class="eyebrow">Exercise ${wkIndex + 1} of ${n}${e.optional ? ' · optional' : ''}</div><h2>${muscleFor(e.name) ? `<button type="button" class="mm-h2 ${mmOpen ? 'open' : ''}" data-act="mm.toggle" aria-expanded="${mmOpen}">${mmTitle(e.name)}</button>` : esc(e.name)}</h2>
     <p class="wk-meta"><b>${e.sets.length} × ${esc(e.reps)}</b> ${esc(e.unit === 'reps' ? 'reps' : e.unit)}${metaLoad}</p></div>
-    ${muscleBlock(e.name)}
+    ${mmOpen ? muscleBlock(e.name) : ''}
     <div class="sets ${e.load ? '' : e.dist ? '' : 'noload'} ${e.load && e.dist ? 'threeinp' : ''}" data-cur="${firstUndone}" role="group" aria-label="Sets"><div class="set-head" aria-hidden="true"><span></span><span>Last time</span>${e.dist ? `<span>${e.dist === 'km' ? 'km' : 'm'}</span>` : ''}${e.load ? '<span>kg</span>' : (e.dist ? '' : '<span></span>')}<span>${unitName === 'reps' ? 'Reps' : unitName}</span><span></span></div>${rows.replace(new RegExp(`(<div class="set-row )([^"]*" data-row="${firstUndone}")`), '$1cur $2')}
     <button type="button" class="wk-addset" data-act="set.add" data-i="${wkIndex}">${icon('plus')}<span>Add set</span></button></div>
     <div class="pbline" id="pbline" aria-live="polite">${pbSummary(e, best)}</div>`;
