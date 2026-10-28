@@ -587,3 +587,6 @@ The lift you have improved most now sits above the leaderboard on the You page: 
 
 ## 2.81.1 — Plan tab: the selected day, tidied
 The day below the calendar no longer sits in a box that clipped at the edges. The status (Planned / Completed / Missed) sits above the session name, Start is full width, Move to another day and Back to recommended day are quiet links underneath, "Add to this day" is a row of chips, and Plan settings lines up with everything else.
+
+## 2.81.2 — Plan tab: Move is a button
+"Move to another day" is now a proper button under Start. If you have moved a session, a line below says so and offers to put it back on its recommended day.

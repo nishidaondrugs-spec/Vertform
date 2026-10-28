@@ -1015,3 +1015,13 @@ body.nav2 .dayinline+details.explain,body.nav2 .dayinline ~ details.explain{marg
 body.nav2 #view .dayinline .dayitem{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
 body.nav2 #view .dayinline ~ details.explain{background:transparent!important;border:0!important;border-top:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;padding:0!important;margin-top:26px}
 body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;font-weight:600}
+
+/* 2.81.2 — Move is a real button; the "you moved this" note explains the undo */
+.dayitem .btn.dmove{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:48px;margin-top:10px;border-radius:24px;background:transparent!important;border:1.5px solid rgba(255,255,255,.18)!important;color:inherit;font-weight:600}
+.dayitem .btn.dmove .ico{width:17px;height:17px}
+:root[data-theme="light"] .dayitem .btn.dmove{border-color:rgba(0,0,0,.18)!important}
+.dmoved{margin:14px 2px 0;font-size:13.5px;line-height:1.45;color:#8e8e93}
+.dmoved .linkbtn{display:inline;padding:0;font-size:inherit;font-weight:600;text-align:left}
+.dmoved .linkbtn{color:inherit!important;text-decoration:underline;text-underline-offset:3px;display:block;margin-top:4px}
+.dmoved{color:#8e8e93}.dmoved .linkbtn{color:#e5e5ea!important}
+:root[data-theme="light"] .dmoved .linkbtn{color:#1c1c1e!important}
