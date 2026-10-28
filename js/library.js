@@ -30,7 +30,7 @@ function libraryItems() {
   const add = (e, src) => {
     const name = String(e.name || '').trim(), unit = e.unit || 'reps'; if (!name) return;
     if (items.some(x => nameMatch(x.name, name))) return;   /* one entry per exercise, whichever way it was saved */
-    items.push({ name: name.slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10'), unit, load: !!e.load, hint: e.hint || '', rest: e.rest || 0, src, id: src === 'yours' ? e.id : null });
+    items.push({ name: name.slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10'), unit, load: !!e.load, dist: ['m', 'km'].includes(e.dist) ? e.dist : '', hint: e.hint || '', rest: e.rest || 0, src, id: src === 'yours' ? e.id : null });
   };
   data.catalogue.forEach(e => add(e, 'yours'));
   BUILTIN_KEYS.forEach(k => templates[k].exercises.forEach(e => add(e, 'built-in')));
@@ -140,7 +140,7 @@ async function libAdd(x) {
   if (lib.mode === 'session') {
     if (typeof se === 'undefined' || !se) return;
     if (se.exercises.length >= 25) { toast('A session holds up to 25 exercises'); return; }
-    se.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', rest: x.rest || 0 });
+    se.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', rest: x.rest || 0, dist: x.dist || '' });
     se.err = ''; refreshSheet(); toast(`${x.name} added · ${plural(se.exercises.length, 'exercise')} so far`); return;
   }
   if (lib.mode === 'target') { if (sessAdd(lib.target, x)) { refreshSheet(); render(); toast(`${x.name} added to ${sName(lib.target)}`); } return; }
@@ -151,7 +151,7 @@ function sessAdd(k, x) {
   const my = data.mySessions.find(s => s.key === k && !s.deleted);
   if (allExercises(k).length >= 25) { toast('A session holds up to 25 exercises'); return false; }
   if (BUILTIN_KEYS.includes(k)) (data.custom[k] ||= []).push(ex('custom-' + uid(), x.name, x.sets, x.reps, x.unit, x.load, x.hint || 'Custom exercise'));
-  else if (my) { my.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0 }); data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin); }
+  else if (my) { my.exercises.push({ id: 'cx-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0, dist: x.dist || '' }); data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin); }
   else return false;
   save(); return true;
 }
@@ -171,7 +171,7 @@ function addToWorkout(x, scope) {
     if (BUILTIN_KEYS.includes(k)) { id = 'custom-' + uid(); (data.custom[k] ||= []).push(ex(id, x.name, x.sets, x.reps, x.unit, x.load, x.hint || 'Custom exercise')); }
     else if (my) {
       if (my.exercises.length >= 25) { toast('A session holds up to 25 exercises'); return; }
-      id = 'cx-' + uid(); my.exercises.push({ id, name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0 });
+      id = 'cx-' + uid(); my.exercises.push({ id, name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0, dist: x.dist || '' });
       data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin);
     }
   }

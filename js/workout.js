@@ -38,6 +38,7 @@ const loadText = v => (num1(v) === 0 ? 'BW' : `${fmt(num1(v) ?? 0, 2)} kg`);
 const unitSuffix = u => u === 'seconds' ? ' s' : u === 'metres' ? ' m' : '';
 /* "60 kg × 8, 8, 7" — consecutive sets at the same load are grouped */
 function formatSets(cur, sets) {
+  if (cur.dist && !cur.load) return sets.map(s => `${s.dist ? s.dist + cur.dist + ' in ' : ''}${s.reps}${cur.unit === 'seconds' ? ' s' : cur.unit === 'metres' ? ' m' : ' reps'}`).join(', ');
   if (!cur.load) return sets.map(s => s.reps).join(', ') + (cur.unit === 'seconds' ? ' s' : cur.unit === 'metres' ? ' m' : ' reps');
   const groups = [];
   for (const s of sets) { const k = String(num1(s.load) ?? ''); const g = groups[groups.length - 1]; if (g && g.k === k) g.reps.push(s.reps); else groups.push({ k, load: s.load, reps: [s.reps] }); }
@@ -179,7 +180,7 @@ function makeWorkout(k, date) {
     else if (BUILTIN_KEYS.includes(k) && (deload || w === 1 && k !== 'A')) n = Math.max(1, Math.ceil(n * (w === 1 ? .8 : .5)));
     else if (k === 'C' && w === 1) n = Math.max(1, Math.ceil(n * .5));
     const defaultLoad = e.id === 'trap' && Number(data.user.trap1rm) > 0 ? fmt(Number(data.user.trap1rm) * (p.lo + p.hi) / 200 / 2.5, 0) * 2.5 : latestLoad(e, date);
-    return { ...e, sets: Array.from({ length: n }, () => ({ load: e.load ? String(defaultLoad) : '', reps, done: false })) };
+    return { ...e, sets: Array.from({ length: n }, () => ({ load: e.load ? String(defaultLoad) : '', reps, done: false, ...(e.dist ? { dist: '' } : {}) })) };
   }) };
 }
 /* Start (or resume) a session on a specific date. The date always comes from the caller: today, or the day picked in the plan. */
@@ -246,7 +247,8 @@ function lastTimeBlock(e) {
   if (!last) return `<div class="lastmini"><span>First time logging this</span><span class="lm-acts">${plates}</span></div>`;
   return `<div class="lastmini"><span>Last time ${esc(weekdayShort(last.date))} ${esc(pretty(last.date))}</span><span class="lm-acts"><button type="button" class="linkbtn" data-act="wk.uselast">Fill all</button><button type="button" class="linkbtn" data-act="wk.history">Progress</button>${plates}</span></div>`;
 }
-const prevText = (e, p) => !p ? '—' : e.load ? `${num1(p.load) === 0 ? 'BW' : fmt(num1(p.load) ?? 0, 2)} × ${p.reps}` : `${p.reps}${unitSuffix(e.unit)}`;
+const distBit = (e, p) => e.dist && p && p.dist !== undefined && p.dist !== '' ? `${p.dist}${e.dist} · ` : '';
+const prevText = (e, p) => !p ? '—' : e.dist && !e.load ? `${distBit(e, p)}${p.reps}${unitSuffix(e.unit)}` : e.load ? `${num1(p.load) === 0 ? 'BW' : fmt(num1(p.load) ?? 0, 2)} × ${p.reps}` : `${p.reps}${unitSuffix(e.unit)}`;
 /* working sets of this exercise numbered 1..n; warm-ups show W and line up with nothing from last time */
 function rowPrev(e, last) { let k = 0; return e.sets.map(s => s.wu ? null : (last?.sets[k++] || null)); }
 function exercisePanel() {
@@ -257,7 +259,8 @@ function exercisePanel() {
   const rows = e.sets.map((s, j) => { const pb = setPB(e, s, best), p = prevs[j]; if (!s.wu) wn++;
     return `<div class="set-row ${s.done ? 'done' : ''} ${s.wu ? 'wu' : ''}" data-row="${j}"><span class="set-n"><button type="button" class="set-k" data-act="set.wu" data-i="${wkIndex}" data-j="${j}" aria-label="Set ${j + 1}${s.wu ? ', warm-up' : ''}. Tap to ${s.wu ? 'make it a working set' : 'mark as warm-up'}">${s.wu ? 'W' : wn}</button>${pb ? `<i class="pb" title="${esc(pb.text)}">PB<span class="vh"> — ${esc(pb.text)}</span></i>` : ''}</span>
       <button type="button" class="set-prev" data-act="set.prev" data-i="${wkIndex}" data-j="${j}" ${p && !s.done ? '' : 'disabled'} aria-label="${p ? `Last time ${esc(prevText(e, p))}. Tap to copy` : 'No previous set'}">${esc(s.wu ? 'warm-up' : prevText(e, p))}</button>
-      ${e.load ? `<label class="cell"><span class="vh">Load in kilograms, set ${j + 1}</span><input class="num" type="number" inputmode="decimal" enterkeyhint="next" min="0" step="0.5" data-in="setload" data-i="${wkIndex}" data-j="${j}" value="${esc(s.load)}"><span class="u" aria-hidden="true">kg</span></label>` : `<span class="cell na" aria-hidden="true">—</span>`}
+      ${e.dist ? `<label class="cell"><span class="vh">Distance in ${e.dist === 'km' ? 'kilometres' : 'metres'}, set ${j + 1}</span><input class="num" type="text" inputmode="decimal" enterkeyhint="next" data-in="setdist" data-i="${wkIndex}" data-j="${j}" value="${esc(s.dist ?? '')}"><span class="u" aria-hidden="true">${e.dist}</span></label>` : ''}
+      ${e.load ? `<label class="cell"><span class="vh">Load in kilograms, set ${j + 1}</span><input class="num" type="number" inputmode="decimal" enterkeyhint="next" min="0" step="0.5" data-in="setload" data-i="${wkIndex}" data-j="${j}" value="${esc(s.load)}"><span class="u" aria-hidden="true">kg</span></label>` : e.dist ? '' : `<span class="cell na" aria-hidden="true">—</span>`}
       <label class="cell"><span class="vh">${unitName} for set ${j + 1}</span><input class="num" type="text" inputmode="decimal" enterkeyhint="done" data-in="setreps" data-i="${wkIndex}" data-j="${j}" value="${esc(s.reps)}"><span class="u" aria-hidden="true">${unitName === 'reps' ? '' : unitName}</span></label>
       <button type="button" class="set-done ${s.done ? 'done' : ''}" data-act="set.done" data-i="${wkIndex}" data-j="${j}" aria-pressed="${!!s.done}" aria-label="${s.done ? 'Undo' : 'Complete'} set ${j + 1}">${icon('check')}</button>
       </div>`; }).join('');
@@ -265,7 +268,7 @@ function exercisePanel() {
   const metaLoad = e.load ? ' · load in kg' : '';
   return `<div class="ex-head"><div class="eyebrow">Exercise ${wkIndex + 1} of ${n}${e.optional ? ' · optional' : ''}</div><h2>${esc(e.name)}</h2>
     <p class="wk-meta"><b>${e.sets.length} × ${esc(e.reps)}</b> ${esc(e.unit === 'reps' ? 'reps' : e.unit)}${metaLoad}</p></div>
-    <div class="sets ${e.load ? '' : 'noload'}" data-cur="${firstUndone}" role="group" aria-label="Sets"><div class="set-head" aria-hidden="true"><span></span><span>Last time</span><span>${e.load ? 'kg' : ''}</span><span>${unitName === 'reps' ? 'Reps' : unitName}</span><span></span></div>${rows.replace(new RegExp(`(<div class="set-row )([^"]*" data-row="${firstUndone}")`), '$1cur $2')}
+    <div class="sets ${e.load ? '' : e.dist ? '' : 'noload'} ${e.load && e.dist ? 'threeinp' : ''}" data-cur="${firstUndone}" role="group" aria-label="Sets"><div class="set-head" aria-hidden="true"><span></span><span>Last time</span>${e.dist ? `<span>${e.dist === 'km' ? 'km' : 'm'}</span>` : ''}${e.load ? '<span>kg</span>' : (e.dist ? '' : '<span></span>')}<span>${unitName === 'reps' ? 'Reps' : unitName}</span><span></span></div>${rows.replace(new RegExp(`(<div class="set-row )([^"]*" data-row="${firstUndone}")`), '$1cur $2')}
     <button type="button" class="wk-addset" data-act="set.add" data-i="${wkIndex}">${icon('plus')}<span>Add set</span></button></div>
     <div class="pbline" id="pbline" aria-live="polite">${pbSummary(e, best)}</div>`;
 }
@@ -291,9 +294,9 @@ ACTIONS['wk.prev'] = () => { wkIndex = Math.max(wkIndex - 1, 0); paintWorkoutBod
 ACTIONS['wk.list'] = () => openSheet({ title: 'Exercises', eyebrow: `${sName(data.draft.session).toUpperCase()}`, render: () => ({ body: `<ul class="ex-list">${data.draft.exercises.map((e, i) => `<li style="display:flex;gap:6px;align-items:center"><button type="button" class="result ${i === wkIndex ? 'cur' : ''}" style="flex:1" data-act="wk.jump" data-arg="${i}"><span class="mono num-n">${pad2(i + 1)}</span><div class="grow"><strong>${esc(e.name)}</strong><small>${exDone(e)} of ${e.sets.length} sets done${e.optional ? ' · optional' : ''}</small></div>${icon('chev')}</button><button type="button" class="iconbtn" data-act="wk.rmex" data-arg="${i}" aria-label="Remove ${esc(e.name)}">${icon('trash')}</button></li>`).join('')}</ul>`, footer: `<button type="button" class="btn ghost" data-act="wk.addex">${icon('plus')}Add exercise</button><button type="button" class="btn primary grow" data-act="sheet.close">Close</button>` }) });
 ACTIONS['wk.jump'] = el => { wkIndex = Number(el.dataset.arg); closeSheet(); paintWorkoutBody(false); };
 
-INPUTS.setload = INPUTS.setreps = el => {
+INPUTS.setload = INPUTS.setreps = INPUTS.setdist = el => {
   const s = data.draft?.exercises[el.dataset.i]?.sets[el.dataset.j]; if (!s) return;
-  s[el.dataset.in === 'setload' ? 'load' : 'reps'] = el.value; saveSoon(); updatePBs();
+  s[el.dataset.in === 'setload' ? 'load' : el.dataset.in === 'setdist' ? 'dist' : 'reps'] = el.value; saveSoon(); updatePBs();
 };
 function updatePBs() {
   const e = currentExercise(); if (!e) return; const best = bestsOf(e, exerciseHistory(e, { before: data.draft.date, excludeId: data.draft.id }));
@@ -316,14 +319,14 @@ ACTIONS['set.wu'] = el => { const s = data.draft.exercises[el.dataset.i]?.sets[e
 ACTIONS['set.prev'] = el => {
   const e = data.draft.exercises[el.dataset.i], j = Number(el.dataset.j), s = e?.sets[j]; if (!s || s.done) return;
   const p = rowPrev(e, exerciseHistory(e, { before: data.draft.date, excludeId: data.draft.id })[0])[j]; if (!p) return;
-  s.reps = String(p.reps); if (e.load) s.load = String(p.load ?? ''); save(); paintWorkoutBody();
+  s.reps = String(p.reps); if (e.load) s.load = String(p.load ?? ''); if (e.dist) s.dist = String(p.dist ?? ''); save(); paintWorkoutBody();
 };
-ACTIONS['set.add'] = el => { const x = data.draft.exercises[el.dataset.i], prev = x.sets.at(-1); x.sets.push({ load: prev?.load || '', reps: prev?.reps || parseReps(x.reps), done: false, wu: false }); save(); paintWorkoutBody(); };
+ACTIONS['set.add'] = el => { const x = data.draft.exercises[el.dataset.i], prev = x.sets.at(-1); x.sets.push({ load: prev?.load || '', reps: prev?.reps || parseReps(x.reps), done: false, wu: false, ...(x.dist ? { dist: prev?.dist || '' } : {}) }); save(); paintWorkoutBody(); };
 ACTIONS['set.del'] = el => { const x = data.draft.exercises[el.dataset.i]; if (x.sets.length > 1) { x.sets.splice(el.dataset.j, 1); save(); paintWorkoutBody(); } };
 ACTIONS['wk.uselast'] = () => {
   const w = data.draft, e = currentExercise(), last = exerciseHistory(e, { before: w.date, excludeId: w.id })[0]; if (!last) return;
   let changed = 0;
-  let k = 0; e.sets.forEach(s => { if (s.wu) return; const src = last.sets[Math.min(k++, last.sets.length - 1)]; if (s.done) return; s.reps = String(src.reps); if (e.load) s.load = String(src.load ?? ''); changed++; });
+  let k = 0; e.sets.forEach(s => { if (s.wu) return; const src = last.sets[Math.min(k++, last.sets.length - 1)]; if (s.done) return; s.reps = String(src.reps); if (e.load) s.load = String(src.load ?? ''); if (e.dist) s.dist = String(src.dist ?? ''); changed++; });
   save(); paintWorkoutBody(); toast(changed ? `Filled ${plural(changed, 'set')} from ${pretty(last.date)}. Nothing is ticked until you tick it.` : 'All sets are already ticked.');
 };
 ACTIONS['wk.history'] = () => openExerciseHistory(currentExercise());

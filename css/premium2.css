@@ -904,3 +904,16 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 .sslist{list-style:none;margin:14px 0 0;padding:0}
 .sslist li{padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}.sslist li:first-child{border-top:0}
 .sslist b{display:block;font-size:15px;font-weight:600}.sslist small{color:#a1a1a6;font-size:12px}
+
+/* 2.79.0 — distance column (no weight: sits in the weight slot; weight + distance: three inputs) */
+.wk-layer .sets.threeinp .set-head,.wk-layer .sets.threeinp .set-row{grid-template-columns:28px 0 72px 72px 72px 44px;gap:6px}
+.wk-layer .sets.threeinp .set-prev,.wk-layer .sets.threeinp .set-head span:nth-child(2){visibility:hidden;width:0;overflow:hidden;padding:0}
+.wk-layer .sets.threeinp .set-head span:nth-child(3),.wk-layer .sets.threeinp .set-head span:nth-child(4),.wk-layer .sets.threeinp .set-head span:nth-child(5){text-align:center}
+
+/* 2.79.0 — Hevy import */
+.hvpick{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:52px;border-radius:26px;margin:14px 0;cursor:pointer}
+.hvsum{list-style:none;margin:0 0 18px;padding:0}.hvsum li{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.hvsum li:first-child{border-top:0}
+.hvsum b{font-size:28px;font-weight:800;letter-spacing:-.02em;min-width:60px}.hvsum span{color:#a1a1a6;font-size:14px}
+.hvt{list-style:none;margin:8px 0 14px;padding:0}.hvt li{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}.hvt li:first-child{border-top:0}.hvt small{color:#a1a1a6}
+.obhevy{width:100%;margin:22px 0 8px}.obnote.ok{color:#fff;font-weight:600}
+:root:not([data-theme="light"]) .onb .obhevy{color:#fff!important;background:#1c1c1e!important;border:0!important;height:52px;border-radius:26px}

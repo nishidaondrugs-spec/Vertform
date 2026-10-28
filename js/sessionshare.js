@@ -8,7 +8,7 @@ function ssPack(k) {
   const t = templates[k]; if (!t) return null;
   const my = data.mySessions.find(s => s.key === k), mins = my ? my.minutes : parseInt((String(t.duration || '').match(/\d+/) || [0])[0]) || 0;
   return { v: 1, t: t.title, e: t.emoji || '', y: my ? my.type : '', m: mins || 0, h: isHeavy(k) ? 1 : 0,
-    x: allExercises(k).map(e => [e.name, e.sets, e.reps, e.unit || 'reps', e.load ? 1 : 0, e.hint || '', e.rest || 0]) };
+    x: allExercises(k).map(e => [e.name, e.sets, e.reps, e.unit || 'reps', e.load ? 1 : 0, e.hint || '', e.rest || 0, e.dist || '']) };
 }
 const ssCode = k => { const p = ssPack(k); return p ? SS_PREFIX + ssB64(JSON.stringify(p)) : ''; };
 const ssLink = k => location.origin + location.pathname + '#s=' + ssCode(k).slice(SS_PREFIX.length);
@@ -19,7 +19,7 @@ function ssParse(text) {
   let o; try { o = JSON.parse(ssUnB64(raw)); } catch (_) { return null; }
   if (!o || o.v !== 1 || !Array.isArray(o.x) || !o.x.length) return null;
   const rec = { key: 'E', title: String(o.t || '').slice(0, 40), emoji: String(o.e || ''), type: String(o.y || '').slice(0, 30), minutes: Number(o.m) || 0, heavy: !!o.h, deleted: false,
-    exercises: o.x.slice(0, 25).map(r => ({ id: 'cx-' + uid(), name: String(r[0] || ''), sets: Number(r[1]) || 3, reps: String(r[2] || '8'), unit: ['reps', 'seconds', 'metres'].includes(r[3]) ? r[3] : 'reps', load: !!r[4], hint: String(r[5] || '').slice(0, 140), rest: Number(r[6]) || 0, optional: false })) };
+    exercises: o.x.slice(0, 25).map(r => ({ id: 'cx-' + uid(), name: String(r[0] || ''), sets: Number(r[1]) || 3, reps: String(r[2] || '8'), unit: ['reps', 'seconds', 'metres'].includes(r[3]) ? r[3] : 'reps', load: !!r[4], hint: String(r[5] || '').slice(0, 140), rest: Number(r[6]) || 0, dist: ['m', 'km'].includes(r[7]) ? r[7] : '', optional: false })) };
   const clean = cleanMySessions([rec])[0]; return clean && clean.exercises.length ? clean : null;
 }
 

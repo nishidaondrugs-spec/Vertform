@@ -299,7 +299,7 @@ ACTIONS['plan.now'] = () => { ui.planWeek = monday(todayISO()); render(); };
 /* =============== PROGRESS =============== */
 
 /* =============== SETTINGS =============== */
-const SG_IC = { You: 'heart', Training: 'train', Appearance: 'gear', Notifications: 'post', Creatine: 'plus', 'Backup & data': 'download', 'Help & about': 'check', Account: 'home' };
+const SG_IC = { You: 'heart', Training: 'train', Appearance: 'gear', Notifications: 'post', Creatine: 'plus', 'Backup & data': 'download', Import: 'download', 'Help & about': 'check', Account: 'home' };
 function setGroup(title, sub, inner, open) { return `<details class="setgroup" ${open ? 'open' : ''}><summary><i class="sg-ic" aria-hidden="true">${icon(SG_IC[title] || 'gear')}</i><span><b>${title}</b><small>${sub}</small></span>${icon('chev')}</summary><div class="sg-body">${inner}</div></details>`; }
 function viewSettings() {
   const b = backupStatus(), r = data.settings.rest, nT = vbDaysFor(todayISO()).length;
@@ -318,6 +318,7 @@ function viewSettings() {
     ${setGroup('Appearance', `${data.settings.theme === 'light' ? 'Light' : data.settings.theme === 'auto' ? 'Match phone' : 'Dark'} theme`, appearanceSection())}
     ${typeof pushSettings === 'function' ? setGroup('Notifications', pushSummary(), pushSettings()) : ''}
     ${typeof creatineSettings === 'function' ? setGroup('Creatine', data.settings.creatine?.on ? `Tracking · ${data.settings.creatine.dose} g a day` : 'Optional daily tracker', creatineSettings()) : ''}
+    ${typeof hvParse === 'function' ? setGroup('Import', 'Bring workouts from Hevy', '<p class="tiny">Import your Hevy workout history (workout_data.csv). It is read on this phone and added to your history.</p><button type="button" class="btn ghost" data-act="hevy.open">Import from Hevy</button>') : ''}
     ${setGroup('Backup & data', b.cloud ? 'Backed up to your account · files optional' : b.due ? 'Backup overdue' : b.last ? 'Last backup ' + (b.daysSince === 0 ? 'today' : plural(b.daysSince, 'day') + ' ago') : 'No backup yet', `<div class="backupbox"><div class="bk-row"><span class="eyebrow">LAST BACKUP FILE CREATED</span><b class="mono">${b.last ? esc(b.last.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + b.last.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })) : 'Never'}</b></div>
       <p class="tiny">${b.last ? `${b.daysSince === 0 ? 'Today' : plural(b.daysSince, 'day') + ' ago'}${b.changed !== null ? ` · ${b.changed > 0 ? plural(b.changed, 'record') + ' added since' : b.changed < 0 ? plural(-b.changed, 'record') + ' removed since' : 'no record count change since'}` : ''}.` : (b.total ? `You have ${plural(b.total, 'record')} that exist only on this device.` : 'Nothing to back up yet.')}</p>
       <div class="status ${b.due ? 'warn' : ''}">${b.due ? 'Backup overdue. ' : ''}VERTFORM can create the file, but cannot see where your browser puts it. Check that it landed in your Downloads or Files app and copy it somewhere safe, such as cloud storage or email to yourself.</div>

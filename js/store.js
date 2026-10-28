@@ -54,12 +54,13 @@ const numOr = (v, d) => (isNum(v) ? Number(v) : d);
 /* Validate and normalise an unknown object (stored records or an imported file) into the current layout.
    Throws a readable Error for files that must not be imported; returns warnings for entries that were skipped. */
 /* Your own gym sessions (keys E and up): validated field by field, never trusted as-is. */
+const withDist = (x, o) => (['m', 'km'].includes(x.dist) ? { ...o, dist: x.dist } : o);
 function cleanMySessions(arr) {
   const used = new Set(), out = [];
   for (const s of (Array.isArray(arr) ? arr : []).slice(0, 12)) {
     if (!isObj(s) || !/^[E-P]$/.test(s.key || '') || used.has(s.key) || !String(s.title || '').trim()) continue; used.add(s.key);
     out.push({ key: s.key, title: String(s.title).trim().slice(0, 40), type: String(s.type || '').slice(0, 30), minutes: clamp(parseInt(s.minutes) || 0, 0, 240), heavy: !!s.heavy, deleted: !!s.deleted, emoji: Array.from(String(s.emoji || '').trim())[0] || '',
-      exercises: (Array.isArray(s.exercises) ? s.exercises : []).filter(e => isObj(e) && String(e.name || '').trim()).slice(0, 25).map(e => ({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 60) : 'cx-' + uid(), name: String(e.name).trim().slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10').slice(0, 30), unit: ['reps', 'seconds', 'metres'].includes(e.unit) ? e.unit : 'reps', load: !!e.load, hint: String(e.hint || '').slice(0, 140), optional: false, rest: clamp(parseInt(e.rest) || 0, 0, 600) })) });
+      exercises: (Array.isArray(s.exercises) ? s.exercises : []).filter(e => isObj(e) && String(e.name || '').trim()).slice(0, 25).map(e => ({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 60) : 'cx-' + uid(), name: String(e.name).trim().slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10').slice(0, 30), unit: ['reps', 'seconds', 'metres'].includes(e.unit) ? e.unit : 'reps', dist: ['m', 'km'].includes(e.dist) ? e.dist : '', load: !!e.load, hint: String(e.hint || '').slice(0, 140), optional: false, rest: clamp(parseInt(e.rest) || 0, 0, 600) })) });
   }
   return out;
 }
@@ -74,7 +75,7 @@ function cleanCatalogue(arr) {
   const out = [];
   for (const e of (Array.isArray(arr) ? arr : []).slice(0, 500)) {
     if (!isObj(e) || !String(e.name || '').trim()) continue;
-    out.push({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 60) : 'lib-' + uid(), name: String(e.name).trim().slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10').slice(0, 30), unit: ['reps', 'seconds', 'metres'].includes(e.unit) ? e.unit : 'reps', load: !!e.load, hint: String(e.hint || '').slice(0, 140), rest: clamp(parseInt(e.rest) || 0, 0, 600) });
+    out.push({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 60) : 'lib-' + uid(), name: String(e.name).trim().slice(0, 80), sets: clamp(parseInt(e.sets) || 3, 1, 12), reps: String(e.reps || '10').slice(0, 30), unit: ['reps', 'seconds', 'metres'].includes(e.unit) ? e.unit : 'reps', dist: ['m', 'km'].includes(e.dist) ? e.dist : '', load: !!e.load, hint: String(e.hint || '').slice(0, 140), rest: clamp(parseInt(e.rest) || 0, 0, 600) });
   }
   return out;
 }
@@ -112,7 +113,7 @@ function normaliseData(o) {
 
   out.logs = o.logs.filter(l => (isObj(l) && isISO(l.date) && typeof l.session === 'string' && Array.isArray(l.exercises)) || skip()).map(l => ({
     ...l, id: freshId(l.id), completed: l.completed !== false, with: cleanWith(l.with),
-    exercises: l.exercises.filter(e => isObj(e) && Array.isArray(e.sets)).map(e => ({ ...e, sets: e.sets.filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done })) }))
+    exercises: l.exercises.filter(e => isObj(e) && Array.isArray(e.sets)).map(e => ({ ...e, sets: e.sets.filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done, ...(s.wu ? { wu: true } : {}), ...(s.dist ? { dist: String(s.dist).slice(0, 12) } : {}) })) }))
   }));
   out.metrics = o.metrics.filter(m => (isObj(m) && isISO(m.date) && METRIC_KEYS.has(m.key) && Number.isFinite(Number(m.value)) && (Number(m.value) > 0 || (m.key === 'pullup' && m.value !== '' && Number(m.value) === 0))) || skip()).map(m => {
     const r = { id: freshId(m.id), date: m.date, key: m.key, value: Number(m.value) };
@@ -122,12 +123,12 @@ function normaliseData(o) {
   out.readiness = {}; for (const [d, v] of Object.entries(o.readiness)) if (isISO(d) && isObj(v)) out.readiness[d] = v;
 
   if (o.draft && isObj(o.draft) && isISO(o.draft.date) && templates[o.draft.session] && Array.isArray(o.draft.exercises)) {
-    out.draft = { ...o.draft, with: cleanWith(o.draft.with), exercises: o.draft.exercises.filter(isObj).map(e => ({ ...e, sets: (Array.isArray(e.sets) ? e.sets : []).filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done })) })) };
+    out.draft = { ...o.draft, with: cleanWith(o.draft.with), exercises: o.draft.exercises.filter(isObj).map(e => ({ ...e, sets: (Array.isArray(e.sets) ? e.sets : []).filter(isObj).map(s => ({ load: s.load ?? '', reps: s.reps ?? '', done: !!s.done, ...(s.wu ? { wu: true } : {}), ...(s.dist ? { dist: String(s.dist).slice(0, 12) } : {}) })) })) };
     ids.add(out.draft.id);
   } else if (o.draft) warnings.push('An unfinished workout draft in this data was damaged and could not be kept.');
 
   out.custom = { A: [], B: [], C: [], D: [] };
-  if (isObj(o.custom)) for (const k of SESSION_KEYS) out.custom[k] = (Array.isArray(o.custom[k]) ? o.custom[k] : []).filter(x => (isObj(x) && x.id && x.name) || skip()).map(x => ex(String(x.id), String(x.name).slice(0, 80), clamp(parseInt(x.sets) || 2, 1, 12), String(x.reps || '10').slice(0, 30), x.unit || 'reps', !!x.load, x.hint || 'Custom exercise', !!x.optional));
+  if (isObj(o.custom)) for (const k of SESSION_KEYS) out.custom[k] = (Array.isArray(o.custom[k]) ? o.custom[k] : []).filter(x => (isObj(x) && x.id && x.name) || skip()).map(x => withDist(x, ex(String(x.id), String(x.name).slice(0, 80), clamp(parseInt(x.sets) || 2, 1, 12), String(x.reps || '10').slice(0, 30), x.unit || 'reps', !!x.load, x.hint || 'Custom exercise', !!x.optional)));
 
   const n = isObj(o.nutrition) ? o.nutrition : {};
   out.nutrition = {

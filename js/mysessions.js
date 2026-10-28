@@ -4,13 +4,13 @@
    Stored in data.mySessions (keys E and up). Built-in A–D are never changed; start from a copy of one if you want. */
 
 let se = null;
-const blankEx = () => ({ name: '', sets: 3, reps: '8', unit: 'reps', load: true, rest: '', hint: '' });
+const blankEx = () => ({ name: '', sets: 3, reps: '8', unit: 'reps', load: true, rest: '', hint: '', dist: '' });
 const nextKey = () => { const used = new Set([...data.mySessions.map(s => s.key), ...data.logs.map(l => l.session)]); for (const c of 'EFGHIJKLMNOP') if (!used.has(c)) return c; return null; };
 
 /* Built-in sessions are never changed in place: editing one opens a copy that replaces it when saved. */
 function openBuiltinCopy(k) {
   const t = templates[k]; if (!t) return;
-  se = { key: null, replaces: k, emoji: t.emoji || '', title: t.title, type: '', minutes: '', heavy: isHeavy(k), exercises: allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: !!e.load, hint: e.hint || '', rest: e.rest || '', optional: false })), inPlan: activeSessions().includes(k), idx: -1, ex: blankEx(), isNew: true, err: '' };
+  se = { key: null, replaces: k, emoji: t.emoji || '', title: t.title, type: '', minutes: '', heavy: isHeavy(k), exercises: allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: !!e.load, hint: e.hint || '', rest: e.rest || '', optional: false, dist: e.dist || '' })), inPlan: activeSessions().includes(k), idx: -1, ex: blankEx(), isNew: true, err: '' };
   openSheet({ title: 'Edit session', eyebrow: 'YOUR SESSION', size: 'tall', render: renderSessionEditor });
 }
 ACTIONS['ses.edit'] = el => { const k = el.dataset.arg; if (templates[k]?.custom) openSessionEditor(k); else openBuiltinCopy(k); };
@@ -23,12 +23,12 @@ function openSessionEditor(key) {
 ACTIONS['ys.new'] = () => openSessionEditor(null);
 ACTIONS['ys.edit'] = el => openSessionEditor(el.dataset.id);
 
-const exLine = e => `${e.sets} × ${esc(e.reps)}${e.unit !== 'reps' ? ' ' + esc(e.unit) : ''} · ${e.load ? 'weighted' : 'no weight'}${e.rest ? ` · rest ${e.rest}s` : ''}`;
+const exLine = e => `${e.sets} × ${esc(e.reps)}${e.unit !== 'reps' ? ' ' + esc(e.unit) : ''} · ${e.load ? 'weighted' : 'no weight'}${e.dist ? ` · distance in ${e.dist}` : ''}${e.rest ? ` · rest ${e.rest}s` : ''}`;
 function renderSessionEditor() {
   const x = se.ex;
   const rows = se.exercises.map((e, i) => `<li class="xrow ${se.idx === i ? 'editing' : ''}" data-i="${i}"><span class="xhandle" role="button" tabindex="0" aria-label="Drag to reorder ${esc(e.name)}" data-handle="${i}">${icon('grip')}</span><button type="button" class="xtext" data-act="ys.pick" data-id="${i}" aria-label="Edit ${esc(e.name)}"><strong>${esc(e.name)}</strong><span class="tiny">${exLine(e)}</span></button><span class="xmv"><button type="button" data-act="ys.up" data-id="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${icon('down')}</button><button type="button" data-act="ys.down" data-id="${i}" aria-label="Move down" ${i === se.exercises.length - 1 ? 'disabled' : ''}>${icon('down')}</button></span><button type="button" class="xdel" data-act="ys.del" data-id="${i}" aria-label="Remove ${esc(e.name)}">${icon('close')}</button></li>`).join('');
   const copy = se.isNew && !se.exercises.length ? `<div class="sxstart"><div class="sxlab">Start from</div><div class="sxscroll"><span class="chip on" aria-hidden="true">Blank</span>${Object.entries(YS_TEMPLATES).map(([id, t]) => `<button type="button" class="chip tpl" data-act="ys.tpl" data-id="${id}">${esc(t.title)}</button>`).join('')}${BUILTIN_KEYS.map(k => `<button type="button" class="chip" data-act="ys.copy" data-id="${k}">Copy of ${k}</button>`).join('')}</div></div>` : '';
-  const xo = se.idx >= 0 || x.unit !== 'reps' || x.rest || x.hint || !x.load;
+  const xo = se.idx >= 0 || x.unit !== 'reps' || x.rest || x.hint || !x.load || x.dist;
   const lastN = se.exercises.length;
   const EMO = ['🏋️', '💪', '🦵', '🔥', '⚡', '🏐', '🦘', '🏃', '🧘', '🎯', '🚀', '🐻', '🦍', '🏆', '❤️', '🌙'];
   return { body: `<div class="seemo" role="group" aria-label="Session icon"><button type="button" class="seemo-none ${se.emoji ? '' : 'on'}" data-act="ys.emoji" data-arg="" aria-label="No icon">${esc(se.title.trim()[0] || 'A').toUpperCase()}</button>${EMO.map(e => `<button type="button" class="${se.emoji === e ? 'on' : ''}" data-act="ys.emoji" data-arg="${e}" aria-label="Icon ${e}">${e}</button>`).join('')}<input id="seemoin" data-in="seemoin" maxlength="8" autocomplete="off" inputmode="text" placeholder="Any" aria-label="Type any emoji" value="${EMO.includes(se.emoji) ? '' : esc(se.emoji || '')}"></div>
@@ -43,6 +43,7 @@ function renderSessionEditor() {
         <div class="sxreps"><input id="exr" data-in="exr" maxlength="30" inputmode="text" aria-label="Reps or time" placeholder="8–10" value="${esc(x.reps)}"><small>${esc(x.unit)}</small></div></div>
       <details class="sxmore" ${xo ? 'open' : ''}><summary>More options</summary>
         <div class="form-row"><div class="field"><label for="exu">Counted in</label><select id="exu" data-in="exu">${['reps', 'seconds', 'metres'].map(u => `<option value="${u}" ${x.unit === u ? 'selected' : ''}>${u}</option>`).join('')}</select></div><div class="field"><label for="exrest">Rest (seconds)</label><input id="exrest" data-in="exrest" type="number" inputmode="numeric" min="0" max="600" placeholder="auto" value="${esc(String(x.rest))}"></div></div>
+        <div class="field"><label for="exd">Track distance</label><select id="exd" data-in="exd">${[['', 'Off'], ['m', 'Metres'], ['km', 'Kilometres']].map(([v, n]) => `<option value="${v}" ${(x.dist || '') === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
         <label class="switch"><span>Track weight</span><input type="checkbox" data-in="exload" ${x.load ? 'checked' : ''}></label>
         <div class="field"><label for="exh">Note</label><input id="exh" data-in="exh" maxlength="140" placeholder="cue, tempo, RIR…" value="${esc(x.hint)}"></div></details>
       <div class="quick"><button type="button" class="btn ${se.idx >= 0 ? 'primary' : 'ghost'}" data-act="ys.exsave">${se.idx >= 0 ? 'Update exercise' : icon('plus') + 'Add to session'}</button>${se.idx >= 0 ? '<button type="button" class="btn ghost" data-act="ys.excancel">Cancel</button>' : ''}</div></div>
@@ -58,9 +59,10 @@ ACTIONS['ys.emoji'] = el => { se.emoji = el.dataset.arg || ''; refreshSheet(); }
 INPUTS.seemoin = el => { se.emoji = Array.from(el.value.trim())[0] || ''; };
 INPUTS.setitle = el => { se.title = el.value; }; INPUTS.setype = el => { se.type = el.value; }; INPUTS.semin = el => { se.minutes = el.value; };
 INPUTS.seheavy = el => { se.heavy = el.checked; }; INPUTS.seplan = el => { se.inPlan = el.checked; };
+INPUTS.exd = el => { se.ex.dist = el.value; };
 INPUTS.exn = el => { se.ex.name = el.value; }; INPUTS.exs = el => { se.ex.sets = el.value; }; INPUTS.exr = el => { se.ex.reps = el.value; };
 INPUTS.exu = el => { se.ex.unit = el.value; }; INPUTS.exrest = el => { se.ex.rest = el.value; }; INPUTS.exload = el => { se.ex.load = el.checked; }; INPUTS.exh = el => { se.ex.hint = el.value; };
-ACTIONS['ys.copy'] = el => { const k = el.dataset.id, t = templates[k]; se.exercises = allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: e.load, hint: e.hint || '', rest: 0 })); if (!se.title.trim()) se.title = 'My ' + t.title; if (!se.type) se.type = t.type; se.heavy = k === 'A'; refreshSheet(); };
+ACTIONS['ys.copy'] = el => { const k = el.dataset.id, t = templates[k]; se.exercises = allExercises(k).map(e => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: e.load, hint: e.hint || '', rest: 0, dist: e.dist || '' })); if (!se.title.trim()) se.title = 'My ' + t.title; if (!se.type) se.type = t.type; se.heavy = k === 'A'; refreshSheet(); };
 /* Ready-made volleyball sessions you can start from. Agility + landing comes from your own agility plan. */
 const YS_TEMPLATES = {
   agility: { title: 'Agility + landing', type: 'Agility / plyo', minutes: 65, heavy: false, exercises: [
@@ -89,12 +91,12 @@ ACTIONS['ys.tpl'] = el => {
 ACTIONS['ys.exsave'] = () => {
   const x = se.ex, n = x.name.trim(), sets = parseInt(x.sets), reps = String(x.reps).trim();
   if (!n || !reps || !(sets >= 1 && sets <= 12)) { se.err = 'Give the exercise a name, 1 to 12 sets and reps or time.'; refreshSheet(); return; }
-  const rec = { id: se.idx >= 0 ? se.exercises[se.idx].id : 'cx-' + uid(), name: n, sets, reps, unit: x.unit, load: !!x.load, hint: x.hint.trim(), rest: clamp(parseInt(x.rest) || 0, 0, 600) };
+  const rec = { id: se.idx >= 0 ? se.exercises[se.idx].id : 'cx-' + uid(), name: n, sets, reps, unit: x.unit, load: !!x.load, hint: x.hint.trim(), rest: clamp(parseInt(x.rest) || 0, 0, 600), dist: ['m', 'km'].includes(x.dist) ? x.dist : '' };
   if (se.idx >= 0) se.exercises[se.idx] = rec; else se.exercises.push(rec);
   se.idx = -1; se.ex = blankEx(); se.err = ''; refreshSheet();
 };
 ACTIONS['ys.excancel'] = () => { se.idx = -1; se.ex = blankEx(); refreshSheet(); };
-ACTIONS['ys.pick'] = el => { const i = Number(el.dataset.id), e = se.exercises[i]; se.idx = i; se.ex = { name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: e.load, rest: e.rest || '', hint: e.hint || '' }; refreshSheet(); };
+ACTIONS['ys.pick'] = el => { const i = Number(el.dataset.id), e = se.exercises[i]; se.idx = i; se.ex = { name: e.name, sets: e.sets, reps: e.reps, unit: e.unit, load: e.load, rest: e.rest || '', hint: e.hint || '', dist: e.dist || '' }; refreshSheet(); };
 ACTIONS['ys.del'] = el => { se.exercises.splice(Number(el.dataset.id), 1); se.idx = -1; se.ex = blankEx(); refreshSheet(); };
 const msMove = (i, d) => { const j = i + d; if (j < 0 || j >= se.exercises.length) return; [se.exercises[i], se.exercises[j]] = [se.exercises[j], se.exercises[i]]; se.idx = -1; refreshSheet(); };
 ACTIONS['ys.up'] = el => msMove(Number(el.dataset.id), -1); ACTIONS['ys.down'] = el => msMove(Number(el.dataset.id), 1);

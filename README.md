@@ -374,6 +374,9 @@ The app now opens on a hub like the career home: a VERT/FORM crest in the middle
 - Plan: tap any day on the month calendar and that day's plan opens right under it (start, move, log volleyball / match / extra). The old week list is replaced by a collapsed "Plan settings & upcoming" section.
 - Leaderboard: Refresh sits in the header (it was hidden behind the tab bar), "Load the board" replaces the "pull to refresh" line, and "Settings" is now "Sharing & nickname".
 
+## 2.79.0 — Distance tracking + Hevy import
+Exercises can track distance (metres or km) per set: sprints, runs, sled pushes. It shows in the workout, history and "last time". Import your Hevy export (workout_data.csv) from Settings → Import, or at the start of first-run setup: workouts become log-only sessions with every set's weight, reps, warm-up flag, time and distance. Also fixes warm-up flags being dropped from saved workouts after a reload.
+
 ## 2.78.0 — Share sessions, one entry per exercise
 Sessions → open a session → Share session sends a code and link; the other person uses Add a shared session, previews it and adds it to their own. Only the session is shared, never weights, notes or logs. The exercise library now shows one entry per exercise even if it was saved weighted and unweighted.
 
