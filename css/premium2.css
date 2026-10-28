@@ -952,3 +952,26 @@ body.nav2.has-bell .topbell{display:inline-grid!important}
 .xhandle .ico{width:22px!important;height:22px!important}
 .xrow.dragging .xhandle{color:#fff!important}
 .xremove{display:block;margin:14px auto 0;font-size:14px;color:#e5383b}
+
+/* 2.80.3 — move a session: a three-week calendar instead of grey slabs */
+.mvcal{margin:6px 0 0}
+.mvhead,.mvrow{display:grid;grid-template-columns:34px repeat(7,1fr);gap:4px;align-items:center}
+.mvhead span{text-align:center;font-size:11px;font-weight:600;letter-spacing:.06em;color:#6e6e73;padding-bottom:6px}
+.mvrow{margin-bottom:4px}
+.mvrow em{font-style:normal;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73}
+.mvd{appearance:none;border:0!important;background:transparent!important;color:inherit;font:inherit;height:46px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;position:relative;-webkit-tap-highlight-color:transparent}
+.mvd b{font-size:16px;font-weight:600}
+.mvd i{width:5px;height:5px;border-radius:50%;background:transparent}
+.mvd.busy i{background:#8e8e93}
+.mvd.today b{color:#e5383b}
+.mvd.from{box-shadow:inset 0 0 0 1.5px #636366}
+.mvd:disabled{opacity:.25}
+.mvd.on{background:#e5383b!important;box-shadow:none}
+.mvd.on b,.mvd.on.today b{color:#fff}.mvd.on i{background:#fff}
+.mvkey{display:flex;gap:18px;margin:10px 0 14px;font-size:12px;color:#8e8e93}
+.mvkey span{display:flex;align-items:center;gap:6px}
+.mvkey .k{width:10px;height:10px;border-radius:50%;display:inline-block}
+.mvkey .k.from{box-shadow:inset 0 0 0 1.5px #636366;border-radius:4px}.mvkey .k.busy{width:5px;height:5px;background:#8e8e93}
+.mvother{margin-top:16px}.mvother summary{cursor:pointer;font-size:14px;color:#8e8e93;list-style:none}.mvother summary::-webkit-details-marker{display:none}
+.mvother[open] summary{margin-bottom:8px}
+:root[data-theme="light"] .mvd.from{box-shadow:inset 0 0 0 1.5px #aeaeb2}

@@ -211,12 +211,19 @@ function describeDay(date) {
   return parts;
 }
 function renderMove() {
-  const today = todayISO(); const chips = Array.from({ length: 14 }, (_, i) => addDays(today, i));
+  const today = todayISO(), start = monday(today), cells = Array.from({ length: 21 }, (_, i) => addDays(start, i));
   const tgt = mv.target; const valid = isISO(tgt) && tgt >= today; const there = valid ? describeDay(tgt).filter(x => !(tgt === mv.from && x === `${sName(mv.session)}`)) : [];
+  const cell = d => { const past = d < today, what = describeDay(d), on = d === tgt, from = d === mv.from;
+    return `<button type="button" class="mvd ${on ? 'on' : ''} ${from ? 'from' : ''} ${what.length ? 'busy' : ''} ${d === today ? 'today' : ''}" ${past ? 'disabled' : ''} data-act="move.pick" data-arg="${d}" aria-pressed="${on}" aria-label="${esc(longDate(d))}${what.length ? ', ' + esc(what.join(' and ')) : ', free'}"><b>${parseDate(d).getDate()}</b><i></i></button>`; };
+  const month = d => parseDate(d).toLocaleDateString('en-GB', { month: 'short' });
+  const heads = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<span>${x}</span>`).join('');
+  const rows = [0, 1, 2].map(w => { const wk = cells.slice(w * 7, w * 7 + 7); return `<div class="mvrow"><em>${esc(month(wk[0]))}</em>${wk.map(cell).join('')}</div>`; }).join('');
+  const note = !valid ? `<div class="status warn">Choose today or a later date.</div>` : there.length ? `<div class="status warn">${icon('warn')} ${esc(longDate(tgt))} already has <b>${esc(there.join(' + '))}</b>. You can still move here. The clash is flagged on your plan; nothing is overwritten.</div>` : `<div class="status">${esc(longDate(tgt))} is free.</div>`;
   return { body: `<p class="lead first">Pick the day you want to do ${esc(sName(mv.session))} instead. The rest of the week re-plans around it.</p>
-    <div class="field"><label for="mvd">New date</label><input id="mvd" data-in="mv" type="date" min="${today}" value="${esc(mv.target)}"></div>
-    <div class="movegrid" role="group" aria-label="Quick dates">${chips.map(d => { const what = describeDay(d); return `<button type="button" class="mv ${d === mv.target ? 'on' : ''} ${what.length ? 'busy' : ''}" data-act="move.pick" data-arg="${d}" aria-pressed="${d === mv.target}"><b>${esc(weekdayShort(d))} ${parseDate(d).getDate()}</b><span>${what.length ? esc(what.join(' + ')) : 'Free'}</span></button>`; }).join('')}</div>
-    ${!valid ? `<div class="status warn">Choose today or a later date.</div>` : there.length ? `<div class="status warn">${icon('warn')} ${esc(pretty(tgt))} already has: <b>${esc(there.join(' + '))}</b>. You can still move here. The clash will be flagged on your plan; nothing is overwritten.</div>` : `<div class="status">${esc(longDate(tgt))} is free.</div>`}`,
+    <div class="mvcal" role="group" aria-label="Choose a day"><div class="mvhead"><em></em>${heads}</div>${rows}</div>
+    <div class="mvkey"><span><i class="k from"></i>Now</span><span><i class="k busy"></i>Something planned</span></div>
+    ${note}
+    <details class="mvother"${isISO(tgt) && tgt > cells[20] ? ' open' : ''}><summary>Another date</summary><div class="field"><label for="mvd" class="vh">New date</label><input id="mvd" data-in="mv" type="date" min="${today}" value="${esc(mv.target)}"></div></details>`,
     footer: `<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="move.save" ${valid ? '' : 'disabled'}>${there.length ? 'Move anyway' : 'Move session'}</button>` };
 }
 INPUTS.mv = el => { mv.target = el.value; refreshSheet(); const i = $('#mvd'); if (i) { i.focus(); } };
