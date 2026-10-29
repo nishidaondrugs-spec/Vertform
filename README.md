@@ -620,3 +620,8 @@ A friend's profile now shows the front and back muscle map, coloured by who lead
 
 ## 2.88.0 — Compare pops up
 Tapping a muscle group on a profile now opens the comparison as a pop-up instead of below the body, with chips along the top to jump to another muscle group.
+
+## 2.89.0 — Progression, screen-off rest timer, season
+- **Auto-progression:** new workouts start each lift at the weight your last session earned. Hit the top of the rep range on every working set and it adds 2.5 kg (5 kg on squat, deadlift and leg lifts). Otherwise it repeats the weight and tells you the reps to aim for. The reason shows under the last-time line.
+- **Screen-off rest timer:** the rest is played as a quiet audio clip that ends with three beeps, so it rings with the screen off or in another app, and shows a Rest card on the lock screen. Switch it off under Rest timer ("Ring even when the screen is off"); it can pause other music.
+- **Season:** Settings → Training → Season (Auto, Off, Pre, In). In-season gives about 30% fewer sets and holds leg weights. Off-season adds a set to the first two loaded lifts. Only new workouts change.

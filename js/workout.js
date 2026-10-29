@@ -71,11 +71,37 @@ function loadTimer() {
   if (timer.state === 'running' && Date.now() >= timer.endsAt) { timer.state = 'done'; timer.finishedAt = timer.endsAt; timer.lateMs = Date.now() - timer.endsAt; persistTimer(); }
   if (timer.state === 'running') startTicker();
 }
-function persistTimer() { try { if (timer.state === 'idle') localStorage.removeItem(KEY_TIMER); else localStorage.setItem(KEY_TIMER, JSON.stringify(timer)); } catch (_) { /* ignore */ } }
+function persistTimer() { try { if (timer.state === 'idle') localStorage.removeItem(KEY_TIMER); else localStorage.setItem(KEY_TIMER, JSON.stringify(timer)); } catch (_) { /* ignore */ } bgSync(); }
+/* Screen-off rest timer: a web page cannot run timers once the phone locks, but audio keeps playing. So the rest is played as one quiet audio
+   clip that is silent for the whole rest and ends with three beeps. It also puts a "Rest" card with the time on the lock screen. */
+let bgEl = null, bgUrl = '', bgEnd = 0;
+function restWav(ms) {
+  const sr = 8000, lead = Math.max(0, Math.round(ms / 1000 * sr)), tone = [[784, .18], [784, .18], [1040, .3]], gap = Math.round(sr * .08);
+  const tail = tone.reduce((a, t) => a + Math.round(sr * t[1]) + gap, 0), n = lead + tail, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); str(36, 'data'); v.setUint32(40, n, true);
+  const u = new Uint8Array(buf, 44); u.fill(128); let o = lead;
+  tone.forEach(([f, d]) => { const len = Math.round(sr * d); for (let i = 0; i < len; i++) { const env = Math.min(1, i / 80, (len - i) / 200); u[o + i] = 128 + Math.round(Math.sin(2 * Math.PI * f * i / sr) * 100 * env); } o += len + gap; });
+  return new Blob([buf], { type: 'audio/wav' });
+}
+function bgStop() { if (bgEl) { try { bgEl.pause(); } catch (_) { /* ignore */ } bgEl.removeAttribute('src'); bgEl = null; } if (bgUrl) { URL.revokeObjectURL(bgUrl); bgUrl = ''; } bgEnd = 0; try { if ('mediaSession' in navigator) { navigator.mediaSession.metadata = null; navigator.mediaSession.playbackState = 'none'; } } catch (_) { /* ignore */ } }
+function bgSync() {
+  try {
+    if (!data?.settings?.rest || data.settings.rest.bg === false || data.settings.rest.sound === false) { if (bgEl) bgStop(); return; }
+    if (timer.state === 'running') {
+      if (bgEl && bgEnd === timer.endsAt) return; bgStop();
+      const ms = Math.max(0, timer.endsAt - Date.now()); if (ms < 800) return;
+      bgUrl = URL.createObjectURL(restWav(ms)); bgEl = new Audio(bgUrl); bgEl.setAttribute('playsinline', ''); bgEnd = timer.endsAt;
+      const el = bgEl; el.addEventListener('ended', () => { if (bgEl === el) bgStop(); });
+      el.play().catch(() => { if (bgEl === el) bgStop(); });
+      if ('mediaSession' in navigator && window.MediaMetadata) { navigator.mediaSession.metadata = new MediaMetadata({ title: `Rest · ${fmtClock(ms)}`, artist: 'VERTFORM', album: String(timer.label || 'Rest') }); navigator.mediaSession.playbackState = 'playing'; try { navigator.mediaSession.setActionHandler('pause', () => timerPause()); navigator.mediaSession.setActionHandler('stop', () => timerClear()); } catch (_) { /* ignore */ } }
+    } else if (timer.state === 'done') { /* let the clip finish its beeps */ if (bgEl && bgEl.ended) bgStop(); } else if (bgEl) bgStop();
+  } catch (_) { /* audio is a bonus: the on-screen timer still works */ }
+}
 const timerRemaining = () => timer.state === 'running' ? Math.max(0, timer.endsAt - Date.now()) : timer.state === 'paused' ? timer.remaining : 0;
 function unlockAudio() { try { if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); } if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch (_) { /* ignore */ } }
 function beep() {
-  if (!data.settings.rest.sound || !audioCtx) return;
+  if (!data.settings.rest.sound || !audioCtx || (bgEl && !bgEl.paused && !bgEl.ended)) return;
   try { const t0 = audioCtx.currentTime; [0, 0.22, 0.44].forEach((d, i) => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = 'sine'; o.frequency.value = i === 2 ? 1040 : 784; g.gain.setValueAtTime(0.0001, t0 + d); g.gain.exponentialRampToValueAtTime(0.35, t0 + d + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.18); o.connect(g); g.connect(audioCtx.destination); o.start(t0 + d); o.stop(t0 + d + 0.2); }); } catch (_) { /* ignore */ }
 }
 const canVibrate = () => typeof navigator.vibrate === 'function';
@@ -155,9 +181,10 @@ function restSwitches() {
   return `<label class="switch"><span>Start automatically when I tick a set</span><input type="checkbox" data-in="restopt" data-key="auto" ${r.auto ? 'checked' : ''}></label>
     <label class="switch"><span>Play a sound when rest ends</span><input type="checkbox" data-in="restopt" data-key="sound" ${r.sound ? 'checked' : ''}></label>
     <label class="switch ${canVibrate() ? '' : 'disabled'}"><span>Vibrate when rest ends${canVibrate() ? '' : ' (not supported here)'}</span><input type="checkbox" data-in="restopt" data-key="vibrate" ${r.vibrate ? 'checked' : ''} ${canVibrate() ? '' : 'disabled'}></label>
+    <label class="switch"><span>Ring even when the screen is off or I'm in another app</span><input type="checkbox" data-in="restopt" data-key="bg" ${r.bg !== false ? 'checked' : ''}></label>
     <label class="switch"><span>Keep the screen awake during a workout</span><input type="checkbox" data-in="restopt" data-key="wakeLock" ${r.wakeLock !== false ? 'checked' : ''}></label>`;
 }
-INPUTS.restopt = el => { data.settings.rest[el.dataset.key] = el.checked; save(); if (el.dataset.key === 'wakeLock') { el.checked ? requestWakeLock() : releaseWakeLock(); } if (el.dataset.key === 'sound' && el.checked) { unlockAudio(); beep(); } };
+INPUTS.restopt = el => { data.settings.rest[el.dataset.key] = el.checked; save(); if (el.dataset.key === 'wakeLock') { el.checked ? requestWakeLock() : releaseWakeLock(); } if (el.dataset.key === 'sound' && el.checked) { unlockAudio(); beep(); } if (el.dataset.key === 'bg' || el.dataset.key === 'sound') bgSync(); };
 ACTIONS['timer.preset'] = el => { const e = currentExercise(); timerStart(Number(el.dataset.arg), `Rest${e ? ' · ' + e.name : ''}`, e?.id); closeSheet(); };
 ACTIONS['timer.savedef'] = () => { const e = currentExercise(), v = Number($('#rtdef').value); if (!e || !(v >= 10 && v <= 900)) { toast('Enter 10 to 900 seconds'); return; } data.settings.rest.perExercise[e.id] = Math.round(v); save(); refreshSheet(); paintTimer(); toast(`Rest for ${e.name}: ${fmtClock(v * 1000)}`); };
 ACTIONS['timer.resetdef'] = () => { const e = currentExercise(); if (!e) return; delete data.settings.rest.perExercise[e.id]; save(); refreshSheet(); paintTimer(); };
@@ -172,16 +199,39 @@ function latestLoad(e0, before) {
   for (const l of [...data.logs].reverse()) { const x = l.exercises?.find(x => x.id === id || nameMatch(x.name, e0.name)); if (x) { const s = x.sets.find(s => s.load !== '' && s.load !== undefined && s.load !== null); if (s) return s.load; } }
   return '';
 }
+/* Auto-progression: looks at the last session of this lift. Every working set reached the top of the rep range -> add weight.
+   Otherwise repeat the weight and go for the full reps. In-season, leg lifts hold their weight so you arrive at matches fresh. */
+function repRange(str) { const m = String(str).match(/(\d+)\s*[-–]\s*(\d+)/); if (m) return [Number(m[1]), Number(m[2])]; const n = parseInt(str); return n ? [n, n] : null; }
+function progStep(e) { return /squat|deadlift|rdl|romanian|leg press|hip thrust|lunge|split/i.test(e.name) ? 5 : 2.5; }
+function progSuggest(e, date, excludeId) {
+  if (!e.load || e.dist || e.unit !== 'reps') return null;
+  const last = exerciseHistory(e, { before: date, excludeId })[0], rg = repRange(e.reps); if (!last || !rg) return null;
+  const top = Math.max(...last.sets.map(x => num1(x.load) ?? 0)), working = last.sets.filter(x => (num1(x.load) ?? 0) >= top * 0.9 && num1(x.reps) !== null);
+  if (!(top > 0) || !working.length) return null;
+  const hit = working.length >= Math.min(e.sets, 2) && working.every(x => num1(x.reps) >= rg[1]), legs = typeof liftPart === 'function' && liftPart(e.name) === 'legs';
+  const hold = typeof phaseNow === 'function' && phaseNow() === 'in' && legs;
+  if (hit && !hold) { const step = progStep(e); return { load: String(top + step), up: true, why: `You hit ${rg[1]} reps on every set last time. Try +${fmt(step, 2)} kg.` }; }
+  if (hit && hold) return { load: String(top), up: false, why: 'In-season: legs stay at this weight so you are fresh for matches.' };
+  return { load: String(top), up: false, why: `Same weight. Aim for ${rg[1]} reps on every set to move up.` };
+}
 function makeWorkout(k, date) {
   const w = weekFor(date), p = progression[w - 1], deload = isDeload(w);
-  return { id: uid(), date, session: k, completed: false, startedAt: new Date().toISOString(), rpe: '', notes: '', exercises: allExercises(k).map(e => {
+  return { id: uid(), date, session: k, completed: false, startedAt: new Date().toISOString(), rpe: '', notes: '', exercises: allExercises(k).map((e, i) => {
     let n = e.sets, reps = parseReps(e.reps);
     if (e.id === 'trap') { n = Number(p.sets.split(' ')[0]); reps = String(p.sets.split('× ')[1]); }
     else if (BUILTIN_KEYS.includes(k) && (deload || w === 1 && k !== 'A')) n = Math.max(1, Math.ceil(n * (w === 1 ? .8 : .5)));
     else if (k === 'C' && w === 1) n = Math.max(1, Math.ceil(n * .5));
-    const defaultLoad = e.id === 'trap' && Number(data.user.trap1rm) > 0 ? fmt(Number(data.user.trap1rm) * (p.lo + p.hi) / 200 / 2.5, 0) * 2.5 : latestLoad(e, date);
+    const sug = progSuggest(e, date, ''), defaultLoad = e.id === 'trap' && Number(data.user.trap1rm) > 0 ? fmt(Number(data.user.trap1rm) * (p.lo + p.hi) / 200 / 2.5, 0) * 2.5 : sug ? sug.load : latestLoad(e, date);
+    if (n === e.sets) n = seasonSets(e, n, i, k);
     return { ...e, sets: Array.from({ length: n }, () => ({ load: e.load ? String(defaultLoad) : '', reps, done: false, ...(e.dist ? { dist: '' } : {}) })) };
   }) };
+}
+/* Season: in-season trims volume (about 70% of the sets) so matches stay sharp; off-season adds a set to the first two loaded lifts. */
+function seasonSets(e, n, i, k) {
+  if (data.mySessions.some(x => x.key === k && x.deleted && x.title === 'Other workouts')) return n; const ph = typeof phaseNow === 'function' ? phaseNow() : 'pre';
+  if (ph === 'in' && n >= 3) return Math.max(2, Math.round(n * 0.7));
+  if (ph === 'off' && e.load && i < 2 && n >= 2 && n < 5) return n + 1;
+  return n;
 }
 /* Start (or resume) a session on a specific date. The date always comes from the caller: today, or the day picked in the plan. */
 async function startWorkout(k, date) {
@@ -245,7 +295,8 @@ function lastTimeBlock(e) {
   const hist = exerciseHistory(e, { before: data.draft.date, excludeId: data.draft.id }), last = hist[0];
   const plates = e.load ? `<button type="button" class="linkbtn" data-act="plates.open">Plates</button>` : '';
   if (!last) return `<div class="lastmini"><span>First time logging this</span><span class="lm-acts">${plates}</span></div>`;
-  return `<div class="lastmini"><span>Last time ${esc(weekdayShort(last.date))} ${esc(pretty(last.date))}</span><span class="lm-acts"><button type="button" class="linkbtn" data-act="wk.uselast">Fill all</button><button type="button" class="linkbtn" data-act="wk.history">Progress</button>${plates}</span></div>`;
+  const sg = progSuggest(e, data.draft.date, data.draft.id);
+  return `<div class="lastmini"><span>Last time ${esc(weekdayShort(last.date))} ${esc(pretty(last.date))}</span><span class="lm-acts"><button type="button" class="linkbtn" data-act="wk.uselast">Fill all</button><button type="button" class="linkbtn" data-act="wk.history">Progress</button>${plates}</span></div>${sg ? `<p class="sugline ${sg.up ? 'up' : ''}">${sg.up ? icon('check') : ''}<span>${esc(sg.why)}</span></p>` : ''}`;
 }
 const distBit = (e, p) => e.dist && p && p.dist !== undefined && p.dist !== '' ? `${p.dist}${e.dist} · ` : '';
 const prevText = (e, p) => !p ? '—' : e.dist && !e.load ? `${distBit(e, p)}${p.reps}${unitSuffix(e.unit)}` : e.load ? `${num1(p.load) === 0 ? 'BW' : fmt(num1(p.load) ?? 0, 2)} × ${p.reps}` : `${p.reps}${unitSuffix(e.unit)}`;
@@ -500,3 +551,13 @@ ACTIONS['plates.open'] = () => {
 };
 INPUTS.plw = el => { plateUi.w = el.value; const r = $('#plres'); if (r) r.innerHTML = plateResult(); };
 ACTIONS['plates.bar'] = el => { data.settings.bar = Number(el.dataset.arg); save(); plateUi.w = $('#plw')?.value ?? plateUi.w; refreshSheet(); };
+
+/* =============== season =============== */
+const SEASONS = [['', 'Auto'], ['off', 'Off-season'], ['pre', 'Pre-season'], ['in', 'In-season']];
+const SEASON_NOTE = { off: 'Build phase. The first two loaded lifts of each session get an extra set, and weights go up as soon as you hit your reps.', pre: 'Sharpen phase. Normal volume, weights go up as soon as you hit your reps.', in: 'Match phase. About 30% fewer sets so you are fresh for games, and leg lifts hold their weight. Upper body still progresses.' };
+function seasonSettings() {
+  const cur = data.user.phase || '', now = phaseNow();
+  return `<div class="eyebrow">SEASON</div><div class="chip-row" role="group" aria-label="Season">${SEASONS.map(([k, n]) => `<button type="button" class="chip ${cur === k ? 'on' : ''}" aria-pressed="${cur === k}" data-act="season.set" data-arg="${k}">${n}</button>`).join('')}</div>
+  <p class="tiny">${cur ? '' : `Auto picks ${SEASONS.find(x => x[0] === now)[1].toLowerCase()} from your upcoming matches. `}${esc(SEASON_NOTE[now])} It changes new workouts, never ones you have saved.</p>`;
+}
+ACTIONS['season.set'] = el => { data.user.phase = el.dataset.arg; save(); render(); toast(`Season: ${SEASONS.find(x => x[0] === el.dataset.arg)[1]}`); };

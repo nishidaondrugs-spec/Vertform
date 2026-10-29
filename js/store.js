@@ -40,7 +40,7 @@ function baseData() {
     hiddenEx: {},
     creatine: {},
     settings: {
-      rest: { auto: true, sound: true, vibrate: true, wakeLock: true, perExercise: {} },
+      rest: { auto: true, sound: true, vibrate: true, wakeLock: true, bg: true, perExercise: {} },
       backup: { lastExportAt: null, lastExportCounts: null, reminderDays: 14, snoozedUntil: null },
       theme: 'dark', nav: 'feed', creatine: { on: false, dose: 5 }, logo: '', weighSnooze: null, lb: null
     },
