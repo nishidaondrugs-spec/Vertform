@@ -1064,3 +1064,9 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 
 /* 2.84 — share cards */
 .scprev{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+
+/* 2.86 onboarding: pre-made vs create my own */
+.obmode{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:#1c1c1e;margin:10px 0 8px}
+.obmode button{min-height:38px;border:0!important;border-radius:9px;background:none!important;color:#8e8e93!important;font-size:13px;font-weight:600;box-shadow:none!important}
+.obmode button.on{background:#fff!important;color:#000!important}
+.obmodenote{margin:2px 0 0;font-size:13px;line-height:1.4;color:#8e8e93}

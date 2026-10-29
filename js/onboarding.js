@@ -63,9 +63,10 @@ function obBody() {
   }
   if (st.id === 'names') {
     obSyncSessions();
-    return `${obHead('GYM', ob.count === 1 ? 'Name your session' : 'Name your sessions', 'Pick a starting point for each, or start blank and add your own exercises.')}
+    return `${obHead('GYM', ob.count === 1 ? 'Name your session' : 'Name your sessions', 'Pick one of my ready-made sessions, or create your own and add the exercises yourself.')}
     <div class="obrows">${ob.sessions.map((s, i) => `<section class="obrow"><span class="obnum">${i + 1}</span><div class="obrowmain"><input id="obs${i}" data-in="obsname" data-i="${i}" maxlength="40" autocomplete="off" aria-label="Session ${i + 1} name" value="${esc(s.name)}">
-      <div class="obstarts" role="radiogroup" aria-label="Start from">${OB_STARTS.map(([id, label]) => `<button type="button" role="radio" aria-checked="${s.start === id}" class="${s.start === id ? 'on' : ''}" data-act="ob.start" data-id="${i}" data-arg="${id}">${esc(label.replace(' (pull)', '').replace(' (add my own)', '').replace(' & jump', ''))}</button>`).join('')}</div></div></section>`).join('')}</div>`;
+      <div class="obmode" role="radiogroup" aria-label="Session type"><button type="button" role="radio" aria-checked="${s.start !== 'blank'}" class="${s.start !== 'blank' ? 'on' : ''}" data-act="ob.start" data-id="${i}" data-arg="${s.start !== 'blank' ? s.start : OB_STARTS[i % 4][0]}">Pick one of mine</button><button type="button" role="radio" aria-checked="${s.start === 'blank'}" class="${s.start === 'blank' ? 'on' : ''}" data-act="ob.start" data-id="${i}" data-arg="blank">Create my own</button></div>
+      ${s.start === 'blank' ? '<p class="obmodenote">Starts empty. You build it with your own exercises after setup.</p>' : `<div class="obstarts" role="radiogroup" aria-label="Pre-made session">${OB_STARTS.filter(x => x[2]).map(([id, label]) => `<button type="button" role="radio" aria-checked="${s.start === id}" class="${s.start === id ? 'on' : ''}" data-act="ob.start" data-id="${i}" data-arg="${id}">${esc(label.replace(' (pull)', '').replace(' & jump', ''))}</button>`).join('')}</div>`}</div></section>`).join('')}</div>`;
   }
   if (st.id === 'hevy') return `${obHead('YOUR HISTORY', 'Coming from Hevy?', 'Bring your workouts with you so your charts and “last time” numbers start full. It takes a minute, and you can do it later in Settings.')}
     <button type="button" class="btn ghost obhevy" data-act="ob.hevy">${icon('plus')}${ob.hevy ? 'Import another file' : 'Import from Hevy'}</button>${ob.hevy ? `<p class="obnote ok">${ob.hevy} workouts imported.</p>` : ''}
@@ -100,7 +101,7 @@ INPUTS.obsname = el => { const s = ob.sessions[Number(el.dataset.i)]; if (s) s.n
 ACTIONS['ob.count'] = el => { ob.count = clamp(Number(el.dataset.arg), 1, 6); paintOb.keep = true; paintOb(); };
 ACTIONS['ob.inc'] = () => { ob.count = Math.min(6, ob.count + 1); paintOb.keep = true; paintOb(); };
 ACTIONS['ob.dec'] = () => { ob.count = Math.max(1, ob.count - 1); paintOb.keep = true; paintOb(); };
-ACTIONS['ob.start'] = el => { const s = ob.sessions[Number(el.dataset.id)], id = el.dataset.arg, was = OB_DEFAULTS.some(d => d[0] === s.name) || !s.name.trim(); s.start = id; if (was && id !== 'blank') s.name = OB_STARTS.find(x => x[0] === id)[1].replace(' (pull)', '').replace(' & jump', ''); paintOb.keep = true; paintOb(); };
+ACTIONS['ob.start'] = el => { const s = ob.sessions[Number(el.dataset.id)], id = el.dataset.arg, was = OB_DEFAULTS.some(d => d[0] === s.name) || !s.name.trim(); s.start = id; if (was && id === 'blank') s.name = `Session ${Number(el.dataset.id) + 1}`; if (was && id !== 'blank') s.name = OB_STARTS.find(x => x[0] === id)[1].replace(' (pull)', '').replace(' & jump', ''); paintOb.keep = true; paintOb(); };
 ACTIONS['ob.notify'] = async () => {
   try {
     const p = { ...pushPrefs(), want: true, remind: true, fuel: true, posts: true, mentions: true }; pushSavePrefs(p);

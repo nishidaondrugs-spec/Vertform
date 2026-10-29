@@ -611,3 +611,6 @@ Open a logged workout (History, or a day on the Plan tab) and tap the share butt
 
 ## 2.85.0 — Edit a saved workout without redoing the post
 Editing a saved gym session no longer asks for a photo and no longer posts it to friends again by default, so your original post and picture stay as they are. "Post again" is there if you do want a fresh post.
+
+## 2.86.0 — Setup: pick mine or create your own
+When a new account names its gym sessions, each one now has a clear choice: "Pick one of mine" (Lower body, Upper body, Power, Back & arms) or "Create my own", which starts empty so you build it later.
