@@ -602,3 +602,6 @@ A gym post with a photo now has "See the full workout" under it: every exercise 
 
 ## 2.82.2 — Completed volleyball fills in on the calendar
 A day where you completed volleyball (training or a match) now fills in solid, like a completed gym day, instead of staying as an outline. If volleyball was done on a gym day, the corner dot turns green.
+
+## 2.83.0 — Add to this day: Gym and Volleyball
+"Add to this day" is now two chips. **Gym** lists all your sessions, and "Pick exercises yourself" lets you log just the exercises you did on that day when none of your sessions fits. **Volleyball** holds training or social sessions, matches and extra sessions in one place.

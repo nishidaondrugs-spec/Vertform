@@ -74,8 +74,8 @@ function renderLibrary() {
     footer: `<button type="button" class="btn ghost" data-act="lib.new">${icon('plus')}New exercise</button><button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` };
 }
 function openLibrary(opts = {}) {
-  lib = { mode: opts.mode || 'browse', q: '', scope: 'today', shown: [], target: opts.target || null };
-  openSheet({ title: lib.mode === 'browse' ? 'Exercise library' : 'Pick an exercise', eyebrow: lib.mode === 'workout' ? 'ADD TO WORKOUT' : lib.mode === 'session' ? 'ADD TO SESSION' : lib.mode === 'target' ? `ADD TO ${esc(sName(lib.target)).toUpperCase()}` : 'YOUR EXERCISES', size: 'tall', autofocus: '#libq', render: renderLibrary });
+  lib = { mode: opts.mode || 'browse', q: '', scope: 'today', shown: [], target: opts.target || null, date: opts.date || null };
+  openSheet({ title: lib.mode === 'browse' ? 'Exercise library' : 'Pick an exercise', eyebrow: lib.mode === 'adhoc' ? 'FIRST EXERCISE' : lib.mode === 'workout' ? 'ADD TO WORKOUT' : lib.mode === 'session' ? 'ADD TO SESSION' : lib.mode === 'target' ? `ADD TO ${esc(sName(lib.target)).toUpperCase()}` : 'YOUR EXERCISES', size: 'tall', autofocus: '#libq', render: renderLibrary });
 }
 INPUTS.libq = el => { lib.q = el.value; const b = $('#libres'); if (b) b.innerHTML = libResults(); };
 ACTIONS['lib.open'] = () => openLibrary({ mode: 'browse' });
@@ -145,6 +145,7 @@ async function libAdd(x) {
   }
   if (lib.mode === 'target') { if (sessAdd(lib.target, x)) { refreshSheet(); render(); toast(`${x.name} added to ${sName(lib.target)}`); } return; }
   if (lib.mode === 'workout') addToWorkout(x, lib.scope);
+  if (lib.mode === 'adhoc') startAdhoc(x, lib.date || todayISO());
 }
 /* saved sessions: add or take out an exercise for good (used by the Sessions tab) */
 function sessAdd(k, x) {

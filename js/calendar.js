@@ -192,7 +192,7 @@ function renderDaySheet(date) {
   if (!parts.length) parts.push(`<section class="dayitem"><div class="between"><div class="eyebrow">REST</div>${tag(past ? 'No plan' : 'Rest day')}</div><h3>Nothing planned</h3><p class="dim">Rest or light mobility. An unscheduled day is not missed progress.</p></section>`);
   const hasGym = day.items.some(i => i.kind === 'gym') || extraG.length > 0;
   return { body: `${day.conflicts.length ? `<div class="flags">${day.conflicts.map(c => `<div class="flag ${c.level}">${icon('warn')}<span>${esc(c.text)}</span></div>`).join('')}<p class="tiny">Flagged, not changed: your plan stays exactly as you set it.</p></div>` : ''}${parts.join('')}
-    <div class="dayadd2"><div class="eyebrow">ADD TO THIS DAY</div><div class="chip-row">${d <= todayISO() ? `<button type="button" class="chip" data-act="day.gym" data-id="${d}">${icon('train')}Gym workout</button>` : ''}<button type="button" class="chip" data-act="vb.log" data-arg="training" data-id="${d}">${icon('ball')}Volleyball</button><button type="button" class="chip" data-act="match.add" data-id="${d}">${icon('plus')}Match</button><button type="button" class="chip" data-act="extra.add" data-id="${d}">${icon('plus')}Extra session</button></div></div>`,
+    <div class="dayadd2"><div class="eyebrow">ADD TO THIS DAY</div><div class="chip-row">${d <= todayISO() ? `<button type="button" class="chip" data-act="day.gym" data-id="${d}">${icon('train')}Gym</button>` : ''}<button type="button" class="chip" data-act="day.vb" data-id="${d}">${icon('ball')}Volleyball</button></div></div>`,
     footer: '' };
 }
 ACTIONS['day.open'] = el => openDaySheet(el.dataset.id);
@@ -241,5 +241,29 @@ ACTIONS['move.reset'] = el => {
 ACTIONS['day.gym'] = el => {
   const d = el.dataset.id, keys = (typeof SESSION_KEYS !== 'undefined' ? SESSION_KEYS : []).filter(k => templates[k] && allExercises(k).length);
   openSheet({ title: 'Log a workout', eyebrow: longDate(d).toUpperCase(), size: 'tall', render: () => ({ body: `<p class="lead first">Which session did you do${d < todayISO() ? ' that day' : ''}? You will fill in the sets as normal and it is saved on ${esc(pretty(d))}.</p>
-    <ul class="dpick">${keys.map(k => `<li><button type="button" class="dpk" data-act="wk.start" data-id="${k}" data-arg="${d}"><span class="dcode sm">${sBadge(k)}</span><span class="dpt"><b>${esc(templates[k].title)}</b><small>${allExercises(k).length} exercises${templates[k].duration ? ' · ' + esc(templates[k].duration) : ''}</small></span>${icon('chev')}</button></li>`).join('')}</ul>`, footer: `<button type="button" class="btn ghost grow" data-act="sheet.close">Cancel</button>` }) });
+    <ul class="dpick">${keys.map(k => `<li><button type="button" class="dpk" data-act="wk.start" data-id="${k}" data-arg="${d}"><span class="dcode sm">${sBadge(k)}</span><span class="dpt"><b>${esc(templates[k].title)}</b><small>${allExercises(k).length} exercises${templates[k].duration ? ' · ' + esc(templates[k].duration) : ''}</small></span>${icon('chev')}</button></li>`).join('')}<li><button type="button" class="dpk" data-act="day.adhoc" data-id="${d}"><span class="dcode sm dplus">${icon('plus')}</span><span class="dpt"><b>Pick exercises yourself</b><small>Not one of your sessions? Add just what you did</small></span>${icon('chev')}</button></li></ul>`, footer: `<button type="button" class="btn ghost grow" data-act="sheet.close">Cancel</button>` }) });
 };
+ACTIONS['day.vb'] = el => {
+  const d = el.dataset.id;
+  openSheet({ title: 'Volleyball', eyebrow: longDate(d).toUpperCase(), size: 'tall', render: () => ({ body: `<ul class="dpick">
+    <li><button type="button" class="dpk" data-act="vb.log" data-arg="training" data-id="${d}"><span class="dcode sm dplus">${icon('ball')}</span><span class="dpt"><b>Training or social session</b><small>Log how it went</small></span>${icon('chev')}</button></li>
+    <li><button type="button" class="dpk" data-act="match.add" data-id="${d}"><span class="dcode sm dplus">${icon('trophy')}</span><span class="dpt"><b>Match</b><small>Add or log a match</small></span>${icon('chev')}</button></li>
+    <li><button type="button" class="dpk" data-act="extra.add" data-id="${d}"><span class="dcode sm dplus">${icon('plus')}</span><span class="dpt"><b>Extra session</b><small>An unplanned extra on top of club training</small></span>${icon('chev')}</button></li></ul>`, footer: `<button type="button" class="btn ghost grow" data-act="sheet.close">Cancel</button>` }) });
+};
+/* a workout built from single exercises instead of one of your sessions: kept under a hidden "Other workouts" session so it logs like any other */
+function adhocKey() {
+  const s = data.mySessions.find(x => x.deleted && x.title === 'Other workouts'); if (s) return s.key;
+  const used = new Set(data.mySessions.map(x => x.key)), key = [...'EFGHIJKLMNOP'].find(c => !used.has(c));
+  if (!key) return null;
+  data.mySessions.push({ key, title: 'Other workouts', emoji: '', type: 'Other', minutes: 0, heavy: false, deleted: true, exercises: [{ id: 'adhoc-ph', name: 'Exercise', sets: 3, reps: '8', unit: 'reps', load: false, hint: '', optional: false, rest: 0, dist: '' }] });
+  data.mySessions = cleanMySessions(data.mySessions); syncCustomSessions(data.mySessions, data.user.hideBuiltin); save(); return key;
+}
+ACTIONS['day.adhoc'] = el => openLibrary({ mode: 'adhoc', date: el.dataset.id });
+async function startAdhoc(x, date) {
+  const key = adhocKey(); if (!key) { toast('You already have 12 sessions of your own. Delete one first'); return; }
+  if (data.draft && !await askConfirm({ title: 'You have an unfinished workout', message: `<p>${esc(sName(data.draft.session))} from ${esc(pretty(data.draft.date))} is still open. Starting this will discard it.</p>`, confirmLabel: 'Discard it and start', cancelLabel: 'Cancel', danger: true })) return;
+  const e = { id: 'day-' + uid(), name: x.name, sets: x.sets, reps: x.reps, unit: x.unit, load: x.load, hint: x.hint || '', optional: false, rest: x.rest || 0, dist: x.dist || '' };
+  const ld = x.load ? String(latestLoad(e, date)) : '';
+  data.draft = { id: uid(), date, session: key, completed: false, startedAt: new Date().toISOString(), rpe: '', notes: '', exercises: [{ ...e, sets: Array.from({ length: x.sets }, () => ({ load: ld, reps: parseReps(x.reps), done: false, ...(x.dist ? { dist: '' } : {}) })) }] };
+  wkIndex = 0; save(); showWorkout();
+}

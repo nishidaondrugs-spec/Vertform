@@ -1058,3 +1058,6 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 
 :root:not([data-theme="light"]) body.nav2 .mcell u.ok{background:#34c759!important;width:9px;height:9px;top:3px;right:3px;box-shadow:0 0 0 1.5px #0b0b0c}
 :root[data-theme="light"] body.nav2 .mcell u.ok{background:#34c759}
+
+.dpk .dcode.dplus{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22);color:inherit}
+.dpk .dcode.dplus .ico{width:18px;height:18px;color:inherit;opacity:1}
