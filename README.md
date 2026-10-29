@@ -625,3 +625,6 @@ Tapping a muscle group on a profile now opens the comparison as a pop-up instead
 - **Auto-progression:** new workouts start each lift at the weight your last session earned. Hit the top of the rep range on every working set and it adds 2.5 kg (5 kg on squat, deadlift and leg lifts). Otherwise it repeats the weight and tells you the reps to aim for. The reason shows under the last-time line.
 - **Screen-off rest timer:** the rest is played as a quiet audio clip that ends with three beeps, so it rings with the screen off or in another app, and shows a Rest card on the lock screen. Switch it off under Rest timer ("Ring even when the screen is off"); it can pause other music.
 - **Season:** Settings → Training → Season (Auto, Off, Pre, In). In-season gives about 30% fewer sets and holds leg weights. Off-season adds a set to the first two loaded lifts. Only new workouts change.
+
+## 2.90.0 — Backup nudge and honest data note
+After your 1st, 5th and 15th saved workout, if you are not signed in, VERTFORM offers to sign you in so your history is backed up. "Where your data lives" now describes the account backup correctly instead of saying there is no account.

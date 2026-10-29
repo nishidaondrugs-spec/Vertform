@@ -461,6 +461,14 @@ ACTIONS['wk.save'] = () => {
   const fph = finishPhoto; finishPhoto = '';
   if (summary) shareWorkout(summary, fph);
   const id = w.id; closeWorkout(); toast(`${sName(w.session)} saved`, { action: { label: 'View', fn: () => openLogView(id) } });
+  /* Not backed up? Ask after the 1st, 5th and 15th saved workout, so a lost phone never costs someone their history. */
+  try {
+    const n = data.logs.filter(l => l.completed).length;
+    if (typeof acctOn === 'function' && acctOn() && !signedIn() && [1, 5, 15].includes(n) && data.meta.nudge !== n) {
+      data.meta.nudge = n; save();
+      setTimeout(() => toast('Your workouts are only on this phone. Sign in to back them up.', { ms: 9000, action: { label: 'Sign in', fn: () => acctSignIn() } }), 3800);
+    }
+  } catch (_) { /* never block saving */ }
 };
 
 /* =============== saved workout records =============== */
