@@ -49,7 +49,7 @@ function pAttachHtml(kind, m, compact, seed) {
     return `<div class="wkcard jpost"><span class="tiny">Standing jump</span><div class="jt-big"><b>${fmt(cm, 1)}</b><span>cm</span>${m.pb ? ' <i class="pbt">PB</i>' : ''}</div><small>${n > 1 ? `Best of ${n} · ` : ''}${prev > 0 ? `${cm - prev >= 0 ? '+' : '−'}${fmt(Math.abs(cm - prev), 1)} cm on previous best` : 'First test'}</small></div>`;
   }
   if (kind === 'gym') {
-    const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null, list = Array.isArray(m.l) ? m.l.slice(0, 6) : [];
+    const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null, list = Array.isArray(m.l) ? m.l.slice(0, 12) : [];
     const stats = [n(m.min) && ['Time', `${n(m.min)} min`], n(m.vol) && ['Volume', `${Math.round(n(m.vol)).toLocaleString('en-GB')} kg`], ['Sets', `${Number(m.s) || 0}`], n(m.pb) && ['PBs', `${n(m.pb)}`]].filter(Boolean);
     if (navNew()) {
       const big = [n(m.min) && [n(m.min), 'min'], n(m.vol) && [Math.round(n(m.vol)).toLocaleString('en-GB'), 'kg'], n(m.pb) && [n(m.pb), n(m.pb) === 1 ? 'PB' : 'PBs', 1]].filter(Boolean);
@@ -101,7 +101,7 @@ function postCard(r, full) {
   const cam = !mine && r.pid ? `<button type="button" class="rcam" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}<span>React</span></button>` : '';
   return `<li class="pcard bm ${mine ? 'mine' : ''}">
     <div class="phead">${who}${mine ? `<button type="button" class="iconbtn" data-act="post.del" data-id="${esc(r.id)}" aria-label="Post options"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>` : ''}</div>
-    ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? '' : pAttachHtml(r.kind, r.meta, hasMedia, r.id)}${hasMedia && navNew() ? '' : rx}
+    ${media}${hasMedia && navNew() && r.kind === 'gym' && r.meta && r.meta.t ? `<button type="button" class="seefull" data-act="post.workout" data-id="${esc(r.id)}">See the full workout${icon('chev')}</button>` : pAttachHtml(r.kind, r.meta, hasMedia, r.id)}${hasMedia && navNew() ? '' : rx}
     ${full ? '' : navNew() ? `<div class="bcline">${r.comments ? `<button type="button" class="bc-view" data-act="post.comments" data-id="${esc(r.id)}">View ${r.comments === 1 ? '1 comment' : `all ${r.comments} comments`}</button>` : ''}<div class="bc-row"><button type="button" class="bc-add" data-act="post.comments" data-arg="1" data-id="${esc(r.id)}">Add a comment…</button>${!mine && r.pid ? `<button type="button" class="bc-react" data-act="rcam.open" data-id="${esc(r.id)}" aria-label="React with a photo">${icon('camera')}</button>` : ''}</div></div>` : `    <div class="rbar">${cam}<button type="button" class="pcm" data-act="post.comments" data-id="${esc(r.id)}" aria-label="Comments, ${r.comments || 0}">${icon('post')}<b class="mono">${r.comments || ''}</b></button></div>`}</li>`;
 }
 const P_KINDS = [
@@ -508,4 +508,14 @@ ACTIONS['post.mine'] = () => {
     return { body: days.length ? days.map(d => `<div class="eyebrow pday">${esc(pDayLabel(d, today).toUpperCase())}</div><ul class="pfeed">${mine.filter(r => (r.day || today) === d).map(postCard).join('')}</ul>`).join('') : '<p class="note">Nothing posted yet.</p>', footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` };
   } });
   setTimeout(() => { if (typeof pPaint === 'function') pPaint(); }, 80);
+};
+
+/* a gym post with a photo only shows the headline numbers on the picture; this opens every exercise from that workout */
+ACTIONS['post.workout'] = el => {
+  const r = (pUi.rows || []).find(x => String(x.id) === el.dataset.id), m = r && r.meta; if (!m || !m.t) return;
+  const n = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null, list = Array.isArray(m.l) ? m.l : [];
+  const stats = [n(m.min) && [n(m.min), 'min'], n(m.vol) && [Math.round(n(m.vol)).toLocaleString('en-GB'), 'kg'], [Number(m.s) || 0, 'sets'], n(m.pb) && [n(m.pb), n(m.pb) === 1 ? 'PB' : 'PBs']].filter(Boolean);
+  openSheet({ title: String(m.t), eyebrow: `${r.mine ? 'YOU' : String(r.nickname || '').toUpperCase()}${m.d ? ' · ' + pretty(m.d).toUpperCase() : ''}`, size: 'tall', render: () => ({ body: `<div class="pwk-stats">${stats.map(([v, l]) => `<span><b>${esc(String(v))}</b>${l}</span>`).join('')}</div>
+    ${list.length ? `<ul class="wk-list pwk-list">${list.map(x => `<li><span>${esc(x[0])}</span><span>${esc(x[1])}${x[2] ? ' <i class="pbt">PB</i>' : ''}</span></li>`).join('')}</ul>` : `<p class="note">${plural(Number(m.ex) || 0, 'exercise')} in this workout.</p>`}
+    ${Number(m.ex) > list.length && list.length ? `<p class="tiny">Showing ${list.length} of ${Number(m.ex)} exercises. Posts only carry a short summary.</p>` : ''}`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
 };

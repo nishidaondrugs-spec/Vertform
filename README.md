@@ -593,3 +593,9 @@ The day below the calendar no longer sits in a box that clipped at the edges. Th
 
 ## 2.81.3 — Tapping a notification always opens this app
 A notification now opens VERTFORM itself, whatever web address the message carried.
+
+## 2.82.0 — Log a workout on any past day
+On the Plan tab, tap a day (today or earlier) and use "Gym workout" under "Add to this day": pick which session you did and fill it in as normal. It is saved on that date, so history, streaks and last-time comparisons use the right day. It works even if the day already has a planned or missed session. A logged workout on the day can be deleted from the same screen if you logged it by mistake.
+
+## 2.82.1 — See the full workout on a gym photo post
+A gym post with a photo now has "See the full workout" under it: every exercise with its top set and PBs. Posts now carry up to 12 exercises (as many as fit) instead of 6.

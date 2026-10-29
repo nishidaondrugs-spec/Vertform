@@ -458,7 +458,7 @@ function wkSummary(w) {
     const best = bestsOf(e, exerciseHistory(e, { before: w.date, excludeId: w.id })), pb = sets.some(s => setPB(e, s, best)); if (pb) pbs++;
     rows.push([String(e.name).trim().slice(0, 28), wkTopLine(e, sets).slice(0, 30), pb ? 1 : 0]);
   });
-  const m = { t: String(templates[w.session]?.title || sName(w.session)).slice(0, 40), d: w.date, ex: w.exercises.length, s: done, of: tot, rpe: Number(w.rpe) || null, min: mins > 0 && mins <= 300 ? mins : null, vol: wkVolume(w) || null, pb: pbs, l: rows.slice(0, 6) };
+  const m = { t: String(templates[w.session]?.title || sName(w.session)).slice(0, 40), d: w.date, ex: w.exercises.length, s: done, of: tot, rpe: Number(w.rpe) || null, min: mins > 0 && mins <= 300 ? mins : null, vol: wkVolume(w) || null, pb: pbs, l: rows.slice(0, 12) };
   while (JSON.stringify(m).length > 580 && m.l.length) m.l.pop();
   return m;
 }
