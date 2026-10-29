@@ -212,7 +212,7 @@ function partData(mine, theirs, nick) {
 }
 function partSheet(part, pd, nick) {
   const d = pd[part]; if (!d) return '';
-  const head = `<div class="psh-head"><span class="psh-dot"></span><b>${PART_NAMES[part].toUpperCase()}</b><small>${d.common ? `${d.common} shared ${d.common === 1 ? 'lift' : 'lifts'}` : 'no shared lifts'}</small><button type="button" class="psh-x" data-act="part.clear" aria-label="Close">&times;</button></div>`;
+  const head = '' && `<div class="psh-head"><span class="psh-dot"></span><b>${PART_NAMES[part].toUpperCase()}</b><small>${d.common ? `${d.common} shared ${d.common === 1 ? 'lift' : 'lifts'}` : 'no shared lifts'}</small><button type="button" class="psh-x" data-act="part.clear" aria-label="Close">&times;</button></div>`;
   if (!d.common) {
     const only = d.theirOnly.length ? `<div class="eyebrow mt">Only ${esc(nick)} has</div><ul class="lothers">${d.theirOnly.map(l => `<li><span>${esc(l.n)}</span><b class="mono">${kgTxt(l.k)}</b><small>${kgTxt(l.w)} × ${l.r}</small></li>`).join('')}</ul>` : '';
     return `${head}<div class="psh-empty"><b>Nothing to compare yet</b><p class="tiny">Log a ${PART_NAMES[part].toLowerCase()} lift and it will show here next to ${esc(nick)}'s.</p></div>${only}`;
@@ -240,13 +240,17 @@ function cmpHero(r, pd, isMe, mine, streak) {
 }
 function partPush() { /* the 2D body needs no messages */ }
 function partPaint() {
-  const c = partCtx(), box = $('#partsheet'); if (!c || !box) return;
-  const sel = ui.part && c.pd[ui.part] ? ui.part : null; ui.part = sel;
-  box.innerHTML = sel ? partSheet(sel, c.pd, c.r.nickname) : '';
-  box.hidden = !sel;
-  $$('.cmpbodies g[data-arg]').forEach(g => g.classList.toggle('sel', g.dataset.arg === sel));
+  $$('.cmpbodies g[data-arg]').forEach(g => g.classList.toggle('sel', g.dataset.arg === ui.part));
 }
-ACTIONS['part.pick'] = el => { ui.part = ui.part === el.dataset.arg ? null : el.dataset.arg; partPaint(); if (ui.part) setTimeout(() => $('#partsheet')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); };
+function partOpen() {
+  const c = partCtx(); if (!c || !ui.part) return;
+  const chips = `<div class="pchips" role="group" aria-label="Muscle group">${Object.keys(PART_NAMES).map(k => `<button type="button" class="${k === ui.part ? 'on' : ''}" data-act="part.switch" data-arg="${k}">${PART_NAMES[k]}</button>`).join('')}</div>`;
+  const spec = { title: PART_NAMES[ui.part], eyebrow: `YOU VS ${c.r.nickname.toUpperCase()}`, onClose: () => { ui.part = null; partPaint(); }, render: () => { const cc = partCtx() || c; return { body: `${chips}${partSheet(ui.part, cc.pd, cc.r.nickname)}` }; } };
+  if (sheetOpen() && topSheet().isPart) { Object.assign(topSheet(), spec); refreshSheet(); } else { spec.isPart = true; openSheet(spec); }
+  partPaint();
+}
+ACTIONS['part.pick'] = el => { ui.part = el.dataset.arg; partOpen(); };
+ACTIONS['part.switch'] = el => { ui.part = el.dataset.arg; partOpen(); };
 ACTIONS['part.clear'] = () => { ui.part = null; partPaint(); };
 addEventListener('message', e => {
   if (e.origin !== location.origin) return; const m = e.data || {}; if (ui.page !== 'friend' || ui.friendId === 'me') return;
@@ -269,7 +273,6 @@ function viewFriend() {
   const right = isMe && look ? `<button type="button" class="btn sm ghost" data-act="lk.open">Edit player</button>` : '';
   return `${pageHead('', esc(r.nickname) + (look ? ` <span class="pnum">#${look.number}</span>` : ''), right)}${banners()}
     ${hero}
-    ${isMe ? '' : '<div id="partsheet" class="psheet" hidden></div>'}
     <div class="fstats">${stat(`${sessions}${r.target ? `<i> / ${r.target}</i>` : ''}`, 'gym this week')}${stat(`${streak}`, streak === 1 ? 'week streak' : 'weeks streak')}${stat(`${vb}`, 'volleyball')}</div>
     ${isMe ? (theirs.length ? `${sectionHead('', 'Best lifts')}<ul class="lothers">${theirs.map(l => `<li><span>${esc(l.n)}</span><b class="mono">${kgTxt(l.k)}</b><small>${kgTxt(l.w)} × ${l.r}</small></li>`).join('')}</ul>` : '')
     : `<details class="explain liftdd"><summary><span>Compare lifts with ${esc(r.nickname)}</span>${cmp.common ? `<b class="mono">${cmp.common}</b>` : ''}</summary>

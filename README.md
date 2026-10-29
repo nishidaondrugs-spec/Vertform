@@ -617,3 +617,6 @@ When a new account names its gym sessions, each one now has a clear choice: "Pic
 
 ## 2.87.0 — Profiles: muscle-map compare instead of the 3D player
 A friend's profile now shows the front and back muscle map, coloured by who leads each muscle group (you, them or level). Tap a group to see the lifts side by side. Your own profile lights up where you have logged lifts. The spinning 3D player is gone from profiles.
+
+## 2.88.0 — Compare pops up
+Tapping a muscle group on a profile now opens the comparison as a pop-up instead of below the body, with chips along the top to jump to another muscle group.

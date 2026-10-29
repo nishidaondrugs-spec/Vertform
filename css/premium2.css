@@ -1087,3 +1087,6 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 .cmphint{text-align:center;font-size:12px;color:#8e8e93;margin:8px 0 0}
 .cmptags{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
 .cmptags .ptag{position:static;background:#1c1c1e;border:0}
+.pchips{display:flex;gap:6px;overflow-x:auto;margin:0 -16px 12px;padding:0 16px;scrollbar-width:none}.pchips::-webkit-scrollbar{display:none}
+.pchips button{flex:none;min-height:34px;padding:0 14px;border:0;border-radius:999px;background:#1c1c1e;color:#c7c7cc;font-size:13px;font-weight:600}
+.pchips button.on{background:#fff;color:#000}
