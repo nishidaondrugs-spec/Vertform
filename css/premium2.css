@@ -1094,3 +1094,7 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 /* 2.89 progression line */
 .sugline{display:flex;align-items:flex-start;gap:8px;margin:2px 0 10px;font-size:13px;line-height:1.35;color:#8e8e93}
 .sugline.up{color:#30d158}.sugline svg{width:15px;height:15px;flex:none;margin-top:1px}
+.sheet .gbtn,.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 14px;background:#fff!important;color:#000!important;font-weight:700;min-height:48px}
+.sheet .gbtn span{color:#000!important}
+.gbtn .gg{width:18px;height:18px}
+.acor{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#8e8e93;font-size:12px}.acor:before,.acor:after{content:"";flex:1;height:1px;background:#2c2c2e}

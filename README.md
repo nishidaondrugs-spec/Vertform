@@ -628,3 +628,6 @@ Tapping a muscle group on a profile now opens the comparison as a pop-up instead
 
 ## 2.90.0 — Backup nudge and honest data note
 After your 1st, 5th and 15th saved workout, if you are not signed in, VERTFORM offers to sign you in so your history is backed up. "Where your data lives" now describes the account backup correctly instead of saying there is no account.
+
+## 2.91.0 — Continue with Google
+The account sheet shows "Continue with Google" at the top once Google is switched on for the project in Supabase (the app checks that itself, so nothing appears until then). Email and password still work.

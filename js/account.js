@@ -190,11 +190,20 @@ function acStore(j) {
   acct.session = { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: null };
   acct.justIn = true; acct.pullAt = 0; acctSave();
 }
+/* Google: only shown once the provider is switched on in Supabase (the project's public settings say so). */
+let gOn = null;
+async function acctGoogleCheck() {
+  if (gOn !== null || !acctOn()) return; gOn = false;
+  try { const r = await fetch(`${VF_CONFIG.url}/auth/v1/settings`, { headers: { apikey: VF_CONFIG.key } }); const j = await r.json(); gOn = !!j?.external?.google; if (gOn && typeof refreshSheet === 'function' && sheetOpen()) refreshSheet(); } catch (_) { gOn = false; }
+}
+ACTIONS['acct.google'] = () => { flushSave(); location.href = `${VF_CONFIG.url}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(location.origin + location.pathname)}`; };
 function acPanel() {
+  acctGoogleCheck();
   const m = acUi.mode, btn = m === 'up' ? 'Create account' : m === 'reset' ? 'Send reset link' : 'Sign in';
   const note = acUi.err ? `<div class="status warn" role="alert">${esc(acUi.err)}</div>` : acUi.msg ? `<div class="status" role="status">${esc(acUi.msg)}</div>` : '';
   return {
     body: `<p class="tiny">${m === 'up' ? 'Your records back up to this account and come back on any device. Use an email you can get to, for password resets.' : m === 'reset' ? 'We\'ll email you a link to choose a new password.' : 'Sign in to back up your records and use them on another device.'}</p>
+      ${m === 'reset' || !gOn ? '' : `<button type="button" class="btn ghost full gbtn" style="background:#fff!important;color:#000!important;border:0!important" data-act="acct.google">${googleG()}<span style="color:#000!important">Continue with Google</span></button><div class="acor"><span>or use email</span></div>`}
       <div class="field"><label for="acEmail">Email</label><input id="acEmail" type="email" inputmode="email" autocomplete="email" data-in="acEmail" value="${esc(acUi.email)}"></div>
       ${m === 'reset' ? '' : `<div class="field"><label for="acPass">Password</label><input id="acPass" type="password" autocomplete="${m === 'up' ? 'new-password' : 'current-password'}" data-in="acPass" value="${esc(acUi.pass)}" placeholder="At least 8 characters"></div>`}
       ${note}`,
