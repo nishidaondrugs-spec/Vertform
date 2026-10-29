@@ -5,6 +5,19 @@ const recUi = { mon: null, tab: 'week', theme: 'dark', url: '', busy: false };
 /* A week counts toward the streak if you did every planned session, or missed just one (the grace day) when you had 3+ planned. */
 const graceOk = (done, target) => done >= target || (target >= 3 && done >= target - 1);
 
+/* The icon of what you actually did: the emoji you gave the session, otherwise a guess from its exercises and name. */
+const GLYPH_PART = { legs: '🦵', arms: '💪', back: '💪', chest: '🏋️', shoulders: '🏋️', core: '🔥' };
+function gymGlyph(l) {
+  const t = templates[l.session]; if (t?.emoji) return t.emoji;
+  const name = String(t?.title || '').toLowerCase();
+  if (/jump|power|plyo|explos/.test(name)) return '⚡';
+  const n = {}; (l.exercises || []).forEach(e => { const p = typeof liftPart === 'function' ? liftPart(e.name) : null; if (p) n[p] = (n[p] || 0) + 1; });
+  const top = Object.entries(n).sort((a, b) => b[1] - a[1])[0];
+  const upper = (n.back || 0) + (n.arms || 0) + (n.chest || 0) + (n.shoulders || 0);
+  if (top && (n.legs || 0) >= upper) return '🦵';
+  return top ? (GLYPH_PART[top[0]] || '🏋️') : '🏋️';
+}
+const vbGlyph = ls => ls.some(l => l.kind === 'match') ? '🏆' : '🏐';
 function recapData(mon) {
   const end = addDays(mon, 6), today = todayISO();
   const gym = data.logs.filter(l => l.completed !== false && l.date >= mon && l.date <= end);
@@ -30,7 +43,8 @@ function recapData(mon) {
   const days = plan.map((d, i) => {
     const g = gym.some(l => l.date === d.date), v = vb.some(l => l.date === d.date);
     const missed = !g && !v && d.date < today && d.items.some(it => it.kind === 'gym' && !it.logged && !it.unplanned);
-    return { i, g, v, missed };
+    const gl = gym.filter(l => l.date === d.date), vl = vb.filter(l => l.date === d.date);
+    return { i, g, v, missed, gi: gl.length ? gymGlyph(gl[0]) : '', vi: vl.length ? vbGlyph(vl) : '' };
   });
   let graceIdx = -1; if (graceUsed) graceIdx = days.findIndex(d => d.missed);
   const cmj = entriesOf('cmj').filter(e => e.date >= mon && e.date <= end).map(e => Number(e.value)).filter(Number.isFinite);
@@ -90,7 +104,7 @@ function drawWeekCard(c, T, r) {
     else if (i === r.graceIdx) { c.setLineDash([12, 10]); c.lineWidth = 5; c.strokeStyle = T.mute; c.stroke(); c.setLineDash([]); }
     else { c.fillStyle = T.chip; c.fill(); }
     c.font = `44px ${EF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
-    if (d.g && d.v) c.fillText('🏋️', cx - 4, cy + 3); else if (d.g) c.fillText('🏋️', cx, cy + 3); else if (d.v) c.fillText('🏐', cx, cy + 3);
+    if (d.g && d.v) { c.font = `34px ${EF}`; c.fillText(d.gi || '🏋️', cx - 17, cy - 8); c.fillText(d.vi || '🏐', cx + 17, cy + 14); } else if (d.g) c.fillText(d.gi || '🏋️', cx, cy + 3); else if (d.v) c.fillText(d.vi || '🏐', cx, cy + 3);
     else if (i === r.graceIdx) { c.font = `800 22px ${RF}`; c.fillStyle = T.mute; c.fillText('grace', cx, cy + 1); }
     rcText(c, names[i], cx, cy + 96, 26, { col: T.mute, al: 'center', w: 700 });
   });
