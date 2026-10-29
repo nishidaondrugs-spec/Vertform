@@ -1061,3 +1061,6 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 
 .dpk .dcode.dplus{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22);color:inherit}
 .dpk .dcode.dplus .ico{width:18px;height:18px;color:inherit;opacity:1}
+
+/* 2.84 — share cards */
+.scprev{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,.08)}

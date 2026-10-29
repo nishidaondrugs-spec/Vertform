@@ -605,3 +605,6 @@ A day where you completed volleyball (training or a match) now fills in solid, l
 
 ## 2.83.0 — Add to this day: Gym and Volleyball
 "Add to this day" is now two chips. **Gym** lists all your sessions, and "Pick exercises yourself" lets you log just the exercises you did on that day when none of your sessions fits. **Volleyball** holds training or social sessions, matches and extra sessions in one place.
+
+## 2.84.0 — Share a workout or a session as a picture
+Open a logged workout (History, or a day on the Plan tab) and tap the share button: you get a 1080 × 1350 card with the session name, time, volume, sets, PBs and your exercises, ready for Instagram or WhatsApp. Sharing a session to a friend now sends a picture of it with one short message and a link, instead of a long block of text; "Copy code" is there for anyone who opens it from a Home Screen app.

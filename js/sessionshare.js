@@ -23,11 +23,11 @@ function ssParse(text) {
   const clean = cleanMySessions([rec])[0]; return clean && clean.exercises.length ? clean : null;
 }
 
-ACTIONS['ses.share'] = async el => {
-  const k = el.dataset.arg, t = templates[k]; if (!t) return;
-  const url = ssLink(k), text = `${t.title} · ${allExercises(k).length} exercises. Open VERTFORM → Gym → Sessions → Add a shared session, and paste this code:\n${ssCode(k)}`;
-  try { if (navigator.share) { await navigator.share({ title: t.title, text: text + '\n' + url }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
-  try { await navigator.clipboard.writeText(text); toast('Copied. Send it to a friend'); } catch (_) { prompt('Copy this and send it to a friend', text); }
+ACTIONS['ses.share'] = el => {
+  const k = el.dataset.arg, t = templates[k], p = t && ssPack(k); if (!p) return;
+  const url = ssLink(k);
+  scOpen({ title: 'Share session', eyebrow: String(t.title).toUpperCase(), name: `vertform-${String(t.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30)}.png`, shareTitle: t.title,
+    text: `${t.title} on VERTFORM · ${p.x.length} exercises\nOpen it here: ${url}`, code: ssCode(k), draw: c => drawSessionCard(c, p) });
 };
 
 let ssDraft = null, ssText = '', ssErr = '';
