@@ -224,21 +224,30 @@ function partCtx() {
   const r = (lbUi.rows || []).find(x => x.id === ui.friendId); if (!r || ui.page !== 'friend' || ui.friendId === 'me') return null;
   return { r, pd: partData(lbLifts(), Array.isArray(r.lifts) ? r.lifts : [], r.nickname) };
 }
-function partPush() {
-  const c = partCtx(), f = $('.pstage-3d'); if (!c || !f) return;
-  const states = {}; Object.keys(c.pd).forEach(p => { states[p] = c.pd[p].state; });
-  try { f.contentWindow.postMessage({ type: 'vf3d:regions', states, sel: ui.part || null }, location.origin); } catch (_) { /* frame not ready */ }
+const CMP_MUSCLES = { shoulders: ['front-deltoids', 'back-deltoids'], chest: ['chest'], back: ['upper-back', 'lower-back', 'trapezius'], arms: ['biceps', 'triceps', 'forearm'], core: ['abs', 'obliques'], legs: ['quadriceps', 'hamstring', 'gluteal', 'calves', 'adductor', 'abductors', 'left-soleus', 'right-soleus'] };
+const CMP_PART_OF = {}; Object.entries(CMP_MUSCLES).forEach(([p, ms]) => ms.forEach(m => { CMP_PART_OF[m] = p; }));
+function cmpFigure(side, pd, sel) {
+  const g = MM_BODY[side].map(([m, pts]) => { const p = CMP_PART_OF[m], st = p ? pd[p].state : 'none', cls = m === 'head' ? 'cm-h' : p ? `cm-${st}${sel === p ? ' sel' : ''}` : 'cm-none';
+    return `<g class="${cls}" ${p && !pd[p].self ? `data-act="part.pick" data-arg="${p}"` : ''}>${pts.map(q => `<polygon points="${q}"/>`).join('')}</g>`; }).join('');
+  return `<svg viewBox="0 0 100 200" role="img" aria-label="${side === 'front' ? 'Front' : 'Back'} of the body">${g}</svg>`;
 }
+function cmpHero(r, pd, isMe, mine, streak) {
+  const nick = esc(r.nickname), n = { you: 0, them: 0 }; Object.values(pd).forEach(d => { if (d.state === 'you') n.you++; else if (d.state === 'them') n.them++; });
+  const tags = profileTags(r, streak);
+  const head = isMe ? '' : `<div class="cmplegend"><span><i class="y"></i>You${n.you ? ` · ${n.you}` : ''}</span><span><i class="t"></i>${nick}${n.them ? ` · ${n.them}` : ''}</span><span><i class="l"></i>Level</span></div>`;
+  return `<div class="cmphero" id="pstage">${head}<div class="cmpbodies"><div>${cmpFigure('front', pd, ui.part)}<small>FRONT</small></div><div>${cmpFigure('back', pd, ui.part)}<small>BACK</small></div></div>
+    <p class="cmphint">${isMe ? 'Lit up: where you have logged a lift' : 'Tap a muscle group to compare'}</p>${tags ? `<div class="cmptags">${tags}</div>` : ''}</div>`;
+}
+function partPush() { /* the 2D body needs no messages */ }
 function partPaint() {
   const c = partCtx(), box = $('#partsheet'); if (!c || !box) return;
   const sel = ui.part && c.pd[ui.part] ? ui.part : null; ui.part = sel;
   box.innerHTML = sel ? partSheet(sel, c.pd, c.r.nickname) : '';
-  box.hidden = !sel; $('#pstage')?.classList.toggle('sel', !!sel);
-  $$('.pface button').forEach(b => b.classList.toggle('on', b.dataset.face === (ui.pface || 'front')));
-  partPush();
+  box.hidden = !sel;
+  $$('.cmpbodies g[data-arg]').forEach(g => g.classList.toggle('sel', g.dataset.arg === sel));
 }
+ACTIONS['part.pick'] = el => { ui.part = ui.part === el.dataset.arg ? null : el.dataset.arg; partPaint(); if (ui.part) setTimeout(() => $('#partsheet')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); };
 ACTIONS['part.clear'] = () => { ui.part = null; partPaint(); };
-ACTIONS['part.face'] = el => { ui.pface = el.dataset.face; const f = $('.pstage-3d'); try { f.contentWindow.postMessage({ type: 'vf3d:face', face: ui.pface }, location.origin); } catch (_) { /* ignore */ } partPaint(); };
 addEventListener('message', e => {
   if (e.origin !== location.origin) return; const m = e.data || {}; if (ui.page !== 'friend' || ui.friendId === 'me') return;
   if (m.type === 'vf3d:part') { ui.part = typeof m.part === 'string' ? m.part : null; partPaint(); }
@@ -254,12 +263,9 @@ function viewFriend() {
   const posts = (pUi.rows || []).filter(p => isMe ? p.mine : p.pid === r.id);
   if (pUi.rows === null && lbCfg() && !pUi.loading) setTimeout(postLoad, 0);
   setTimeout(pPaint, 0);
-  const heroTags = profileTags(r, streak) + (isMe ? '' : `<div class="pface" role="group" aria-label="Turn the player"><button type="button" data-act="part.face" data-face="front" class="on">Front</button><button type="button" data-act="part.face" data-face="back">Back</button></div><div class="phint">Tap a body part to compare</div>`);
-  if (partFor !== r.id) { ui.part = null; ui.pface = 'front'; partFor = r.id; }
+  if (partFor !== r.id) { ui.part = null; partFor = r.id; }
   setTimeout(partPaint, 0);
-  const hero = look ? stageHTML(look, `${r.nickname}'s player`, heroTags, isMe ? '' : '&parts=1')
-    : isMe ? `<div class="pstage empty"><div class="pempty"><b>Make your player</b><p class="tiny">Pick a look, colours and shirt number. Friends see it on your profile and next to your posts.</p><button type="button" class="btn primary" data-act="lk.open">Create player</button></div></div>`
-      : `<div class="pstage empty"><div class="pempty"><span class="pav xl" aria-hidden="true">${esc(r.nickname.slice(0, 1).toUpperCase())}</span><p class="tiny">${esc(r.nickname)} hasn't made a player yet.</p></div></div>`;
+  const pdAll = isMe ? Object.fromEntries(Object.keys(PART_NAMES).map(k => [k, { self: 1, state: mine.some(l => liftPart(l.n) === k) ? 'you' : 'none' }])) : partData(mine, theirs, r.nickname), hero = cmpHero(r, pdAll, isMe, mine, streak);
   const right = isMe && look ? `<button type="button" class="btn sm ghost" data-act="lk.open">Edit player</button>` : '';
   return `${pageHead('', esc(r.nickname) + (look ? ` <span class="pnum">#${look.number}</span>` : ''), right)}${banners()}
     ${hero}

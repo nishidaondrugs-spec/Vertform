@@ -614,3 +614,6 @@ Editing a saved gym session no longer asks for a photo and no longer posts it to
 
 ## 2.86.0 — Setup: pick mine or create your own
 When a new account names its gym sessions, each one now has a clear choice: "Pick one of mine" (Lower body, Upper body, Power, Back & arms) or "Create my own", which starts empty so you build it later.
+
+## 2.87.0 — Profiles: muscle-map compare instead of the 3D player
+A friend's profile now shows the front and back muscle map, coloured by who leads each muscle group (you, them or level). Tap a group to see the lifts side by side. Your own profile lights up where you have logged lifts. The spinning 3D player is gone from profiles.

@@ -1070,3 +1070,20 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 .obmode button{min-height:38px;border:0!important;border-radius:9px;background:none!important;color:#8e8e93!important;font-size:13px;font-weight:600;box-shadow:none!important}
 .obmode button.on{background:#fff!important;color:#000!important}
 .obmodenote{margin:2px 0 0;font-size:13px;line-height:1.4;color:#8e8e93}
+
+/* 2.87 profile: muscle-map compare instead of the 3D player */
+.cmphero{margin:4px 0 12px;padding:0}
+.cmplegend{display:flex;justify-content:center;gap:16px;font-size:13px;font-weight:600;color:#c7c7cc;margin-bottom:6px}
+.cmplegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.cmplegend .y,.cm-you polygon{background:#fff;fill:#fff}.cmplegend .t{background:#7cc4ff}.cmplegend .l{background:#8e8e93}
+.cmpbodies{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:340px;margin:0 auto}
+.cmpbodies>div{text-align:center}.cmpbodies svg{width:100%;height:min(46vh,330px);display:block}
+.cmpbodies small{font-size:11px;letter-spacing:.12em;color:#636366;font-weight:700}
+.cmpbodies polygon{stroke:#000;stroke-width:.5;transition:fill .2s,opacity .2s}
+.cm-h polygon,.cm-none polygon{fill:#232326}
+.cm-you polygon{fill:#fff}.cm-them polygon{fill:#7cc4ff}.cm-lvl polygon{fill:#8e8e93}
+.cmpbodies g[data-act]{cursor:pointer}.cmpbodies g.sel polygon{stroke:#fff;stroke-width:1.4}
+.cmpbodies:has(g.sel) g[data-act]:not(.sel) polygon{opacity:.35}
+.cmphint{text-align:center;font-size:12px;color:#8e8e93;margin:8px 0 0}
+.cmptags{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.cmptags .ptag{position:static;background:#1c1c1e;border:0}
