@@ -599,3 +599,6 @@ On the Plan tab, tap a day (today or earlier) and use "Gym workout" under "Add t
 
 ## 2.82.1 — See the full workout on a gym photo post
 A gym post with a photo now has "See the full workout" under it: every exercise with its top set and PBs. Posts now carry up to 12 exercises (as many as fit) instead of 6.
+
+## 2.82.2 — Completed volleyball fills in on the calendar
+A day where you completed volleyball (training or a match) now fills in solid, like a completed gym day, instead of staying as an outline. If volleyball was done on a gym day, the corner dot turns green.

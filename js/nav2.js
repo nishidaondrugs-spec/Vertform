@@ -125,11 +125,11 @@ function monthGrid() {
       if (d.date.slice(0, 7) !== ym) { cells.push('<span class="mcell pad"></span>'); return; }
       const gym = d.items.find(i => i.kind === 'gym'), mt = d.items.find(i => i.kind === 'match'), tr = d.items.find(i => i.kind === 'training' && !i.cancelled);
       const lg = data.logs.find(l => l.date === d.date && l.completed !== false), lv = data.vb.logs.some(l => l.date === d.date);
-      const hasGym = !!(gym || lg), hasVb = !!(mt || tr || lv);
+      const hasGym = !!(gym || lg), hasVb = !!(mt || tr || lv), vbDone = !!(lv || (mt && mt.status === 'done') || (tr && tr.status === 'done'));
       const main = gym || mt || tr, st = (lg && !gym) || (lv && !mt && !tr) ? 'done' : main ? main.status : (lg || lv) ? 'done' : 'rest', both = hasGym && hasVb;
       const txt = gym ? sBadge(gym.session) : lg ? sBadge(lg.session) : hasVb ? 'VB' : '·';
       const cls = `${hasGym ? 'g' : hasVb ? 'vb' : 'r'} st-${st} ${d.isToday ? 'today' : ''} ${(ui.planDay || today) === d.date ? 'sel' : ''}`;
-      cells.push(`<button type="button" class="mcell ${cls}" data-act="plan.pick" data-id="${d.date}" aria-pressed="${(ui.planDay || todayISO()) === d.date}" aria-label="${esc(DOW_LONG[d.idx])} ${Number(d.date.slice(8))}${main || hasGym || hasVb ? ', ' + (hasGym ? 'gym' : 'volleyball') + (both ? ' and volleyball' : '') + ', ' + st : (hasGym || hasVb) ? ', ' + (hasGym ? 'gym' : 'volleyball') + ' logged' : ', rest'}"><i>${Number(d.date.slice(8))}</i><b>${txt}</b>${both ? '<u></u>' : ''}</button>`);
+      cells.push(`<button type="button" class="mcell ${cls}" data-act="plan.pick" data-id="${d.date}" aria-pressed="${(ui.planDay || todayISO()) === d.date}" aria-label="${esc(DOW_LONG[d.idx])} ${Number(d.date.slice(8))}${main || hasGym || hasVb ? ', ' + (hasGym ? 'gym' : 'volleyball') + (both ? ' and volleyball' : '') + ', ' + st : (hasGym || hasVb) ? ', ' + (hasGym ? 'gym' : 'volleyball') + ' logged' : ', rest'}"><i>${Number(d.date.slice(8))}</i><b>${txt}</b>${both ? `<u class="${vbDone ? 'ok' : ''}"></u>` : ''}</button>`);
     });
   }
   return `<div class="mcard"><div class="mnav"><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="-1" aria-label="Previous month">${icon('back')}</button><b>${esc(label)}</b><button type="button" class="iconbtn" data-act="plan.mshift" data-arg="1" aria-label="Next month"><span style="display:inline-flex;transform:rotate(180deg)">${icon('back')}</span></button></div>
