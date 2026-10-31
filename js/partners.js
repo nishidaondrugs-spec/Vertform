@@ -39,3 +39,41 @@ function partnersCard() {
   return `<div class="ysec"><div class="yhead"><div class="yeye">TRAINING PARTNERS</div>${s.length > 3 ? '<button type="button" class="ylink" data-act="partners.all">See all</button>' : ''}</div><div class="yrows">${s.slice(0, 3).map(r => `<div class="yrow"><span class="yn">${esc(r.name)}</span><span class="ys">${r.n} ${r.n === 1 ? 'session' : 'sessions'}</span></div>`).join('')}</div></div>`;
 }
 ACTIONS['partners.all'] = () => openSheet({ title: 'Training partners', render: () => ({ body: `<ul class="hist2">${partnerStats().map(r => `<li><span>${esc(r.name)}</span><span class="h-s">${r.n} ${r.n === 1 ? 'session' : 'sessions'} · last ${esc(pretty(r.last))}</span></li>`).join('')}</ul>`, footer: `<button type="button" class="btn primary grow" data-act="sheet.close">Done</button>` }) });
+
+/* =============== tag friends on a workout, and "Log yours" for the people tagged =============== */
+let finishTags = [];
+function tagPickHtml() {
+  const names = (typeof lbUi !== 'undefined' && lbUi.rows || []).filter(r => !r.me && r.nickname).map(r => String(r.nickname)).slice(0, 12);
+  if (!names.length) return '';
+  return `<div class="field"><label>Tag friends <span class="tiny">${finishTags.length ? finishTags.length + ' tagged' : 'optional'}</span></label><div class="tagrow">${names.map(n => `<button type="button" class="chip ${finishTags.includes(n) ? 'on' : ''}" aria-pressed="${finishTags.includes(n)}" data-act="wk.tag" data-arg="${esc(n)}">${esc(n)}</button>`).join('')}</div><p class="tiny">They get a nudge and a button to log the same session with their own numbers.</p></div>`;
+}
+ACTIONS['wk.tag'] = el => {
+  const n = el.dataset.arg, i = finishTags.indexOf(n); if (i >= 0) finishTags.splice(i, 1); else if (finishTags.length < 8) finishTags.push(n);
+  refreshSheet();
+};
+const tagMe = m => { const me = String(data.settings.lb?.nick || '').toLowerCase(); return !!me && Array.isArray(m?.tg) && m.tg.some(x => String(x).toLowerCase() === me); };
+const tagLogged = m => data.logs.some(l => l.completed && l.date === m.d);
+function logYoursHtml(r) {
+  const m = r.meta; if (r.mine || r.kind !== 'gym' || !m || !m.t || !tagMe(m) || tagLogged(m)) return '';
+  return `<div class="logyours"><span>${esc(r.nickname || 'Your friend')} tagged you</span><button type="button" class="btn primary" data-act="post.logyours" data-id="${esc(r.id)}">Log yours</button></div>`;
+}
+ACTIONS['post.logyours'] = async el => {
+  const r = (pUi.rows || []).find(x => String(x.id) === el.dataset.id), m = r && r.meta; if (!m || !m.t) return;
+  const date = isISO(m.d) && m.d <= todayISO() ? m.d : todayISO(), nick = String(r.nickname || '').slice(0, 20);
+  const k = Object.keys(templates).find(x => !(data.mySessions.some(s => s.key === x && s.deleted)) && String(templates[x]?.title || '').toLowerCase() === String(m.t).toLowerCase() && allExercises(x).length);
+  if (k) await startWorkout(k, date);
+  else {
+    const list = Array.isArray(m.l) ? m.l : []; if (!list.length) { toast('Nothing to copy from this post. Log it from Train'); return; }
+    const key = adhocKey(); if (!key) { toast('You already have 12 sessions of your own. Delete one first'); return; }
+    if (data.draft && !await askConfirm({ title: 'You have an unfinished workout', message: `<p>${esc(sName(data.draft.session))} from ${esc(pretty(data.draft.date))} is still open. Starting this will discard it.</p>`, confirmLabel: 'Discard it and start', cancelLabel: 'Cancel', danger: true })) return;
+    const exs = list.slice(0, 12).map(x => {
+      const t = String(x[1] || ''), sets = Math.min(10, Math.max(1, parseInt(t, 10) || 3)), reps = (t.match(/×\s*(\d+)/) || [])[1] || '8', load = /kg/.test(t);
+      const e = { id: 'day-' + uid(), name: String(x[0]).slice(0, 40), sets, reps, unit: 'reps', load, hint: '', optional: false, rest: 0, dist: '' };
+      const ld = load ? String(latestLoad(e, date)) : '';
+      return { ...e, sets: Array.from({ length: sets }, () => ({ load: ld, reps: parseReps(reps), done: false })) };
+    });
+    data.draft = { id: uid(), date, session: key, completed: false, startedAt: new Date().toISOString(), rpe: '', notes: '', exercises: exs };
+    wkIndex = 0; save(); showWorkout();
+  }
+  if (nick && data.draft && data.draft.date === date && !data.draft.completed) { data.draft.with = cleanWith([...(data.draft.with || []), nick]); saveSoon(); }
+};

@@ -632,5 +632,8 @@ After your 1st, 5th and 15th saved workout, if you are not signed in, VERTFORM o
 ## 2.91.0 — Continue with Google
 The account sheet shows "Continue with Google" at the top once Google is switched on for the project in Supabase (the app checks that itself, so nothing appears until then). Email and password still work.
 
+## 2.93.0 — Tag friends, and they log theirs
+When you finish a workout you can tag friends. They get a mention nudge, and the post shows them a "Log yours" button (hidden if they already logged a workout that day). It opens the same session, or copies the exercises, with their own loads and the poster added to Trained with.
+
 ## 2.92.0 — Weekly recap shows what you actually did
 Each day in the weekly recap card now shows the icon of that day's workout: the emoji you gave the session, or one picked from its exercises (legs, upper body, power). Match days show a trophy, training a volleyball.

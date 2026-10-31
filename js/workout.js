@@ -446,7 +446,7 @@ ACTIONS['wk.finish'] = () => {
     return { body: `${photoRow}<div class="fin-sum"><b>${done}<small> / ${total}</small></b><span>sets ticked${done < total ? ` · ${total - done} not counted` : ' · all done'}</span></div>
       <div class="fin-rpe"><div class="fin-l"><span>How hard was it?</span><em>${Number(finishRPE) ? `${finishRPE} · ${['', 'Very easy', 'Easy', 'Easy', 'Steady', 'Steady', 'Hard', 'Hard', 'Very hard', 'Max effort', 'Max effort'][Number(finishRPE)]}` : 'Optional'}</em></div><div class="rpe-grid" role="radiogroup" aria-label="Session RPE">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<button type="button" role="radio" aria-checked="${Number(finishRPE) === n}" class="rpe ${Number(finishRPE) === n ? 'on' : ''}" data-act="wk.rpe" data-arg="${n}">${n}</button>`).join('')}</div></div>
       <div class="field"><label for="wknotes">Notes</label><textarea id="wknotes" data-in="wknotes" rows="2" placeholder="Jump quality, energy, technique, recovery…">${esc(w.notes)}</textarea></div>
-      <details class="fin-more"><summary>More details</summary>${withRow(w)}<div class="field"><label for="wkfocus">Focus for next time</label><input id="wkfocus" data-in="wkfocus" maxlength="100" autocomplete="off" placeholder="One cue for your next ${esc(sName(w.session))}" value="${esc(w.focus || '')}"></div></details>`,
+      ${!isEdit && typeof tagPickHtml === 'function' ? tagPickHtml() : ''}<details class="fin-more"><summary>More details</summary>${withRow(w)}<div class="field"><label for="wkfocus">Focus for next time</label><input id="wkfocus" data-in="wkfocus" maxlength="100" autocomplete="off" placeholder="One cue for your next ${esc(sName(w.session))}" value="${esc(w.focus || '')}"></div></details>`,
       footer: `${typeof lbCfg === 'function' && lbCfg() ? `<label class="sharetog"><input type="checkbox" id="wkshare" ${isEdit || data.settings.shareWk === false ? '' : 'checked'}><span>${isEdit ? 'Post again' : 'Share to friends'}</span></label>` : ''}<button type="button" class="btn ghost" data-act="sheet.close">Back</button><button type="button" class="btn primary grow" data-act="wk.save">${icon('check')}Save workout</button>` };
   } });
 };
@@ -459,7 +459,8 @@ ACTIONS['wk.save'] = () => {
   const summary = share ? wkSummary(w) : null;
   data.draft = null; timerClear(); save(); closeAllSheets();
   const fph = finishPhoto; finishPhoto = '';
-  if (summary) shareWorkout(summary, fph);
+  const tags = share && !isEdit ? finishTags.slice(0, 8) : []; finishTags = [];
+  if (summary) shareWorkout(summary, fph, tags);
   const id = w.id; closeWorkout(); toast(`${sName(w.session)} saved`, { action: { label: 'View', fn: () => openLogView(id) } });
   /* Not backed up? Ask after the 1st, 5th and 15th saved workout, so a lost phone never costs someone their history. */
   try {
@@ -522,10 +523,11 @@ function wkSummary(w) {
   while (JSON.stringify(m).length > 580 && m.l.length) m.l.pop();
   return m;
 }
-async function shareWorkout(meta, photo) {
+async function shareWorkout(meta, photo, tags) {
+  tags = Array.isArray(tags) ? tags : []; if (tags.length) meta = { ...meta, tg: tags };
   const c = typeof lbCfg === 'function' && lbCfg(); if (!c) return;
   try {
-    const r = await lbCall('vf_post_create', { p_id: c.id, p_secret: c.secret, p_body: '', p_kind: 'gym', p_meta: meta, p_photo: photo || null, p_video: null, p_day: todayISO() });
+    const r = await lbCall('vf_post_create', { p_id: c.id, p_secret: c.secret, p_body: tags.map(n => '@' + n).join(' ').slice(0, 280), p_kind: 'gym', p_meta: meta, p_photo: photo || null, p_video: null, p_day: todayISO() });
     (r?.purged || []).forEach(f => fetch(`${LB_URL}/storage/v1/object/vf-media/${f}`, { method: 'DELETE', headers: { apikey: LB_KEY } }).catch(() => {}));
     if (photo && r?.id && typeof pPhotos !== 'undefined') pPhotos[r.id] = photo;
     if (typeof pUi !== 'undefined') pUi.at = 0;
