@@ -85,8 +85,8 @@ const pKind = k => navNew() ? ({ gym: 'Gym · ', vb: 'Volleyball · ', jump: 'Ju
 function postCard(r, full) {
   const mine = !!r.mine, reacts = r.reacts || {};
   const who = mine || !r.pid
-    ? `<button type="button" class="phlink" data-act="me.open" aria-label="Your profile">${faceHTML(lbCfg()?.id, myLook(), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${mine ? ' <i>you</i>' : ''}</b><small>${pKind(r.kind)}${pWhen(r.created)}</small></span></button>`
-    : `<button type="button" class="phlink" data-act="fr.open" data-id="${esc(r.pid)}" aria-label="${esc(r.nickname)}, open profile">${faceHTML(r.pid, lookFor(r.pid), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}</b><small>${pKind(r.kind)}${pWhen(r.created)}</small></span></button>`;
+    ? `<button type="button" class="phlink" data-act="me.open" aria-label="Your profile">${faceHTML(lbCfg()?.id, myLook(), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${mine ? ' <i>you</i>' : ''}${postWith(r)}</b><small>${pKind(r.kind)}${pWhen(r.created)}</small></span></button>`
+    : `<button type="button" class="phlink" data-act="fr.open" data-id="${esc(r.pid)}" aria-label="${esc(r.nickname)}, open profile">${faceHTML(r.pid, lookFor(r.pid), r.nickname)}<span class="grow min0"><b>${esc(r.nickname)}${postWith(r)}</b><small>${pKind(r.kind)}${pWhen(r.created)}</small></span></button>`;
   const hasMedia = !!(r.photo || r.video);
   /* camera reactions: small round selfies on the post (filled in by rxPaint); text-only posts show them in a row */
   const photoN = Number(reacts.photo) || 0;

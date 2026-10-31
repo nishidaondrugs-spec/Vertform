@@ -1100,3 +1100,4 @@ body.nav2 #view .dayinline ~ details.explain>summary{padding:16px 0!important;fo
 .acor{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#8e8e93;font-size:12px}.acor:before,.acor:after{content:"";flex:1;height:1px;background:#2c2c2e}
 .logyours{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 0;padding:10px 12px;border:1px solid var(--line,#2a2a2e);border-radius:14px;background:rgba(255,255,255,.04);font-size:13px}
 .logyours .btn{min-height:40px;padding:0 18px;flex:none}
+.pwith{font-weight:500;color:var(--mute,#9a9aa2)}

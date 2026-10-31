@@ -55,7 +55,7 @@ const tagMe = m => { const me = String(data.settings.lb?.nick || '').toLowerCase
 const tagLogged = m => data.logs.some(l => l.completed && l.date === m.d);
 function logYoursHtml(r) {
   const m = r.meta; if (r.mine || r.kind !== 'gym' || !m || !m.t || !tagMe(m) || tagLogged(m)) return '';
-  return `<div class="logyours"><span>${esc(r.nickname || 'Your friend')} tagged you</span><button type="button" class="btn primary" data-act="post.logyours" data-id="${esc(r.id)}">Log yours</button></div>`;
+  return `<div class="logyours"><span>Tagged in this one. Did yours?</span><button type="button" class="btn primary" data-act="post.logyours" data-id="${esc(r.id)}">Log yours</button></div>`;
 }
 ACTIONS['post.logyours'] = async el => {
   const r = (pUi.rows || []).find(x => String(x.id) === el.dataset.id), m = r && r.meta; if (!m || !m.t) return;
@@ -104,3 +104,11 @@ ACTIONS['ptag.save'] = async () => {
     closeAllSheets(); render(); toast(ptagUi.sel.length ? 'Tags saved' : 'Tags cleared');
   } catch (e) { toast(typeof pErr === 'function' ? pErr(e.message) : e.message); }
 };
+
+/* "Noshida with Ravi, Sam" on the post header */
+function postWith(r) {
+  const tg = Array.isArray(r?.meta?.tg) ? r.meta.tg : []; if (!tg.length) return '';
+  const me = String(data.settings.lb?.nick || '').toLowerCase();
+  const names = tg.slice(0, 4).map(n => String(n).toLowerCase() === me ? 'you' : esc(String(n))), more = tg.length - names.length;
+  return ` <span class="pwith">with ${names.join(', ')}${more > 0 ? ` +${more}` : ''}</span>`;
+}

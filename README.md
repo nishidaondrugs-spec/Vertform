@@ -632,6 +632,9 @@ After your 1st, 5th and 15th saved workout, if you are not signed in, VERTFORM o
 ## 2.91.0 — Continue with Google
 The account sheet shows "Continue with Google" at the top once Google is switched on for the project in Supabase (the app checks that itself, so nothing appears until then). Email and password still work.
 
+## 2.94.2 — "Din with Ravi" on tagged posts
+Tagged posts now say who they were done with in the post header, and show "with you" to the person tagged.
+
 ## 2.94.1 — Tag friends loads your friends first
 Tag friends was missing until the Friends page had been opened. It now loads your friends itself.
 
