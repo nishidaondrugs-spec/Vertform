@@ -77,3 +77,29 @@ ACTIONS['post.logyours'] = async el => {
   }
   if (nick && data.draft && data.draft.date === date && !data.draft.completed) { data.draft.with = cleanWith([...(data.draft.with || []), nick]); saveSoon(); }
 };
+
+/* ---- tag friends on a post you already made ---- */
+let ptagUi = { id: '', sel: [] };
+ACTIONS['post.opts'] = async el => {
+  const r = (pUi.rows || []).find(x => x.id === el.dataset.id); if (!r) return;
+  const friends = (lbUi.rows || []).filter(f => !f.me && f.nickname);
+  const c = await askChoice({ title: 'Your post', message: '', choices: [
+    ...(friends.length ? [{ label: 'Tag friends', kind: 'primary', value: 'tag' }] : []),
+    { label: 'Delete post', kind: 'critical', value: 'del' }, { label: 'Cancel', kind: 'ghost', value: null }] });
+  if (c === 'del') return ACTIONS['post.del'](el);
+  if (c !== 'tag') return;
+  const body = String(r.body || '').toLowerCase();
+  ptagUi = { id: r.id, sel: friends.map(f => String(f.nickname)).filter(n => (Array.isArray(r.meta?.tg) ? r.meta.tg : []).some(t => String(t).toLowerCase() === n.toLowerCase()) || body.includes('@' + n.toLowerCase())) };
+  openSheet({ title: 'Tag friends', eyebrow: 'ON THIS POST', render: () => ({ body: `<div class="tagrow">${friends.map(f => { const n = String(f.nickname), on = ptagUi.sel.includes(n); return `<button type="button" class="chip ${on ? 'on' : ''}" aria-pressed="${on}" data-act="ptag.t" data-arg="${esc(n)}">${esc(n)}</button>`; }).join('')}</div><p class="tiny">${r.kind === 'gym' ? 'Tagged friends get a "Log yours" button on this workout. ' : ''}Tags added now do not send a notification.</p>`,
+    footer: `<button type="button" class="btn ghost" data-act="sheet.close">Cancel</button><button type="button" class="btn primary grow" data-act="ptag.save">Save tags</button>` }) });
+};
+ACTIONS['ptag.t'] = el => { const n = el.dataset.arg, i = ptagUi.sel.indexOf(n); if (i >= 0) ptagUi.sel.splice(i, 1); else if (ptagUi.sel.length < 8) ptagUi.sel.push(n); refreshSheet(); };
+ACTIONS['ptag.save'] = async () => {
+  const c = lbCfg(), r = (pUi.rows || []).find(x => x.id === ptagUi.id); if (!c || !r) return;
+  try {
+    await lbCall('vf_post_tag', { p_id: c.id, p_secret: c.secret, p_post: r.id, p_tags: ptagUi.sel });
+    ptagUi.sel.forEach(n => { if (!String(r.body || '').toLowerCase().includes('@' + n.toLowerCase())) r.body = (String(r.body || '') + ' @' + n).trim().slice(0, 280); });
+    if (r.meta && r.meta.t) r.meta = { ...r.meta, tg: ptagUi.sel.slice() };
+    closeAllSheets(); render(); toast(ptagUi.sel.length ? 'Tags saved' : 'Tags cleared');
+  } catch (e) { toast(typeof pErr === 'function' ? pErr(e.message) : e.message); }
+};
