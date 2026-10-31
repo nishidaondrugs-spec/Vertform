@@ -438,7 +438,7 @@ INPUTS.wkphoto = async el => {
 ACTIONS['wk.photo'] = () => $('#wkphotofile')?.click();
 ACTIONS['wk.photo.clear'] = () => { finishPhoto = ''; refreshSheet(); };
 ACTIONS['wk.finish'] = () => {
-  const w = data.draft; finishRPE = w.rpe || '';
+  const w = data.draft; if (typeof lbCfg === 'function' && lbCfg() && !lbUi.rows && !lbUi.loading) lbLoad().then(() => { if (topSheet()) refreshSheet(); }); finishRPE = w.rpe || '';
   openSheet({ title: 'Finish workout', eyebrow: `${sName(w.session).toUpperCase()} · ${pretty(w.date).toUpperCase()}`, render: () => {
     const total = sum(w.exercises, e => e.sets.length), done = sum(w.exercises, e => exDone(e));
     const isEdit = data.logs.some(x => x.id === w.id && x.completed);

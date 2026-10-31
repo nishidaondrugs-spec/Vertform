@@ -82,6 +82,7 @@ ACTIONS['post.logyours'] = async el => {
 let ptagUi = { id: '', sel: [] };
 ACTIONS['post.opts'] = async el => {
   const r = (pUi.rows || []).find(x => x.id === el.dataset.id); if (!r) return;
+  if (!lbUi.rows) { toast('Loading your friends…'); await lbLoad(); }
   const friends = (lbUi.rows || []).filter(f => !f.me && f.nickname);
   const c = await askChoice({ title: 'Your post', message: '', choices: [
     ...(friends.length ? [{ label: 'Tag friends', kind: 'primary', value: 'tag' }] : []),
